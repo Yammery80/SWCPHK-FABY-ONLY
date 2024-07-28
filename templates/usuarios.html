@@ -1,0 +1,58 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <title>
+        {% block title %}
+            Sistema Web para Ciber Papeleria "Hakkunna - Matata"
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="../static/style/style.css">
+{% endblock %}
+
+{% block body %}
+    {% block navbar %}
+        {% include 'navigation.html' %}
+    {% endblock %}
+
+    {% block content %}
+    <h2>Usuarios</h2>
+    <br>
+        <div class="container-fluid">
+            <table class="table table-success table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">ID Usuario</th>
+                        <th scope="col">Usuario</th>
+                        <th scope="col">Contraseña</th>
+                        <th scope="col">Tipo Usuario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in datos %}
+                    <tr>
+                        <td>{{ usuario[0] }}</td>
+                        <td>{{ usuario[1] }}</td>
+                        <td>{{ usuario[2] }}</td>
+                        <td>{{ usuario[3] }}</td>
+                        <td>
+                            <form action="{{ url_for('update1_usuario', id_usuario=usuario[0]) }}" method="POST">
+                                <button type="submit" class="btn btn-primary">Editar</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="{{ url_for('delete_usuario', id_usuario=usuario[0]) }}" method="POST">
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">No se encontraron Usuarios.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endblock %}
+{% endblock %}

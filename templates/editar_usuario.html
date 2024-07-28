@@ -1,0 +1,34 @@
+{% extends 'bootstrap/base.html' %}
+{% block head %}
+    {{ super() }}
+    <title>
+        {% block title %}
+        Sistema Web para Ciber Papeleria "Hakkunna - Matata"
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="../static/style/style.css">
+{% endblock %}
+
+{% block body %}
+
+    {% block navbar %}
+        {% include 'navigation.html' %}
+    {% endblock %}
+
+    {% block content %}
+        <div class="container-fluid">
+            <h2>Edición de nombre del Usuario</h2>
+            <br>
+            {% for usuario in datos %}
+            <form action="{{ url_for('update2_usuario', id_usuario=usuario[0]) }}" method="post">
+                <input type="hidden" name="id" value="{{ usuario[0] }}">
+                <label for="nombre">Nombre del Usuario</label>
+                <input type="text" id="nombre" name="nombre" value="{{ usuario[1] }}">
+                <input type="submit" value="Actualizar">
+                <a href="{{ url_for('index') }}">Cancelar</a>
+            </form>
+            {% endfor %}
+        </div>
+    {% endblock %}
+
+{% endblock %}
