@@ -65,3 +65,31 @@ def update2_usuario(id_usuario):
     cursor.close()
     db.desconectar(conn)
     return redirect(url_for('index'))
+
+@app.route('/sueldospagado')
+def spagado():
+    conn= db.conectar()
+    # Crear un cursor (objeto para recorrer las tablas)
+    cursor = conn.cursor()
+    #Ejecutar una consulta en postgres
+    cursor.execute('''SELECT * FROM usuarios''')
+    #Recuperar información
+    datos = cursor.fetchall()
+    #Cerrar cursor y conexión a la base de datos
+    cursor.close()
+    db.desconectar(conn)
+    return render_template('sueldospagados.html', datos=datos)
+
+@app.route('/configuracion')
+def config():
+    conn= db.conectar()
+    # Crear un cursor (objeto para recorrer las tablas)
+    cursor = conn.cursor()
+    #Ejecutar una consulta en postgres
+    cursor.execute('''SELECT * FROM usuarios''')
+    #Recuperar información
+    datos = cursor.fetchall()
+    #Cerrar cursor y conexión a la base de datos
+    cursor.close()
+    db.desconectar(conn)
+    return render_template('configuracion.html', datos=datos)

@@ -1,13 +1,149 @@
+h2{
+    margin: 0;
+}
 .mi-nav{
     font-size: 22px;
+}
+.navbar{
+    background-color: #fff;
+    border: none;
+    margin-bottom: 0%;
 }
 .navbar-nav .nav-link{
 display: inline-block;
 margin-left: 10px;
 margin-right: 20px;
 margin-top: 10px;
-color: #057db5;
+color: #000;
 }
-.navbar .navbar-inverse .mi-nav{
-    background-color: #80b505;
+.container-fluid{
+    display: flex;
+    justify-content: flex-end; /* Alinea el contenido al final (end) */
 }
+.navbar-nav{
+    display: flex;
+}
+.navbar .container-fluid .navbar-nav a{
+    font-size: 20px;
+    text-align: end;
+}
+.navbar .container-fluid .navbar-nav .nav-link-entra{
+    text-decoration: none;
+    font-family: Aclonica;
+    color: #1AC052FF;
+}
+.navbar .container-fluid .navbar-nav .nav-link-entra:hover{
+padding-bottom: 9px; /* Espacio entre el texto y la línea */
+padding-bottom: 5px; /* Espacio entre el texto y la línea */
+border-bottom: 2px solid #1AC052FF; /* Ajusta el grosor y el color de la línea */
+}
+.barra {
+    display: flex;
+    overflow: hidden; /* Hace que no se mueva si minimo l a pantalla */
+    align-items: center; /* Alinea verticalmente los elementos dentro de la barra */
+    justify-content: space-between; /* Distribuye el espacio sobrante entre los elementos */
+    background-image: url(../assets/fondo-banner.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 2px; /* Ajusta el espaciado alrededor de los elementos según sea necesario */
+}
+
+.logo, .nomhak, .nomuser, .fotoperfil, .logout {
+    margin: 3px 10px; /* Ajusta el margen entre los elementos según sea necesario */
+    font-size: 12px;
+}
+.nomhak{
+    margin-right: 35%;
+}
+
+.logo img, .fotoperfil img {
+    width: 50px; /* Ajusta el tamaño de las imágenes según sea necesario */
+    height: auto;
+    border-radius: 50%; /* Hace que las imágenes sean circulares */
+    object-fit: cover; /* Asegura que la imagen cubra el contenedor sin deformarse */
+}
+.logout img{
+    width: 30px; /* Ajusta el tamaño de las imágenes según sea necesario */
+    height: auto;
+    color: #fff;
+}
+.nomhak h1, .nomhak h2, .nomuser h2 {
+    margin: 0; /* Elimina márgenes alrededor de los textos para un mejor ajuste */
+    pad: 0;
+    color: white;
+    font-family: Aclonica;
+}
+.nomhak h1, .nomhak h2{
+    font-size: 20px;
+    font-weight: 700;
+}
+.nomuser h2{
+    font-size: 32px;
+    font-weight: 700;
+}
+.caja {
+    background-color: #adacacad;
+    margin: 0px 20px;
+    border-color: #575757ad;
+    border: 1px solid;
+    margin-top: 0%;
+    color: #000;
+    position: relative;
+    padding: 5px 20px;
+}
+.caja h2 {
+    text-align: center;
+    font-family: Aclonica;
+    font-size: 30px;
+    font-weight: 700;
+    margin-top: 8px;
+    margin-bottom: 25px;
+}
+.camposconsulta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Centra el contenido horizontalmente */
+    gap: 20px; /* Espacio entre los items */
+}
+.campo {
+    display: flex;
+    flex-direction: column;
+    align-items: left; /* Opcional: centra el contenido dentro de cada campo */
+}
+.campo p {
+    margin: 0;
+    margin-bottom: 3px;
+}
+.submit-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: right;
+    margin-right: 27%;
+    margin-top: 10px;
+    color: #fff;
+}
+.submit-container input{
+  background: #091108FF;
+  opacity: 1;
+  border: none;
+  border-radius: 2px;
+  margin: 5px;
+  padding: 3px 10px;
+}
+
+.submit-sueldo{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: right;
+    margin-right: 0;
+    margin-top: 5px;
+    color: #fff;
+}
+.submit-sueldo input{
+    background: #091108FF;
+    opacity: 1;
+    border: none;
+    border-radius: 2px;
+    margin: 5px;
+    padding: 3px 10px;
+  }

@@ -1,0 +1,22 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <title>
+        {% block title %}
+            Sistema Web para Ciber Papeleria "Hakkunna - Matata"
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="../static/style/style.css">
+{% endblock %}
+
+{% block body %}
+    {% block navbar %}
+        {% include 'banner.html' %}
+        {% include 'navigation.html' %}
+    {% endblock %}
+
+    {% block content %}
+
+    {% endblock %}
+{% endblock %}

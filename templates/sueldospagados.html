@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block body %}
-
+<!-- bARRA DE NAVEGACIÓN Y MENU -->
     {% block navbar %}
     {% include 'banner.html' %}
     {% include 'navigation.html' %}
@@ -19,8 +19,12 @@
 
     {% block content %}
     <div class="caja">
-        <h2>Entradas y Salidas</h2>
+        <h2>Sueldos Pagados </h2>
         <div class="camposconsulta">
+            <div class="campo">
+                <p>ID Pago</p>
+                <input type="text" name="IDUsuario" placeholder="MariPereH19Tr">
+            </div>
             <div class="campo">
                 <p>ID Usuario</p>
                 <input type="text" name="IDUsuario" placeholder="MariPereH19Tr">
@@ -40,23 +44,36 @@
         <table class="table table-success table-striped">
             <thead>
                 <tr>
+                    <th scope="col">ID Pago</th>
                     <th scope="col">ID Usuario</th>
                     <th scope="col">Usuario</th>
                     <th scope="col">Fecha</th>
                     <th scope="col">Hora de Entrada</th>
                     <th scope="col">Hora de Salida</th>
-                    <th scope="col">Veces cancelado</th>
+                    <th scope="col">Veces Cancelado</th>
+                    <th scope="col">Editar</th>
                 </tr>
             </thead>
             <tbody>
-                {% for entrada in datos %}
+                {% for pagado in datos %}
                 <tr>
-                    <td>{{ entrada[0] }}</td>
-                    <td>{{ entrada[1] }}</td>
-                    <td>{{ entrada[2] }}</td>
-                    <td>{{ entrada[3] }}</td>
-                    <td>{{ entrada[4] }}</td>
-                    <td>{{ entrada[5] }}</td>
+                    <td>{{ pagado[0] }}</td>
+                    <td>{{ pagado[1] }}</td>
+                    <td>{{ pagado[2] }}</td>
+                    <td>{{ pagado[3] }}</td>
+                    <td>{{ pagado[4] }}</td>
+                    <td>{{ pagado[5] }}</td>
+                    <td>{{ pagado[6] }}</td>
+                    <td>
+                        <form action=#" method="POST">
+                            <button type="submit" class="btn btn-primary">Editar</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form action="#" method="POST">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                    </td>
                 </tr>
                 {% else %}
                 <tr>
