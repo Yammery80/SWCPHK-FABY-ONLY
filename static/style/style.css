@@ -1,5 +1,6 @@
 h2{
     margin: 0;
+    text-align: center;
 }
 .mi-nav{
     font-size: 22px;
@@ -83,7 +84,7 @@ border-bottom: 2px solid #1AC052FF; /* Ajusta el grosor y el color de la línea 
 }
 .caja {
     background-color: #adacacad;
-    margin: 0px 20px;
+    margin: 10px 20px;
     border-color: #575757ad;
     border: 1px solid;
     margin-top: 0%;
@@ -128,7 +129,7 @@ border-bottom: 2px solid #1AC052FF; /* Ajusta el grosor y el color de la línea 
   border: none;
   border-radius: 2px;
   margin: 5px;
-  padding: 3px 10px;
+  padding: 3px 1px;
 }
 
 .submit-sueldo{
@@ -144,6 +145,74 @@ border-bottom: 2px solid #1AC052FF; /* Ajusta el grosor y el color de la línea 
     opacity: 1;
     border: none;
     border-radius: 2px;
-    margin: 5px;
     padding: 3px 10px;
   }
+
+  /*Usuario.html */
+  .createuser .usuario-title{
+    display: flex;
+    justify-content: left; /* Centra el contenido horizontalmente */
+    margin: 0%;
+  }
+  .createuser .submit-user{
+    background: #091108FF;
+    opacity: 1;
+    border: none;
+    border-radius: 2px;
+    margin: 1px;
+    padding: 0px 5px;
+    color: #fff;
+    justify-content: right;
+    margin-right: 27%;
+    margin-top: 8px;
+    margin-bottom: 25px;
+  }
+  .createuser .form-createu {
+    background-color: #fff;
+    border-color: #0A4D20FF;
+    border-style: solid;
+    border-radius: 1px;
+    border-width: 1px;
+  }
+  /* Formulario Base de datos */
+  .createuser {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.form-createu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 8px;
+}
+
+.columna-form {
+    flex: 1;
+    min-width: 200px;
+    margin: 10px;
+    box-sizing: border-box;
+}
+
+.columna-form label,
+.columna-form input,
+.columna-form select,
+.columna-form textarea {
+    display: flex;
+    width: 100%;
+    margin-bottom: 10px;
+}
+.columna-form .imagen{
+    width: 150px; /* Ajusta el tamaño de las imágenes según sea necesario */
+    height: auto;
+    border-radius: 50%; /* Hace que las imágenes sean circulares */
+    object-fit: cover;
+    align-items: center; /* Centra el contenido verticalmente */
+    overflow: hidden; /* Asegura que la imagen no se desborde del contenedor */
+    margin-bottom: 10px;
+}
+.politics{
+    width: 40px;
+    height: auto;
+}

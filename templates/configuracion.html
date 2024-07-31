@@ -17,6 +17,55 @@
     {% endblock %}
 
     {% block content %}
-
+    <div class="caja">
+    <div class="createuser">
+        <div class="usuario-title">
+            <input class="submit-user" type="submit" value="Consultar Usuarios">
+            <h2>Usuarios</h2>
+        </div>
+        <form action="" class="formulario-user">
+            <div class="form-createu">
+                <div class="columna-form">
+                    <label for="imagen">Logo:</label>
+                    <img class="imagen" src="../static/assets/logo-banner.jpg" alt="logo-establecimiento">
+                    <input id="logo" type="file" name="file" id="file"><br>
+                    <label for="nom-local">Nombre del establecimiento:</label>
+                    <input type="text" id="nom-local" name="nom-local" required><br>
+                    <label for="tipo-servicio">Tipo Servicio:</label>
+                    <select name="tipo-servicio" id="tipo-servicio">
+                        <option value="inicio">----</option>
+                        <option value="Ciber-Papeleria">Ciber-Papeleria</option>
+                        <option value="Abarrotes">Abarrotes</option>
+                        <option value="Ropa">Ropa</option>
+                      </select><br>
+                    <input class="submit-user" type="submit" value="Listo">
+                </div>
+                <div class="columna-form">
+                    <label for="domiciolio-local">Domicilio:</label>
+                    <input type="text" id="domiciolio-local" name="domiciolio-local" required><br>
+                    <label for="num-tel-local">Número telefónico:</label>
+                    <input type="number" id="num-tel-local" name="num-tel-local" required><br>
+                    <label for="Tipografia-sistema">Tipografía de letra:</label>
+                    <input type="text" id="nom-local" name="nom-local" required><br>
+                    <label for="tamaño-local">Tamaño de empresa:</label>
+                    <select name="tamaño-local" id="tamaño-local">
+                        <option value="inicio">----</option>
+                        <option value="chica">Chica</option>
+                        <option value="mediana">Mediana</option>
+                        <option value="grande">Grande</option>
+                      </select><br>
+                </div>
+                <div class="columna-form">
+                    <label for="imagen-banner">Imagen banner:</label>
+                    <input id="imagen-banner" type="file" name="file" id="imagen-banner"><br/>
+                    <label for="color-interfaz">Color interfaz:</label>
+                    <input type="color" name="color-interfaz" value="#000000">
+                    <label for="politics">Politicas y términos de la empresa:</label>
+                    <img class="politics" src="../static/assets/pdf-politics_and_terms.png" alt="politics">
+                </div>
+                </div>
+        </form>
+    </div>
+</div>
     {% endblock %}
 {% endblock %}

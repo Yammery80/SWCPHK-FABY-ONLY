@@ -17,16 +17,16 @@
     {% endblock %}
 
     {% block content %}
-        <div class="container-fluid">
-            <h2>Edición de nombre del Usuario</h2>
-            <br>
+        <div class="container-editar-spagado">
+            <h2 class="title-sp">Edición de Sueldos Pagados</h2>
+            <br><br>
             {% for usuario in datos %}
-            <form action="{{ url_for('update2_usuario', id_usuario=usuario[0]) }}" method="post">
+            <form class="editar-sueldo-pagado" action="{{ url_for('update2_spagado', id_usuario=usuario[0]) }}" method="post">
                 <input type="hidden" name="id" value="{{ usuario[0] }}">
                 <label for="nombre">Nombre del Usuario</label>
                 <input type="text" id="nombre" name="nombre" value="{{ usuario[1] }}">
                 <input type="submit" value="Actualizar">
-                <a href="{{ url_for('index') }}">Cancelar</a>
+                <a href="{{ url_for('spagado') }}">Cancelar</a>
             </form>
             {% endfor %}
         </div>

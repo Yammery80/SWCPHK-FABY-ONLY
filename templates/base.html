@@ -26,7 +26,7 @@
                 <input type="text" name="IDUsuario" placeholder="MariPereH19Tr">
             </div>
             <div class="campo">
-                <p>Fecha entrada</p>
+                <p>Fecha</p>
                 <input type="date" id="e-fechaentrada" name="e-fechaentrada">
             </div>
             <div class="campo">
@@ -45,7 +45,6 @@
                     <th scope="col">Fecha</th>
                     <th scope="col">Hora de Entrada</th>
                     <th scope="col">Hora de Salida</th>
-                    <th scope="col">Veces cancelado</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,7 +55,6 @@
                     <td>{{ entrada[2] }}</td>
                     <td>{{ entrada[3] }}</td>
                     <td>{{ entrada[4] }}</td>
-                    <td>{{ entrada[5] }}</td>
                 </tr>
                 {% else %}
                 <tr>

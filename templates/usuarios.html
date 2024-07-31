@@ -17,19 +17,65 @@
     {% endblock %}
 
     {% block content %}
+    <div class="caja">
     <div class="createuser">
-        <div class="columna-form">
-
+        <div class="usuario-title">
+            <input class="submit-user" type="submit" value="Consultar Usuarios">
+            <h2>Usuarios</h2>
         </div>
-        <div class="columna-form">
-            
-        </div>
-        <div class="columna-form">
-            
-        </div>
-        <div class="columna-form">
-            
-        </div>
+        <form action="" class="formulario-user">
+            <div class="form-createu">
+                <div class="columna-form">
+                    <label for="id_usuario">Imagen de Perfil:</label>
+                    <img class="imagen" src="../static/assets/foto-admi.jpg" alt="Foto-perfil">
+                    <input id="perfil" type="file" name="file" id="file"><br>
+                    <label for="id_usuario">ID Usuario:</label>
+                    <input type="text" id="id_usuario" name="id_usuario" required><br>
+                    <label for="id_usuario">Nombre Completo:</label>
+                    <input type="text" id="id_usuario" name="id_usuario" required><br>
+                    <label for="id_usuario">Tipo Usuario:</label>
+                    <select name="lenguajes" id="lang">
+                        <option value="inicio">----</option>
+                        <option value="Administrador">Administrador</option>
+                        <option value="Trabajador">Trabajador</option>
+                      </select><br>
+                    <input class="submit-user" type="submit" value="Crear">
+                </div>
+                <div class="columna-form">
+                    <label for="id_usuario">Edad:</label>
+                    <input type="number" id="edad_usuario" name="edad_usuario" required><br>
+                    <label for="domicilio_usuario">Domicilio:</label>
+                    <input type="text" id="domicilio_usuario" name="domicilio_usuario" required><br>
+                    <label for="numtel_usuario">Número telefónico:</label>
+                    <input type="number" id="numtel_usuario" name="numtel_usuario" required><br>
+                    <label for="usuario_usuario">Usuario:</label>
+                    <input type="text" id="usuario_usuario" name="usuario_usuario" required><br>
+                    <label for="contraseña_usuario">Contraseña:</label>
+                    <input type="text" id="contraseña_usuario" name="contraseña_usuario" required><br>
+                    <label for="confirm_usuario">Confirmar Contraseña:</label>
+                    <input type="text" id="confirm_usuario" name="confirm_usuario" required><br>
+                </div>
+                <div class="columna-form">
+                    <label for="hora_entrada">Hora entrada:</label>
+                    <input type="time" id="hora_entrada" name="hora_entrada" required><br>
+                    <label for="hora_salida">Hora salida:</label>
+                    <input type="time" id="hora_salida" name="hora_salida" required><br>
+                    <label for="pago_base">Pago base:</label>
+                    <input type="number" id="pago_base" name="pago_base" required><br>
+                    <label for="pago_hora">Pago hora:</label>
+                    <input type="number" id="pago_hora" name="pago_hora" required><br>
+                    <label for="numero_medico">Número seguro médico:</label>
+                    <input type="number" id="numero_medico" name="numero_medico" required><br>
+                </div>
+                <div class="columna-form">
+                    <label for="cartas-reco">Cartas recomendación:</label>
+                    <input id="ficheros" type="file" name="file" id="file"><br/>
+                    <label for="description">Descripción:</label><br>
+                    <textarea name="descripcion_usuario" rows="4" cols="50" placeholder="Descripción">Descripción</textarea>
+                </div>
+                </div>
+        </form>
     </div>
+</div>
     {% endblock %}
 {% endblock %}

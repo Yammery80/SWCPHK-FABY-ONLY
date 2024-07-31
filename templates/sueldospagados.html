@@ -65,12 +65,12 @@
                     <td>{{ pagado[5] }}</td>
                     <td>{{ pagado[6] }}</td>
                     <td>
-                        <form action="{{ url_for('update1_usuario', id_usuario=pagado[0]) }}" method="POST">
+                        <form action="{{ url_for('update1_spagado', id_usuario=pagado[0]) }}" method="POST">
                             <button type="submit" class="btn btn-primary">Editar</button>
                         </form>
                     </td>
                     <td>
-                        <form action="#" method="POST">
+                        <form action="{{ url_for('delete_spagado', id_usuario=pagado[0]) }}" method="POST">
                             <button type="submit" class="btn btn-danger">Eliminar</button>
                         </form>
                     </td>
