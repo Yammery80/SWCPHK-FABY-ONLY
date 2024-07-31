@@ -1,0 +1,72 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <title>
+        {% block title %}
+            Sistema Web para Ciber Papaleria "Hakkunna Matata"
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="../static/style/style.css">
+    <!-- <link rel="stylesheet" href=""> // Aquí puedes conectar tu hoja de estilo -->
+{% endblock %}
+
+{% block body %}
+
+    {% block navbar %}
+    {% include 'banner-tr.html' %}
+    {% include 'navigation-tr.html' %}
+    {% endblock %}
+
+    {% block content %}
+    <div class="caja">
+        <h2>Consulta Entradas y Salidas</h2>
+        <form action="/trabajadoreys" method="post">
+            <div class="camposconsulta">
+                <div class="campo">
+                    <label for="usuario_entradas">ID Usuario: </label>
+                    <input type="text" id="usuario_entradas" name="usuario_entradas" required>
+                </div>
+                <div class="campo">
+                    <label for="fecha_inicio">Fecha de Inicio:</label>
+                    <input type="date" id="fecha_inicio" name="fecha_inicio" required>
+                </div>
+                <div class="campo">
+                    <label for="fecha_final">Fecha Final:</label>
+                    <input type="date" id="fecha_final" name="fecha_final" required>
+                </div>
+            </div>
+            <div class="submit-container">
+                <input type="submit" value="Consultar">
+            </div>
+        </form>
+
+        {% if datos %}
+        <div class="form-entradas">
+        <table class="table table-success table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">ID Usuario</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Hora de Entrada</th>
+                    <th scope="col">Hora de Salida</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for eysuser in datos %}
+                <tr>
+                    <td>{{ eysuser[0] }}</td>
+                    <td>{{ eysuser[1] }}</td>
+                    <td>{{ eysuser[2] }}</td>
+                    <td>{{ eysuser[3] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% endif %}
+
+    </div>
+    {% endblock %}
+
+{% endblock %}

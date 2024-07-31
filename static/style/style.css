@@ -216,3 +216,20 @@ border-bottom: 2px solid #1AC052FF; /* Ajusta el grosor y el color de la línea 
     width: 40px;
     height: auto;
 }
+
+/*Trabajador Inicio*/
+.tr-base{
+padding: 14%;
+
+}
+/*Trabajador entrdas y salidas*/
+.form-entradas{
+    background-color: #fff;
+    border-color: #0A4D20FF;
+    border-style: solid;
+    border-radius: 1px;
+    border-width: 1px;
+    margin-bottom: 5px;
+    width: 100%;
+    height: auto;
+}
