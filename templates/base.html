@@ -3,11 +3,10 @@
     {{ super() }}
     <title>
         {% block title %}
-            Sistema Web para Ciber Papaleria "Hakkunna Matata"
+            Sistema Web para Ciber Papelería "Hakkunna Matata"
         {% endblock %}
     </title>
-    <link rel="stylesheet" href="../static/style/style.css">
- <!-- <link rel="stylesheet" href=""> // aqui puedo conectar mi hoja de estilo -->
+    <link rel="stylesheet" href="/static/style/style.css">
 {% endblock %}
 
 {% block body %}
@@ -20,23 +19,25 @@
     {% block content %}
     <div class="caja">
         <h2>Entradas y Salidas</h2>
-        <div class="camposconsulta">
-            <div class="campo">
-                <p>ID Usuario</p>
-                <input type="text" name="IDUsuario" placeholder="MariPereH19Tr">
+        <form action="/" method="post">
+            <div class="camposconsulta">
+                <div class="campo">
+                    <label for="id_usuario">ID Usuario: </label>
+                    <input type="text" id="id_usuario" name="id_usuario" placeholder="MariPereH19Tr" required>
+                </div>
+                <div class="campo">
+                    <label for="e_fechaentrada">Fecha Entrada:</label>
+                    <input type="date" id="e_fechaentrada" name="e_fechaentrada" required>
+                </div>
+                <div class="campo">
+                    <label for="e_fechasalida">Fecha Salida:</label>
+                    <input type="date" id="e_fechasalida" name="e_fechasalida" required>
+                </div>
             </div>
-            <div class="campo">
-                <p>Fecha</p>
-                <input type="date" id="e-fechaentrada" name="e-fechaentrada">
+            <div class="submit-container">
+                <input type="submit" value="Consultar">
             </div>
-            <div class="campo">
-                <p>Fecha salida</p>
-                <input type="date" id="e-fechasalida" name="e-fechasalida">
-            </div>
-        </div>
-        <div class="submit-container">
-            <input type="submit" value="Consultar">
-        </div>
+        </form>
         <table class="table table-success table-striped">
             <thead>
                 <tr>
@@ -58,14 +59,17 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="6">No se encontraron Usuarios.</td>
+                    <td colspan="5">No se encontraron Usuarios.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-    <div class="submit-sueldo">
-        <input type="submit" value="Calcular sueldo">
-    </div>
+        <!-- Si necesitas un botón para calcular el sueldo, debes incluirlo en un formulario o manejarlo adecuadamente -->
+        <div class="submit-sueldo">
+            <form action="/calcular_sueldo" method="post">
+                <input type="submit" value="Calcular sueldo">
+            </form>
+        </div>
     </div>
     {% endblock %}
 

@@ -3,26 +3,38 @@
     {{ super() }}
     <title>
         {% block title %}
-            Sistema Web para Ciber Papaleria "Hakkunna Matata"
+            Sistema Web para Ciber Papelería "Hakkunna Matata"
         {% endblock %}
     </title>
-    <link rel="stylesheet" href="../static/style/style.css">
- <!-- <link rel="stylesheet" href=""> // aqui puedo conectar mi hoja de estilo -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
 {% endblock %}
 
 {% block body %}
-
     {% block navbar %}
     {% include 'banner-tr.html' %}
     {% include 'navigation-tr.html' %}
     {% endblock %}
+
     <div class="caja">
         <h2>Entradas y Salidas</h2>
         <div class="tr-base">
         </div>
     </div>
-    {% block content %}
 
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <h2>Entradas y Salidas</h2>
+            <h1>¡Bienvenido Raúl!</h1>
+            <p>Tu hora de entrada es:</p>
+            <div class="time">
+                <span id="hour">00</span> : <span id="minute">00</span>
+            </div>
+            <button id="acceptButton">Aceptar</button>
+            <button id="cancelButton">Cancelar</button>
+        </div>
+    </div>
+    {% block content %}
     {% endblock %}
 
-{% endblock %}
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% endblock %}

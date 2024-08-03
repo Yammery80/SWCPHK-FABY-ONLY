@@ -1,46 +1,47 @@
-h2{
+h2 {
     margin: 0;
     text-align: center;
 }
-.mi-nav{
+
+/* Barra de navegación */
+.mi-nav {
     font-size: 22px;
 }
-.navbar{
+.navbar {
     background-color: #fff;
     border: none;
     margin-bottom: 0%;
 }
-.navbar-nav .nav-link{
-display: inline-block;
-margin-left: 10px;
-margin-right: 20px;
-margin-top: 10px;
-color: #000;
+.navbar-nav .nav-link {
+    display: inline-block;
+    margin: 10px 20px 0 10px;
+    color: #000;
 }
-.container-fluid{
+.container-fluid {
     display: flex;
     justify-content: flex-end; /* Alinea el contenido al final (end) */
 }
-.navbar-nav{
+.navbar-nav {
     display: flex;
 }
-.navbar .container-fluid .navbar-nav a{
+.navbar .container-fluid .navbar-nav a {
     font-size: 20px;
     text-align: end;
 }
-.navbar .container-fluid .navbar-nav .nav-link-entra{
+.navbar .container-fluid .navbar-nav .nav-link-entra {
     text-decoration: none;
     font-family: Aclonica;
     color: #1AC052FF;
 }
-.navbar .container-fluid .navbar-nav .nav-link-entra:hover{
-padding-bottom: 9px; /* Espacio entre el texto y la línea */
-padding-bottom: 5px; /* Espacio entre el texto y la línea */
-border-bottom: 2px solid #1AC052FF; /* Ajusta el grosor y el color de la línea */
+.navbar .container-fluid .navbar-nav .nav-link-entra:hover {
+    padding-bottom: 5px; /* Espacio entre el texto y la línea */
+    border-bottom: 2px solid #1AC052FF; /* Ajusta el grosor y el color de la línea */
 }
+
+/* Barra */
 .barra {
     display: flex;
-    overflow: hidden; /* Hace que no se mueva si minimo l a pantalla */
+    overflow: hidden; /* Hace que no se mueva si se minimiza la pantalla */
     align-items: center; /* Alinea verticalmente los elementos dentro de la barra */
     justify-content: space-between; /* Distribuye el espacio sobrante entre los elementos */
     background-image: url(../assets/fondo-banner.jpg);
@@ -48,22 +49,20 @@ border-bottom: 2px solid #1AC052FF; /* Ajusta el grosor y el color de la línea 
     background-size: cover;
     padding: 2px; /* Ajusta el espaciado alrededor de los elementos según sea necesario */
 }
-
 .logo, .nomhak, .nomuser, .fotoperfil, .logout {
     margin: 3px 10px; /* Ajusta el margen entre los elementos según sea necesario */
     font-size: 12px;
 }
-.nomhak{
+.nomhak {
     margin-right: 35%;
 }
-
 .logo img, .fotoperfil img {
     width: 50px; /* Ajusta el tamaño de las imágenes según sea necesario */
     height: auto;
     border-radius: 50%; /* Hace que las imágenes sean circulares */
     object-fit: cover; /* Asegura que la imagen cubra el contenedor sin deformarse */
 }
-.logout img{
+.logout img {
     width: 30px; /* Ajusta el tamaño de las imágenes según sea necesario */
     height: auto;
     color: #fff;
@@ -74,14 +73,16 @@ border-bottom: 2px solid #1AC052FF; /* Ajusta el grosor y el color de la línea 
     color: white;
     font-family: Aclonica;
 }
-.nomhak h1, .nomhak h2{
+.nomhak h1, .nomhak h2 {
     font-size: 20px;
     font-weight: 700;
 }
-.nomuser h2{
+.nomuser h2 {
     font-size: 32px;
     font-weight: 700;
 }
+
+/* Caja */
 .caja {
     background-color: #adacacad;
     margin: 10px 20px;
@@ -97,9 +98,10 @@ border-bottom: 2px solid #1AC052FF; /* Ajusta el grosor y el color de la línea 
     font-family: Aclonica;
     font-size: 30px;
     font-weight: 700;
-    margin-top: 8px;
-    margin-bottom: 25px;
+    margin: 8px 0 25px;
 }
+
+/* Campos de consulta */
 .camposconsulta {
     display: flex;
     flex-wrap: wrap;
@@ -112,98 +114,87 @@ border-bottom: 2px solid #1AC052FF; /* Ajusta el grosor y el color de la línea 
     align-items: left; /* Opcional: centra el contenido dentro de cada campo */
 }
 .campo p {
-    margin: 0;
-    margin-bottom: 3px;
-}
-.submit-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: right;
-    margin-right: 27%;
-    margin-top: 10px;
-    color: #fff;
-}
-.submit-container input{
-  background: #091108FF;
-  opacity: 1;
-  border: none;
-  border-radius: 2px;
-  margin: 5px;
-  padding: 3px 1px;
+    margin: 0 0 3px;
 }
 
-.submit-sueldo{
+/* Contenedores de envío */
+.submit-container, .submit-sueldo {
     display: flex;
     flex-wrap: wrap;
     justify-content: right;
-    margin-right: 0;
-    margin-top: 5px;
     color: #fff;
 }
-.submit-sueldo input{
+.submit-container {
+    margin-right: 27%;
+    margin-top: 10px;
+}
+.submit-container input, .submit-sueldo input {
     background: #091108FF;
     opacity: 1;
     border: none;
     border-radius: 2px;
+    padding: 3px 1px;
+    margin: 5px;
+}
+.submit-sueldo {
+    margin-right: 0;
+    margin-top: 5px;
+}
+.submit-sueldo input {
     padding: 3px 10px;
-  }
+}
 
-  /*Usuario.html */
-  .createuser .usuario-title{
+/* Usuario.html */
+.createuser .usuario-title {
     display: flex;
     justify-content: left; /* Centra el contenido horizontalmente */
     margin: 0%;
-  }
-  .createuser .submit-user{
+}
+.createuser .submit-user {
     background: #091108FF;
     opacity: 1;
     border: none;
     border-radius: 2px;
     margin: 1px;
-    padding: 0px 5px;
+    padding: 0 5px;
     color: #fff;
     justify-content: right;
     margin-right: 27%;
     margin-top: 8px;
     margin-bottom: 25px;
-  }
-  .createuser .form-createu {
+}
+.createuser .form-createu {
     background-color: #fff;
     border-color: #0A4D20FF;
     border-style: solid;
     border-radius: 1px;
     border-width: 1px;
-  }
-  /* Formulario Base de datos */
-  .createuser {
+}
+
+/* Formulario Base de datos */
+.createuser {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
 }
-
 .form-createu {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     padding: 8px;
 }
-
 .columna-form {
     flex: 1;
     min-width: 200px;
     margin: 10px;
     box-sizing: border-box;
 }
-
-.columna-form label,
-.columna-form input,
-.columna-form select,
-.columna-form textarea {
+.columna-form label, .columna-form input, .columna-form select, .columna-form textarea {
     display: flex;
     width: 100%;
     margin-bottom: 10px;
 }
-.columna-form .imagen{
+.columna-form .imagen {
     width: 150px; /* Ajusta el tamaño de las imágenes según sea necesario */
     height: auto;
     border-radius: 50%; /* Hace que las imágenes sean circulares */
@@ -212,18 +203,18 @@ border-bottom: 2px solid #1AC052FF; /* Ajusta el grosor y el color de la línea 
     overflow: hidden; /* Asegura que la imagen no se desborde del contenedor */
     margin-bottom: 10px;
 }
-.politics{
+.politics {
     width: 40px;
     height: auto;
 }
 
-/*Trabajador Inicio*/
-.tr-base{
-padding: 14%;
-
+/* Trabajador Inicio */
+.tr-base {
+    padding: 14%;
 }
-/*Trabajador entrdas y salidas*/
-.form-entradas{
+
+/* Trabajador entradas y salidas */
+.form-entradas {
     background-color: #fff;
     border-color: #0A4D20FF;
     border-style: solid;
@@ -232,4 +223,39 @@ padding: 14%;
     margin-bottom: 5px;
     width: 100%;
     height: auto;
+}
+
+/* Popup */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+.popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    color: #000;
+}
+.time {
+    font-size: 24px;
+    margin: 20px 0;
+}
+button {
+    padding: 10px 20px;
+    background-color: #2d5a27;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #2a4d26;
 }

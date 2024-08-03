@@ -20,27 +20,29 @@
     {% block content %}
     <div class="caja">
         <h2>Sueldos Pagados </h2>
-        <div class="camposconsulta">
-            <div class="campo">
-                <p>ID Pago</p>
-                <input type="text" name="IDUsuario" placeholder="MariPereH19Tr">
+        <form action="/sueldospagado" method="post">
+            <div class="camposconsulta">
+                <div class="campo">
+                    <label for="id_pago">ID Pago: </label>
+                    <input type="text" id="id_pago" name="id_pago" placeholder="1" required>
+                </div>
+                <div class="campo">
+                    <label for="id_usuario">ID Usuario: </label>
+                    <input type="text" id="id_usuario" name="id_usuario" placeholder="MariPereH19Tr" required>
+                </div>
+                <div class="campo">
+                    <label for="e_fechaentrada">Fecha Entrada:</label>
+                    <input type="date" id="e_fechaentrada" name="e_fechaentrada" required>
+                </div>
+                <div class="campo">
+                    <label for="e_fechasalida">Fecha Salida:</label>
+                    <input type="date" id="e_fechasalida" name="e_fechasalida" required>
+                </div>
             </div>
-            <div class="campo">
-                <p>ID Usuario</p>
-                <input type="text" name="IDUsuario" placeholder="MariPereH19Tr">
+            <div class="submit-container">
+                <input type="submit" value="Consultar">
             </div>
-            <div class="campo">
-                <p>Fecha entrada</p>
-                <input type="date" id="e-fechaentrada" name="e-fechaentrada">
-            </div>
-            <div class="campo">
-                <p>Fecha salida</p>
-                <input type="date" id="e-fechasalida" name="e-fechasalida">
-            </div>
-        </div>
-        <div class="submit-container">
-            <input type="submit" value="Consultar">
-        </div>
+        </form>
         <table class="table table-success table-striped">
             <thead>
                 <tr>
@@ -50,7 +52,7 @@
                     <th scope="col">Fecha</th>
                     <th scope="col">Hora de Entrada</th>
                     <th scope="col">Hora de Salida</th>
-                    <th scope="col">Veces Cancelado</th>
+                    <th scope="col">Monto</th>
                     <th scope="col">Editar</th>
                 </tr>
             </thead>
@@ -77,14 +79,14 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="6">No se encontraron Usuarios.</td>
+                    <td colspan="8">No se encontraron Usuarios.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-    <div class="submit-sueldo">
-        <input type="submit" value="Calcular sueldo">
-    </div>
+        <div class="submit-sueldo">
+            <input type="submit" value="Calcular sueldo">
+        </div>
     </div>
     {% endblock %}
 
