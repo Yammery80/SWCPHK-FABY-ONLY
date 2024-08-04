@@ -1,0 +1,121 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <title>
+        Sistema Web para Ciber Papeleria "Hakkunna - Matata"
+    </title>
+    <link rel="stylesheet" href="../static/style/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='../static/js/script.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    {% block navbar %}
+        {% include 'banner.html' %}
+        {% include 'navigation.html' %}
+    {% endblock %}
+
+    {% block content %}
+        <!-- Mensajes Flash -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="container-editar-usuario">
+        <h2 class="title-sp">Edición de Usuarios</h2>
+        <br><br>
+        {% for cuser in datos %}
+        <form action="{{ url_for('update2_usuario', id_usuario=cuser[1]) }}" method="post" enctype="multipart/form-data" class="formulario-user">
+            <div class="form-createu">
+                <!-- Primera columna -->
+                <div class="columna-form">
+                    <label for="foto_usuario">Imagen de Perfil:</label>
+                    <img class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' + (cuser[0] if cuser[0] else 'Maria-Lopez.jpg')) }}" alt="Imagen de Perfil">
+                    <input id="foto_usuario" type="file" name="foto_usuario" value="{{ cuser[0] }}"><br>
+                    
+                    <label for="id_usuario">ID Usuario:0</label>
+                    <input type="text" id="id_usuario" name="id_usuario" value="{{ cuser[1] }}" required disabled><br>
+                    
+                    <label for="nomcompleto_usuario">Nombre Completo:2</label>
+                    <input type="text" id="nomcompleto_usuario" name="nomcompleto_usuario" value="{{ cuser[2] }}" required><br>
+                    
+                    <label for="tipo_usuario">Tipo Usuario:7</label>
+                    <select name="tipo_usuario" id="tipo_usuario">
+                        <option value="Administrador" {% if cuser[3] == 'Administrador' %}selected{% endif %}>Administrador</option>
+                        <option value="Trabajador" {% if cuser[3] == 'Trabajador' %}selected{% endif %}>Trabajador</option>
+                    </select><br>
+                    
+                    <label for="descripcion_usuario">Descripción:8</label><br>
+                    <textarea name="descripcion_usuario" id="descripcion_usuario" rows="4" cols="30" placeholder="Descripción">{{ cuser[4] }}</textarea><br>
+                </div>
+                
+                <!-- Segunda columna -->
+                <div class="columna-form">
+                    <label for="edad_usuario">Edad:3</label>
+                    <input type="number" id="edad_usuario" name="edad_usuario" value="{{ cuser[5] }}" required><br>
+                    
+                    <label for="domicilio_usuario">Domicilio:4</label>
+                    <input type="text" id="domicilio_usuario" name="domicilio_usuario" value="{{ cuser[6] }}" required><br>
+                    
+                    <label for="numtel_usuario">Número telefónico:5</label>
+                    <input type="number" id="numtel_usuario" name="numtel_usuario" value="{{ cuser[7] }}" required><br>
+                    
+                    <label for="telemer_usuario">Número emergencia:6</label>
+                    <input type="number" id="telemer_usuario" name="telemer_usuario" value="{{ cuser[8] }}" required><br>
+                </div>
+                
+                <!-- Tercera columna -->
+                <div class="columna-form">
+                    <label for="contrasena_usuario">Contraseña:1</label>
+                    <input type="password" id="contrasena_usuario" name="contrasena_usuario" value="{{ cuser[9] }}" disabled><br>
+                    
+                    <label for="confirmarcontrasena_usuario">Confirmar Contraseña:</label>
+                    <input type="password" id="confirmarcontrasena_usuario" name="confirmarcontrasena_usuario" value="{{ cuser[10] }}" disabled><br>
+                
+                    
+                    <label for="hora_entrada">Hora entrada:</label>
+                    <input type="time" id="hora_entrada" name="horaentrada_usuario" value="{{ cuser[11] }}" required><br>
+                    
+                    <label for="hora_salida">Hora salida:</label>
+                    <input type="time" id="hora_salida" name="horasalida_usuario" value="{{ cuser[12] }}" required><br>
+                </div>
+                
+                <!-- Cuarta columna -->
+                <div class="columna-form">
+                    <label for="pago_base">Pago base:12</label>
+                    <input type="number" id="pago_base" name="pagobase_usuario" value="{{ cuser[13] }}" required><br>
+                    
+                    <label for="pago_hora">Pago hora:11</label>
+                    <input type="number" id="pago_hora" name="pagohora_usuario" value="{{ cuser[14] }}" required><br>
+                    
+                    <label for="numero_medico">Número seguro médico:9</label>
+                    <input type="number" id="numero_medico" name="nummedico_usuario" value="{{ cuser[15] }}" required><br>
+                    
+                    <label for="tiposegmedico_usuario">Tipo Seguro Médico:10</label>
+                    <select name="tiposegmedico_usuario" id="tiposegmedico_usuario">
+                        <option value="publico" {% if cuser[16] == 'publico' %}selected{% endif %}>Público</option>
+                        <option value="privado" {% if cuser[16] == 'privado' %}selected{% endif %}>Privado</option>
+                    </select><br>
+                    
+                    <label for="cartas_reco">Cartas recomendación:</label>
+                    <img class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/CartasRecomendacion/' + (cuser[17] if cuser[17] else 'maria-lopez.jpeg')) }}" alt="Imagen de CartasRecomendacion">
+                    <input id="cartas_reco" type="file" name="cartasreco_usuario" value="{{ cuser[17] }}"><br>
+                </div>
+            </div>     
+            <!-- Botones de acción -->
+            <div class="form-buttons">
+                <input type="submit" value="Actualizar">
+                <a href="{{ url_for('consultausers') }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+
+        {% endfor %}
+    {% endblock %}
+{% endblock %}

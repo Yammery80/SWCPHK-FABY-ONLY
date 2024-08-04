@@ -50,11 +50,11 @@ h2 {
     padding: 2px; /* Ajusta el espaciado alrededor de los elementos según sea necesario */
 }
 .logo, .nomhak, .nomuser, .fotoperfil, .logout {
-    margin: 3px 10px; /* Ajusta el margen entre los elementos según sea necesario */
+    margin: 5px 10px; /* Ajusta el margen entre los elementos*/
     font-size: 12px;
 }
 .nomhak {
-    margin-right: 35%;
+    margin-right: 45%;
 }
 .logo img, .fotoperfil img {
     width: 50px; /* Ajusta el tamaño de las imágenes según sea necesario */
@@ -63,7 +63,7 @@ h2 {
     object-fit: cover; /* Asegura que la imagen cubra el contenedor sin deformarse */
 }
 .logout img {
-    width: 30px; /* Ajusta el tamaño de las imágenes según sea necesario */
+    width: 30px; /* Ajusta el tamaño*/
     height: auto;
     color: #fff;
 }
@@ -84,6 +84,8 @@ h2 {
 
 /* Caja */
 .caja {
+    width: 100%;
+    max-width: 1300px;/* Ajusta el ancho máximo */
     background-color: #adacacad;
     margin: 10px 20px;
     border-color: #575757ad;
@@ -91,8 +93,20 @@ h2 {
     margin-top: 0%;
     color: #000;
     position: relative;
-    padding: 5px 20px;
+    padding: 20px 20px;
 }
+.caja-content{
+    width: 100%;
+    max-width: 1300px; /* Ajusta el ancho máximo según tus necesidades */
+    margin: auto;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: auto; /* Añade barras de desplazamiento si el contenido es mayor que el contenedor */
+    background-color: #f9f9f9;
+    padding: 10px;
+}
+
 .caja h2 {
     text-align: center;
     font-family: Aclonica;
@@ -102,6 +116,7 @@ h2 {
 }
 
 /* Campos de consulta */
+
 .camposconsulta {
     display: flex;
     flex-wrap: wrap;
@@ -258,4 +273,30 @@ button {
 }
 button:hover {
     background-color: #2a4d26;
+}
+
+
+/* Ventana emergente de Usuario existente */
+.alert {
+    position: flex;
+    top: 10px;
+    right: 10px;
+    z-index: 9999;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    display: none; /* Initially hidden */
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #000000;
+    border: 1px solid #721c24;
 }

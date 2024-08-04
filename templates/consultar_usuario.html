@@ -1,0 +1,115 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <title>
+        {% block title %}
+            Sistema Web para Ciber Papeleria "Hakkunna - Matata"
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
+
+{% endblock %}
+
+{% block body %}
+    {% block navbar %}
+        {% include 'banner.html' %}
+        {% include 'navigation.html' %}
+    {% endblock %}
+
+    {% block content %}
+    <div class="caja">
+        <div class="createuser">
+            <div class="usuario-title">
+                <a class="btn btn-secondary" href="{{ url_for('usuario') }}">Regresar</a>
+                <h2>Consultar Usuarios</h2>
+            </div>
+        <form action="/consultausers" method="post">
+            <div class="camposconsulta">
+                <div class="campo">
+                    <label for="id_usuario">ID Usuario:</label>
+                <input type="text" id="id_usuario" name="id_usuario" placeholder="falo19htr24">
+                </div>
+                <div class="campo">
+                    <label for="tipo_usuario">Tipo Usuario:</label>
+                <select name="tipo_usuario" id="tipo_usuario">
+                    <option value="Administrador">Administrador</option>
+                    <option value="Trabajador">Trabajador</option>
+                </select>
+                </div>
+            </div>
+            <div class="submit-container">
+                <input type="submit" value="Consultar">
+            </div>
+        </form>
+        <div class="caja-content">
+            <table class="table table-success table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Foto</th>
+                        <th scope="col">ID Usuario</th>
+                        <th scope="col">Nombre Completo</th>
+                        <th scope="col">Tipo Usuario</th>
+                        <th scope="col">Descripción</th>
+                        <th scope="col">Edad</th>
+                        <th scope="col">Domicilio</th>
+                        <th scope="col">Número Telefónico</th>
+                        <th scope="col">Teléfono Emergencia</th>
+                        <th scope="col" class="contrasena-cont">Contraseña</th>
+                        <th scope="col">Hora Entrada</th>
+                        <th scope="col">Hora Salida</th>
+                        <th scope="col">Pago Base</th>
+                        <th scope="col">Pago Hora</th>
+                        <th scope="col">Número Médico</th>
+                        <th scope="col">Tipo Seguro Médico</th>
+                        <th scope="col">Cartas Recomendación</th>
+                        <th scope="col">Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cuser in datos %}
+                    <tr>
+                        <td>{{ cuser[0] }}</td>
+                        <td>{{ cuser[1] }}</td>
+                        <td>{{ cuser[2] }}</td>
+                        <td>{{ cuser[3] }}</td>
+                        <td>{{ cuser[4] }}</td>
+                        <td>{{ cuser[5] }}</td>
+                        <td>{{ cuser[6] }}</td>
+                        <td>{{ cuser[7] }}</td>
+                        <td>{{ cuser[8] }}</td>
+                        <td>{{ cuser[9] }}</td>
+                        <td>{{ cuser[10] }}</td>
+                        <td>{{ cuser[11] }}</td>
+                        <td>{{ cuser[12] }}</td>
+                        <td>{{ cuser[13] }}</td>
+                        <td>{{ cuser[14] }}</td>
+                        <td>{{ cuser[15] }}</td>
+                        <td>
+                            {% if cuser[16] %}
+                                <img src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' ~ cuser[16]) }}" alt="Foto" width="50">
+                            {% else %}
+                                No Disponible
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form action="{{ url_for('update1_usuario', id_usuario=cuser[1]) }}" method="POST">
+                                <button type="submit" class="btn btn-primary">Editar</button>
+                            </form><br>
+                            <form action="{{ url_for('delete_usuario', id_usuario=cuser[1]) }}" method="POST">
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="18">No se encontraron Usuarios.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+    {% endblock %}
+{% endblock %}

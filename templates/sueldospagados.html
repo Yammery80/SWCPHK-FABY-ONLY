@@ -70,11 +70,9 @@
                         <form action="{{ url_for('update1_spagado', id_usuario=pagado[0]) }}" method="POST">
                             <button type="submit" class="btn btn-primary">Editar</button>
                         </form>
-                    </td>
-                    <td>
                         <form action="{{ url_for('delete_spagado', id_usuario=pagado[0]) }}" method="POST">
                             <button type="submit" class="btn btn-danger">Eliminar</button>
-                        </form>
+                        </form><br>
                     </td>
                 </tr>
                 {% else %}

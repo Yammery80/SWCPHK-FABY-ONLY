@@ -8,6 +8,8 @@
         {% endblock %}
     </title>
     <link rel="stylesheet" href="../static/style/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='../static/js/script.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -20,82 +22,98 @@
     <div class="caja">
     <div class="createuser">
         <div class="usuario-title">
-            <input class="submit-user" type="submit" value="Consultar Usuarios">
+            <a class="btn btn-secondary" href="{{ url_for('consultausers') }}">Consultar Usuarios</a>
             <h2>Usuarios</h2>
         </div>
-        <form action="#" method="post" enctype="multipart/form-data" class="formulario-user">
-            <div class="form-createu">
-                <!-- Primera columna -->
-                <div class="columna-form">
-                    <label for="foto_usuario">Imagen de Perfil:</label>
-                    <img class="imagen" src="../static/assets/foto-admi.jpg" alt="logo-establecimiento">
-                    <input id="foto_usuario" type="file" name="foto_usuario"><br>
+    <!-- Mensajes Flash -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
 
-                    <label for="id_usuario">ID Usuario:</label>
-                    <input type="text" id="id_usuario" name="id_usuario" required><br>
-
-                    <label for="nomcompleto_usuario">Nombre Completo:</label>
-                    <input type="text" id="nomcompleto_usuario" name="nomcompleto_usuario" required><br>
-
-                    <label for="tipo_usuario">Tipo Usuario:</label>
-                    <select name="tipo_usuario" id="tipo_usuario">
-                        <option value="Administrador">Administrador</option>
-                        <option value="Trabajador">Trabajador</option>
-                    </select><br>
-                    <input class="submit-user" type="submit" value="Crear">
-                </div>
-
-                <!-- Segunda columna -->
-                <div class="columna-form">
-                    <label for="descripcion_usuario">Descripción:</label><br>
-                    <textarea name="descripcion_usuario" id="descripcion_usuario" rows="4" cols="30" placeholder="Descripción"></textarea><br>
-
-                    <label for="edad_usuario">Edad:</label>
-                    <input type="number" id="edad_usuario" name="edad_usuario" required><br>
-
-                    <label for="domicilio_usuario">Domicilio:</label>
-                    <input type="text" id="domicilio_usuario" name="domicilio_usuario" required><br>
-
-                    <label for="numtel_usuario">Número telefónico:</label>
-                    <input type="number" id="numtel_usuario" name="numtel_usuario" required><br>
-
-                    <label for="usuario_usuario">Usuario:</label>
-                    <input type="text" id="usuario_usuario" name="usuario_usuario" required><br>
-                </div>
-
-                <!-- Tercera columna -->
-                <div class="columna-form">
-                    <label for="contrasena_usuario">Contraseña:</label>
-                    <input type="password" id="contrasena_usuario" name="contrasena_usuario" required><br>
-
-                    <label for="confirmarcontrasena_usuario">Confirmar Contraseña:</label>
-                    <input type="password" id="confirmarcontrasena_usuario" name="confirmarcontrasena_usuario" required><br>
-
-                    <label for="hora_entrada">Hora entrada:</label>
-                    <input type="time" id="hora_entrada" name="horaentrada_usuario" required><br>
-
-                    <label for="hora_salida">Hora salida:</label>
-                    <input type="time" id="hora_salida" name="horasalida_usuario" required><br>
-                </div>
-
-                <!-- Cuarta columna -->
-                <div class="columna-form">
-                    <label for="pago_base">Pago base:</label>
-                    <input type="number" id="pago_base" name="pagobase_usuario" required><br>
-
-                    <label for="pago_hora">Pago hora:</label>
-                    <input type="number" id="pago_hora" name="pagohora_usuario" required><br>
-
-                    <label for="numero_medico">Número seguro médico:</label>
-                    <input type="number" id="numero_medico" name="nummedico_usuario" required><br>
-
-                    <label for="cartas_reco">Cartas recomendación:</label>
-                    <input id="cartas_reco" type="file" name="cartasreco_usuario"><br>
-                </div>
+    <form action="/usuario" method="post" enctype="multipart/form-data" class="formulario-user">
+        <div class="form-createu">
+            <!-- Primera columna -->
+            <div class="columna-form">
+                <label for="foto_usuario">Imagen de Perfil:</label>
+                <img class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' + (foto_filename if foto_filename else 'Maria-Lopez.jpg')) }}" alt="Imagen de Perfil">
+                <input id="foto_usuario" type="file" name="foto_usuario"><br>
+                
+                <label for="id_usuario">ID Usuario:</label>
+                <input type="text" id="id_usuario" name="id_usuario" required><br>
+                
+                <label for="nomcompleto_usuario">Nombre Completo:</label>
+                <input type="text" id="nomcompleto_usuario" name="nomcompleto_usuario" required><br>
+                
+                <label for="tipo_usuario">Tipo Usuario:</label>
+                <select name="tipo_usuario" id="tipo_usuario">
+                    <option value="Administrador">Administrador</option>
+                    <option value="Trabajador">Trabajador</option>
+                </select><br>
+                
+                <label for="descripcion_usuario">Descripción:</label><br>
+                <textarea name="descripcion_usuario" id="descripcion_usuario" rows="4" cols="30" placeholder="Descripción"></textarea><br>
             </div>
-        </form>
+            
+            <!-- Segunda columna -->
+            <div class="columna-form">
+                <label for="edad_usuario">Edad:</label>
+                <input type="number" id="edad_usuario" name="edad_usuario" required><br>
+                
+                <label for="domicilio_usuario">Domicilio:</label>
+                <input type="text" id="domicilio_usuario" name="domicilio_usuario" required><br>
+                
+                <label for="numtel_usuario">Número telefónico:</label>
+                <input type="number" id="numtel_usuario" name="numtel_usuario" required><br>
+                
+                <label for="telemer_usuario">Número emergencia:</label>
+                <input type="number" id="telemer_usuario" name="telemer_usuario" required><br>
+                
+            </div>
+            
+            <!-- Tercera columna -->
+            <div class="columna-form">
+                <label for="contrasena_usuario">Contraseña:</label>
+                <input type="password" id="contrasena_usuario" name="contrasena_usuario" required><br>
+                
+                <label for="confirmarcontrasena_usuario">Confirmar Contraseña:</label>
+                <input type="password" id="confirmarcontrasena_usuario" name="confirmarcontrasena_usuario" required><br>
+                
+                <label for="hora_entrada">Hora entrada:</label>
+                <input type="time" id="hora_entrada" name="horaentrada_usuario" required><br>
+                
+                <label for="hora_salida">Hora salida:</label>
+                <input type="time" id="hora_salida" name="horasalida_usuario" required><br>
+            </div>
+            
+            <!-- Cuarta columna -->
+            <div class="columna-form">
+                <label for="pago_base">Pago base:</label>
+                <input type="number" id="pago_base" name="pagobase_usuario" required><br>
+                
+                <label for="pago_hora">Pago hora:</label>
+                <input type="number" id="pago_hora" name="pagohora_usuario" required><br>
+                
+                <label for="numero_medico">Número seguro médico:</label>
+                <input type="number" id="numero_medico" name="nummedico_usuario" required><br>
 
-    </div>
-</div>
+                <label for="tiposegmedico_usuario">Tipo Seguro Médico:</label>
+                <select name="tiposegmedico_usuario" id="tiposegmedico_usuario">
+                    <option value="publico">Público</option>
+                    <option value="privado">Privado</option>
+                </select><br>
+                <label for="cartas_reco">Cartas recomendación:</label>
+                <input id="cartas_reco" type="file" name="cartasreco_usuario"><br>
+            </div>
+            
+            <input class="submit-user" type="submit" value="Crear">
+        </div>
+    </form>
     {% endblock %}
 {% endblock %}
+

@@ -46,3 +46,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('hour').textContent = hour;
     document.getElementById('minute').textContent = minute;
 });
+
+
+////Crea ventana vergente para Usuario existente
+
+$(document).ready(function() {
+    $(".alert").fadeIn();
+
+    setTimeout(function() {
+        $(".alert").fadeOut();
+    }, 5000); // 5 seconds
+});
