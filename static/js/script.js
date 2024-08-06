@@ -58,8 +58,8 @@ $(document).ready(function() {
     }, 5000); // 5 seconds
 });
 
-////Cambia automáticamente la foto de perfil
-function previewImage(event) {
+// Cambia automáticamente la foto de perfil
+function previewProfileImage(event) {
     const file = event.target.files[0];
     const reader = new FileReader();
 
@@ -73,12 +73,11 @@ function previewImage(event) {
     }
 }
 
-////Cambia automáticamente la foto de cartas recomendación
-
-function previewCartas(event) {
+// Cambia automáticamente la foto de cartas de recomendación
+function previewCartasImage(event) {
     const file = event.target.files[0];
     const reader = new FileReader();
-    
+
     if (file) {
         reader.onload = function(e) {
             // Obtén el elemento de imagen y actualiza su src
@@ -88,6 +87,7 @@ function previewCartas(event) {
         reader.readAsDataURL(file);
     }
 }
+
 
 ///Login ventana
 function mostrarMensaje() {

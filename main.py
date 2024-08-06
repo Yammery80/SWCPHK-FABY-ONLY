@@ -72,7 +72,7 @@ def login():
         user = cur.fetchone()
 
         if user:
-            user_id, hashed_password, tipo_usuario, intentos_fallidos, cuenta_bloqueada = user
+            user_id, stored_password, tipo_usuario, intentos_fallidos, cuenta_bloqueada = user
 
             if cuenta_bloqueada:
                 flash('Tu cuenta ha sido bloqueada, contacta a tu administrador.', 'danger')
@@ -80,7 +80,8 @@ def login():
                 db.desconectar(conn)
                 return redirect(url_for('login'))
 
-            if check_password_hash(hashed_password, password):
+            # Comparar contraseñas en texto plano
+            if stored_password == password:
                 # Login exitoso
                 session['user_id'] = user_id
                 cur.execute('UPDATE infopersonal SET intentos_fallidos = 0 WHERE id_usuario = %s', (username,))
@@ -109,7 +110,6 @@ def login():
         return redirect(url_for('login'))
 
     return render_template('login.html')
-
 
 # Error de página
 

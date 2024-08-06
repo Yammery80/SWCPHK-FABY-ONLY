@@ -2,9 +2,7 @@
 
 {% block head %}
     {{ super() }}
-    <title>
-        Sistema Web para Ciber Papelería "Hakkunna - Matata"
-    </title>
+    <title>Edición de Usuario</title>
     <link rel="stylesheet" href="../static/style/style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
@@ -29,19 +27,19 @@
         {% endwith %}
 
         <div class="container-editar-usuario">
-            <h2 class="title-sp">Edición de Usuarios</h2>
-            <br><br>
+            <h2 class="title-sp">Edición de Usuario</h2>
             <form action="{{ url_for('update2_usuario', id_usuario=datos[1]) }}" method="post" enctype="multipart/form-data" class="formulario-user">
                 <div class="form-createu">
                     <!-- Primera columna --> 
                     <div class="columna-form">
+                        <!-- Imagen de Perfil -->
                         <label for="foto_usuario">Imagen de Perfil:</label>
                         {% if datos[0] %}
-                        <img id="profileImage" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' + datos[0]) }}" alt="Imagen de Perfil">
+                            <img id="profileImage" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' + datos[0]) }}" alt="Imagen de Perfil">
                         {% else %}
-                        <img id="profileImage" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/foto-admi.jpg') }}" alt="Imagen de Perfil">
+                            <img id="profileImage" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/foto-admi.jpg') }}" alt="Imagen de Perfil">
                         {% endif %}
-                        <input id="foto_usuario" type="file" name="foto_usuario" onchange="previewImage(event)"><br>                
+                        <input id="foto_usuario" type="file" name="foto_usuario" onchange="previewProfileImage(event)"><br>
 
                         <label for="id_usuario">ID Usuario:</label>
                         <input type="text" id="id_usuario" name="id_usuario" value="{{ datos[1] }}" required disabled><br>
@@ -78,14 +76,15 @@
                         <label for="contrasena_usuario">Contraseña:</label>
                         <input type="password" id="contrasena_usuario" name="contrasena_usuario" value="{{ datos[9] }}"><br>
 
-                        <label for="contrasena_usuario">Confirmar Contraseña:</label>
-                        <input type="password" id="contrasena_usuario" name="contrasena_usuario" value="{{ datos[10] }}"><br>
+                        <label for="confirmarcontrasena_usuario">Confirmar Contraseña:</label>
+                        <input type="password" id="confirmarcontrasena_usuario" name="confirmarcontrasena_usuario" value="{{ datos[10] }}"><br>
                     
                         <label for="horaentrada_usuario">Hora entrada:</label>
                         <input type="time" id="horaentrada_usuario" name="horaentrada_usuario" value="{{ horaentrada }}" required><br>
                         
                         <label for="horasalida_usuario">Hora salida:</label>
                         <input type="time" id="horasalida_usuario" name="horasalida_usuario" value="{{ horasalida }}" required><br>
+
                     </div>
                     
                     <!-- Cuarta columna -->
@@ -94,7 +93,7 @@
                         <input type="text" id="pagobase_usuario" name="pagobase_usuario" value="{{ datos[13] }}" required><br>
                         
                         <label for="pagohora_usuario">Pago hora:</label>
-                        <input type="number" id="pagohora_usuario" name="pagohora_usuario" value="{{ datos[14]}}" required><br>
+                        <input type="number" id="pagohora_usuario" name="pagohora_usuario" value="{{ datos[14] }}" required><br>
                         
                         <label for="nummedico_usuario">Número seguro médico:</label>
                         <input type="number" id="nummedico_usuario" name="nummedico_usuario" value="{{ datos[15] }}" required><br>
@@ -105,19 +104,18 @@
                             <option value="privado" {% if datos[16] == 'privado' %}selected{% endif %}>Privado</option>
                         </select><br>
                         
+                        <!-- Cartas de Recomendación -->
+                        <label for="cartasreco_usuario">Cartas de Recomendación:</label>
                         {% if datos[17] %}
-                            <img id="cartasImage" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/CartasRecomendacion/' + datos[17]) }}" alt="Imagen de CartasRecomendacion">
+                            <img id="cartasImage" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/CartasRecomendacion/' + datos[17]) }}" alt="Imagen de Cartas Recomendación">
                         {% else %}
-                            <img id="cartasImage" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/CartasRecomendacion/maria-lopez.jpeg') }}" alt="Imagen de CartasRecomendacion">
+                            <img id="cartasImage" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/CartasRecomendacion/maria-lopez.jpeg') }}" alt="Imagen de Cartas Recomendación">
                         {% endif %}
-                            <input id="cartas_reco" type="file" name="cartasreco_usuario" onchange="previewCartas(event)"><br>
+                        <input id="cartasreco_usuario" type="file" name="cartasreco_usuario" onchange="previewCartasImage(event)"><br>
                     </div>
+                    
                 </div>
-                <!-- Botones de acción -->
-                <div class="form-buttons">
-                    <input type="submit" value="Actualizar">
-                    <a href="{{ url_for('consultausers') }}" class="btn btn-secondary">Cancelar</a>
-                </div>
+                <button type="submit" class="btn-submit">Actualizar Usuario</button>
             </form>
         </div>
     {% endblock %}
