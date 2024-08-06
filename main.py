@@ -12,6 +12,8 @@ import os
 from werkzeug.security import  check_password_hash
 from decimal import Decimal
 from datetime import time
+from datetime import datetime
+
 
 app = Flask(__name__)
 app.secret_key = 'Yamilindel2704'  # Necesario para usar flash messages
@@ -514,53 +516,62 @@ def config():
 #Vinculos de trabajador
 @app.route('/trabajadorinicio')
 def trinicio():
-    user_id = session.get('user_id')  # Obtén el ID del usuario de la sesión
-    if user_id:
-        conn = db.conectar()
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+
+    # Consulta la información del usuario desde la base de datos
+    with db.conectar() as conn:
         cur = conn.cursor()
-        cur.execute('SELECT nomcompleto_usuario, foto_usuario FROM infopersonal WHERE id_usuario = %s', (user_id,))
-        user = cur.fetchone()
+        cur.execute("SELECT nomcompleto_usuario, foto_usuario FROM infopersonal WHERE id_usuario = %s", (user_id,))
+        user_info = cur.fetchone()
         cur.close()
-        db.desconectar(conn)
 
-        if user:
-            nomcompleto_usuario = user[0]
-            foto_usuario = user[1]  # Obtener el nombre del archivo de la foto de perfil
-        else:
-            nomcompleto_usuario = 'Usuario desconocido'
-            foto_usuario = 'default-profile.jpg'  # Ruta a una foto de perfil predeterminada
-
-        return render_template('tr-base.html', nomcompleto_usuario=nomcompleto_usuario, foto_usuario=foto_usuario)
+    if user_info:
+        nomcompleto_usuario, foto_usuario = user_info
+        # Extraer solo el nombre del archivo
+        foto_usuario = foto_usuario.split('/')[-1]
     else:
-        return redirect(url_for('login'))  # Redirige si el usuario no está autenticado
+        nomcompleto_usuario = "Desconocido"
+        foto_usuario = None
 
+    return render_template('tr-base.html', nomcompleto_usuario=nomcompleto_usuario, foto_usuario=foto_usuario)
 
 @app.route('/guardar_hora', methods=['POST'])
 def guardar_hora():
-    data = request.get_json()
-    hora = data.get('hora')
-    minuto = data.get('minuto')
-    id_usuario = data.get('id_usuario')
-
-    fecha_actual = datetime.datetime.now().date()
-    hora_entrada = f"{hora}:{minuto}"
-
-    conn = db.conectar()  # Esto es para usar la función de conexión personalizada
     try:
-        with conn.cursor() as cursor:
-            cursor.execute(
-                "INSERT INTO turnos (fecha, hora_entrada, id_usuario) VALUES (%s, %s, %s)",
-                (fecha_actual, hora_entrada, id_usuario)
+        data = request.get_json()
+        hora = data.get('hora')
+        minuto = data.get('minuto')
+        id_usuario = data.get('id_usuario')
+
+        if not hora or not minuto or not id_usuario:
+            return jsonify({'success': False, 'error': 'Datos incompletos'}), 400
+
+        fecha = datetime.now().date()
+        hora_entrada = f"{hora}:{minuto}"
+        hora_salida = None  # Asumiendo que la hora de salida se establece más tarde
+
+        conn = db.conectar()
+        cur = conn.cursor()
+
+        try:
+            cur.execute(
+                'INSERT INTO public.turnos (fecha, hora_entrada, hora_salida, id_usuariofk) VALUES (%s, %s, %s, %s)',
+                (fecha, hora_entrada, hora_salida, id_usuario)
             )
             conn.commit()
-            response = {'success': True}
+            return jsonify({'success': True})
+        except Exception as e:
+            conn.rollback()
+            print(f"Error al ejecutar la consulta: {e}")
+            return jsonify({'success': False, 'error': 'Error al guardar la hora'}), 500
+        finally:
+            cur.close()
+            db.desconectar(conn)
     except Exception as e:
-        conn.rollback()
-        response = {'success': False, 'error': str(e)}
-    finally:
-        db.desconectar(conn)  # Esto es para usar la función de desconexión personalizada
-
-    return jsonify(response)
+        print(f"Error en la función guardar_hora: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/trabajadoreys', methods=['GET', 'POST'])
 def treys():

@@ -1,4 +1,5 @@
 {% extends 'bootstrap/base.html' %}
+
 {% block head %}
     {{ super() }}
     <title>
@@ -7,35 +8,47 @@
         {% endblock %}
     </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 {% endblock %}
 
 {% block body %}
-    {% block navbar %}
-    {% include 'banner-tr.html' %}
-    {% include 'navigation-tr.html' %}
-    {% endblock %}
-
-    <div class="caja">
-        <h2>Entradas y Salidas</h2>
-        <div class="tr-base">
-        </div>
-    </div>
-
-    <div id="popup" class="popup">
-        <div class="popup-content">
-            <h2>Entradas y Salidas</h2>
-            <h1>¡Bienvenido {{ nomcompleto_usuario }}!</h1>
-            <p>Tu hora de entrada es:</p>
-            <div class="time">
-                <span id="hour">00</span> : <span id="minute">00</span>
+    <body data-user-id="{{ session['user_id'] }}">
+        {% block navbar %}
+        {% include 'banner-tr.html' %}
+        {% include 'navigation-tr.html' %}
+        {% endblock %}
+        <!-- Mensajes Flash -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
             </div>
-            <button id="acceptButton">Aceptar</button>
-            <button id="cancelButton">Cancelar</button>
+        {% endif %}
+        {% endwith %}
+
+        <div class="caja">
+            <h2>Entradas y Salidas</h2>
+            <div class="tr-base">
+            </div>
         </div>
-    </div>
-    {% block content %}
-    {% endblock %}
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    {% endblock %}
+        <div id="popup" class="popup">
+            <div class="popup-content">
+                <h2>Entradas y Salidas</h2>
+                <h1>¡Bienvenido {{ nomcompleto_usuario }}!</h1>
+                <p>Tu hora de entrada es:</p>
+                <div class="time">
+                    <span id="hour">00</span> : <span id="minute">00</span>
+                </div>
+                <button id="acceptButton">Aceptar</button>
+                <button id="cancelButton">Cancelar</button>
+            </div>
+        </div>
 
+        {% block content %}
+        {% endblock %}
+    </body>
+{% endblock %}
