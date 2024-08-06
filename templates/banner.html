@@ -18,6 +18,11 @@
     </div>
     <div class="logout">
         <!--Cerrar sesión -->
-        <img class="logo-banner" src="../static/assets/logout.png" alt="Logo_hakkunna-matata">
+        <form action="{{ url_for('logout') }}" method="post" style="display: inline;">
+            <button type="submit" style="background: none; border: none;">
+                <img class="logo-banner" src="../static/assets/logout.png" alt="Logo_hakkunna-matata">
+            </button>
+        </form>
+        
     </div>
 </section>

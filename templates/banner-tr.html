@@ -10,14 +10,18 @@
     </div>
     <div class="nomuser">
         <!--Nombre de usuario -->
-        <h2>Raúl Lopez</h2>
+        <h2>{{ nomcompleto_usuario }}</h2>
     </div>
     <div class="fotoperfil">
         <!--Foto de perfil -->
-        <img class="logo-banner" src="../static/assets/Documents-SWCPHK/FotosPerfiles/raul-lopez.jpg" alt="Logo_hakkunna-matata">
+        <img class="logo-banner" src="{{ url_for('static', filename='Documents-SWCPHK/FotosPerfiles/' ~ foto_usuario) }}" alt="Foto de perfil">
     </div>
     <div class="logout">
         <!--Cerrar sesión -->
-        <img class="logo-banner" src="../static/assets/logout.png" alt="Logo_hakkunna-matata">
+        <form action="{{ url_for('logout') }}" method="post" style="display: inline;">
+            <button type="submit" style="background: none; border: none;">
+                <img class="logo-banner" src="../static/assets/logout.png" alt="Cerrar sesión">
+            </button>
+        </form>
     </div>
 </section>

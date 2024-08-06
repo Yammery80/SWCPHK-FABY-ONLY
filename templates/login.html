@@ -1,0 +1,60 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <title>
+        {% block title %}
+            Login - SWCPHK
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="../static/style/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='../static/js/script.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+
+    {% block content %}
+    <!-- Mensajes Flash -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <form class="form-login" action="/login" method="post">
+            <div class="content-login">
+                <div class="imagen-login">
+                    <div class="logo-login-swcphk">
+                        <img class="logo-banner-s" src="../static/assets/logo-banner.jpg" alt="Logo_hakkunna-matata">
+                        <img src="../static/assets/Documents-SWCPHK/Imagenes-interfaz/login-backgroung-swcphk.png" alt="Login-image" class="image-swcphk-login">
+                        <div class="login-swcphk-name">
+                            <!--Nombre del establecimiento -->
+                            <p class="nom-log">Hakkuna Matata</p>
+                            <p>"Un lugar para relajarte"</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="datos-login">
+                    <div class="titulo">Inicia sesión</div>
+                    <div class="datos-form">
+                        <div class="campo-form">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+                        <div class="campo-form">
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" name="password" required>
+                            <a href="#" class="forget-password" onclick="mostrarMensaje(); return false;">¿Olvidó su contraseña?</a>
+                        </div>
+                        <input class="button-login" type="submit" value="Login">
+                    </div>
+                </div>
+            </div>
+        </form>
+    {% endblock %}
+{% endblock %}
+

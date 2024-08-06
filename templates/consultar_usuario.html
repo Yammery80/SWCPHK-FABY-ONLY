@@ -8,7 +8,8 @@
         {% endblock %}
     </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='../static/js/script.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -18,6 +19,17 @@
     {% endblock %}
 
     {% block content %}
+    <!-- Mensajes Flash -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
     <div class="caja">
         <div class="createuser">
             <div class="usuario-title">
@@ -56,6 +68,7 @@
                         <th scope="col">Número Telefónico</th>
                         <th scope="col">Teléfono Emergencia</th>
                         <th scope="col" class="contrasena-cont">Contraseña</th>
+                        <th scope="col" >Confirmar Contraseña</th>
                         <th scope="col">Hora Entrada</th>
                         <th scope="col">Hora Salida</th>
                         <th scope="col">Pago Base</th>
@@ -85,9 +98,10 @@
                         <td>{{ cuser[13] }}</td>
                         <td>{{ cuser[14] }}</td>
                         <td>{{ cuser[15] }}</td>
+                        <td>{{ cuser[16] }}</td>
                         <td>
-                            {% if cuser[16] %}
-                                <img src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' ~ cuser[16]) }}" alt="Foto" width="50">
+                            {% if cuser[17] %}
+                                <img src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' ~ cuser[17]) }}" alt="Foto" width="50">
                             {% else %}
                                 No Disponible
                             {% endif %}
