@@ -13,21 +13,12 @@
 {% endblock %}
 
 {% block body %}
-    <body data-user-id="{{ session['user_id'] }}">
+    <body data-user-id="{{ session['user_id'] or 'No ID' }}">
+
         {% block navbar %}
         {% include 'banner-tr.html' %}
         {% include 'navigation-tr.html' %}
         {% endblock %}
-        <!-- Mensajes Flash -->
-        {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-        {% endwith %}
 
         <div class="caja">
             <h2>Entradas y Salidas</h2>
@@ -47,7 +38,16 @@
                 <button id="cancelButton">Cancelar</button>
             </div>
         </div>
-
+        <!-- Mensajes Flash -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
         {% block content %}
         {% endblock %}
     </body>

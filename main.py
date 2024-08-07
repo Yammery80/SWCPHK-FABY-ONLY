@@ -553,18 +553,18 @@ def guardar_hora():
         fecha = datetime.now().date()
         hora_actual = f"{hora}:{minuto}"
 
-        conn = db.conectar()  # Esto es para usar la función de conexión personalizada
+        conn = db.conectar()
         cursor = conn.cursor()
 
         try:
             cursor.execute(
-                'SELECT id_turno, hora_salida FROM public.turnos WHERE fecha = %s AND id_usuariofk = %s',
+                'SELECT id_turno, hora_entrada, hora_salida FROM public.turnos WHERE fecha = %s AND id_usuariofk = %s',
                 (fecha, id_usuario)
             )
             registro = cursor.fetchone()
 
             if registro:
-                id_turno, hora_salida = registro
+                id_turno, hora_entrada, hora_salida = registro
                 if hora_salida is None:
                     cursor.execute(
                         'UPDATE public.turnos SET hora_salida = %s WHERE id_turno = %s',
@@ -587,10 +587,10 @@ def guardar_hora():
             return jsonify({'success': False, 'error': 'Error al guardar la hora'}), 500
         finally:
             cursor.close()
-            db.desconectar(conn)  # Esto es para usar la función de desconexión personalizada
+            db.desconectar(conn)
     except Exception as e:
         print(f"Error en la función guardar_hora: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'error': 'Error en la función guardar_hora'}), 500
 
 
 @app.route('/trabajadoreys', methods=['GET', 'POST'])

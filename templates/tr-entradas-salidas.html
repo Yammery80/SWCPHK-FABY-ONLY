@@ -12,6 +12,7 @@
 {% endblock %}
 
 {% block body %}
+<body data-user-id="{{ session['user_id'] or 'No ID' }}"></body>
 
     {% block navbar %}
     {% include 'banner-tr.html' %}
@@ -68,5 +69,5 @@
 
     </div>
     {% endblock %}
-
+    </body>
 {% endblock %}
