@@ -522,10 +522,10 @@ def trinicio():
 
     # Consulta la información del usuario desde la base de datos
     with db.conectar() as conn:
-        cur = conn.cursor()
-        cur.execute("SELECT nomcompleto_usuario, foto_usuario FROM infopersonal WHERE id_usuario = %s", (user_id,))
-        user_info = cur.fetchone()
-        cur.close()
+        cursor = conn.cursor()
+        cursor.execute("SELECT nomcompleto_usuario, foto_usuario FROM infopersonal WHERE id_usuario = %s", (user_id,))
+        user_info = cursor.fetchone()
+        cursor.close()
 
     if user_info:
         nomcompleto_usuario, foto_usuario = user_info
@@ -545,33 +545,53 @@ def guardar_hora():
         minuto = data.get('minuto')
         id_usuario = data.get('id_usuario')
 
+        print(f"Datos recibidos: hora={hora}, minuto={minuto}, id_usuario={id_usuario}")
+
         if not hora or not minuto or not id_usuario:
             return jsonify({'success': False, 'error': 'Datos incompletos'}), 400
 
         fecha = datetime.now().date()
-        hora_entrada = f"{hora}:{minuto}"
-        hora_salida = None  # Asumiendo que la hora de salida se establece más tarde
+        hora_actual = f"{hora}:{minuto}"
 
-        conn = db.conectar()
-        cur = conn.cursor()
+        conn = db.conectar()  # Esto es para usar la función de conexión personalizada
+        cursor = conn.cursor()
 
         try:
-            cur.execute(
-                'INSERT INTO public.turnos (fecha, hora_entrada, hora_salida, id_usuariofk) VALUES (%s, %s, %s, %s)',
-                (fecha, hora_entrada, hora_salida, id_usuario)
+            cursor.execute(
+                'SELECT id_turno, hora_salida FROM public.turnos WHERE fecha = %s AND id_usuariofk = %s',
+                (fecha, id_usuario)
             )
-            conn.commit()
-            return jsonify({'success': True})
+            registro = cursor.fetchone()
+
+            if registro:
+                id_turno, hora_salida = registro
+                if hora_salida is None:
+                    cursor.execute(
+                        'UPDATE public.turnos SET hora_salida = %s WHERE id_turno = %s',
+                        (hora_actual, id_turno)
+                    )
+                    conn.commit()
+                    return jsonify({'success': True, 'message': 'Hora de salida actualizada'})
+                else:
+                    return jsonify({'success': False, 'message': 'Hora de salida ya registrada'}), 400
+            else:
+                cursor.execute(
+                    'INSERT INTO public.turnos (fecha, hora_entrada, hora_salida, id_usuariofk) VALUES (%s, %s, %s, %s)',
+                    (fecha, hora_actual, None, id_usuario)
+                )
+                conn.commit()
+                return jsonify({'success': True, 'message': 'Hora de entrada registrada'})
         except Exception as e:
             conn.rollback()
             print(f"Error al ejecutar la consulta: {e}")
             return jsonify({'success': False, 'error': 'Error al guardar la hora'}), 500
         finally:
-            cur.close()
-            db.desconectar(conn)
+            cursor.close()
+            db.desconectar(conn)  # Esto es para usar la función de desconexión personalizada
     except Exception as e:
         print(f"Error en la función guardar_hora: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
 
 @app.route('/trabajadoreys', methods=['GET', 'POST'])
 def treys():

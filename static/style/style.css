@@ -15,7 +15,7 @@ h2 {
     max-width: 600px; /* Ajusta este valor si necesitas más espacio */
     box-sizing: border-box;
     border-radius: 8px; /* Bordes redondeados */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Sombra sutil */
 }
 
 .content-login {
