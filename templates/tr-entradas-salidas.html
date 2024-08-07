@@ -4,30 +4,26 @@
     {{ super() }}
     <title>
         {% block title %}
-            Sistema Web para Ciber Papaleria "Hakkunna Matata"
+            Sistema Web para Ciber Papelería "Hakkunna Matata"
         {% endblock %}
     </title>
-    <link rel="stylesheet" href="../static/style/style.css">
-    <!-- <link rel="stylesheet" href=""> // Aquí puedes conectar tu hoja de estilo -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 {% endblock %}
 
 {% block body %}
-<body data-user-id="{{ session['user_id'] or 'No ID' }}"></body>
+    <body>
 
-    {% block navbar %}
-    {% include 'banner-tr.html' %}
-    {% include 'navigation-tr.html' %}
-    {% endblock %}
+        {% block navbar %}
+        {% include 'banner-tr.html' %}
+        {% include 'navigation-tr.html' %}
+        {% endblock %}
 
-    {% block content %}
     <div class="caja">
         <h2>Consulta Entradas y Salidas</h2>
         <form action="/trabajadoreys" method="post">
             <div class="camposconsulta">
-                <div class="campo">
-                    <label for="usuario_entradas">ID Usuario: </label>
-                    <input type="text" id="usuario_entradas" name="usuario_entradas" required>
-                </div>
                 <div class="campo">
                     <label for="fecha_inicio">Fecha de Inicio:</label>
                     <input type="date" id="fecha_inicio" name="fecha_inicio">
@@ -44,30 +40,30 @@
 
         {% if datos %}
         <div class="form-entradas">
-        <table class="table table-success table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">ID Usuario</th>
-                    <th scope="col">Fecha</th>
-                    <th scope="col">Hora de Entrada</th>
-                    <th scope="col">Hora de Salida</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for eysuser in datos %}
-                <tr>
-                    <td>{{ eysuser[0] }}</td>
-                    <td>{{ eysuser[1] }}</td>
-                    <td>{{ eysuser[2] }}</td>
-                    <td>{{ eysuser[3] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            <table class="table table-success table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Hora de Entrada</th>
+                        <th scope="col">Hora de Salida</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for eysuser in datos %}
+                    <tr>
+                        <td>{{ eysuser[0] }}</td>
+                        <td>{{ eysuser[1].strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                        <td>{{ eysuser[2].strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
+        {% else %}
+        <p>No se encontraron registros para el rango de fechas especificado.</p>
         {% endif %}
-
     </div>
-    {% endblock %}
     </body>
 {% endblock %}
+
+

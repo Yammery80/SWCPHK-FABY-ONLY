@@ -38,13 +38,13 @@ def index():
             # Esto es para construir la consulta condicionalmente
             if id_usuario:
                 query = sql.SQL("""
-                    SELECT * FROM entradas_salidas
-                    WHERE id_usuario = %s AND fecha BETWEEN %s AND %s
+                    SELECT * FROM entrada_salidas
+                    WHERE id_usuariofk = %s AND fecha BETWEEN %s AND %s
                 """)
                 params = (id_usuario, e_fechaentrada, e_fechasalida)
             else:
                 query = sql.SQL("""
-                    SELECT * FROM entradas_salidas
+                    SELECT * FROM entrada_salidas
                     WHERE fecha BETWEEN %s AND %s
                 """)
                 params = (e_fechaentrada, e_fechasalida)
@@ -62,6 +62,11 @@ def index():
     # Esto es para renderizar la plantilla con los resultados
     return render_template('base.html', datos=datos)
 
+
+## Registro de nuevo
+
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -70,11 +75,11 @@ def login():
         conn = db.conectar()
         cur = conn.cursor()
 
-        cur.execute('SELECT id_usuario, contrasena_usuario, tipo_usuario, intentos_fallidos, cuenta_bloqueada FROM infopersonal WHERE id_usuario = %s', (username,))
+        cur.execute('SELECT id_usuario, contrasena_usuario, tipo_usuario, intentos_fallidos, cuenta_bloqueada, nomcompleto_usuario, foto_usuario FROM infopersonal WHERE id_usuario = %s', (username,))
         user = cur.fetchone()
 
         if user:
-            user_id, stored_password, tipo_usuario, intentos_fallidos, cuenta_bloqueada = user
+            user_id, stored_password, tipo_usuario, intentos_fallidos, cuenta_bloqueada, nomcompleto_usuario, foto_usuario = user
 
             if cuenta_bloqueada:
                 flash('Tu cuenta ha sido bloqueada, contacta a tu administrador.', 'danger')
@@ -86,6 +91,8 @@ def login():
             if stored_password == password:
                 # Login exitoso
                 session['user_id'] = user_id
+                session['user_name'] = nomcompleto_usuario
+                session['foto_filename'] = foto_usuario if foto_usuario else 'default_image.jpg'
                 cur.execute('UPDATE infopersonal SET intentos_fallidos = 0 WHERE id_usuario = %s', (username,))
                 conn.commit()
                 cur.close()
@@ -181,7 +188,7 @@ def usuario():
             
             # Ejecutar la consulta SQL
             cursor.execute(insert_query, (
-                foto_filename, id_usuario, nomcompleto_usuario, tipo_usuario, descripcion_usuario, edad_usuario, domicilio_usuario, numtel_usuario, telemer_usuario,confirmarcontrasena_usuario, confirmarcontrasena_usuario, horaentrada_usuario, horasalida_usuario, pagobase_usuario, pagohora_usuario, nummedico_usuario, tiposegmedico_usuario, cartas_filename))
+                foto_filename, id_usuario, nomcompleto_usuario, tipo_usuario, descripcion_usuario, edad_usuario, domicilio_usuario, numtel_usuario, telemer_usuario,contrasena_usuario, confirmarcontrasena_usuario, horaentrada_usuario, horasalida_usuario, pagobase_usuario, pagohora_usuario, nummedico_usuario, tiposegmedico_usuario, cartas_filename))
             conn.commit()
             
             flash("Usuario creado con éxito", "success")
@@ -196,8 +203,34 @@ def usuario():
                 cursor.close()
             if conn:
                 db.desconectar(conn)
-
-    return render_template('usuarios.html')
+    
+    # Si es un GET, se recupera la información del usuario (si el ID se proporciona)
+    id_usuario = request.args.get('id_usuario')
+    foto_filename = None
+    cartas_filename = None
+    if id_usuario:
+        try:
+            # Conectar a la base de datos
+            conn = db.conectar() 
+            cursor = conn.cursor()
+            
+            # Consultar la base de datos
+            cursor.execute("SELECT foto_usuario, cartasreco_usuario FROM public.infopersonal WHERE id_usuario = %s;", (id_usuario,))
+            result = cursor.fetchone()
+            
+            if result:
+                foto_filename, cartas_filename = result
+            
+        except Exception as e:
+            print("Error:", e)
+            flash("Hubo un error al recuperar los datos del usuario", "error")
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                db.desconectar(conn)
+    
+    return render_template('usuarios.html', foto_filename=foto_filename, cartas_filename=cartas_filename)
 
 
 #Consulta de Usuarios
@@ -595,43 +628,50 @@ def guardar_hora():
 
 @app.route('/trabajadoreys', methods=['GET', 'POST'])
 def treys():
-    datos = None  # Esto es para inicializar datos como None para manejar el caso en que no hay resultados.
+    datos = []  # Inicializar datos
+    nomcompleto_usuario = "Desconocido"
+    foto_usuario = None
+    
+    user_id = session.get('user_id')
+    
+    if not user_id:
+        return redirect(url_for('login'))
+    
+    # Consulta la información del usuario desde la base de datos
+    with db.conectar() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT nomcompleto_usuario, foto_usuario FROM infopersonal WHERE id_usuario = %s", (user_id,))
+        user_info = cursor.fetchone()
+        cursor.close()
+    
+    if user_info:
+        nomcompleto_usuario, foto_usuario = user_info
+        # Extraer solo el nombre del archivo
+        if foto_usuario:
+            foto_usuario = foto_usuario.split('\\')[-1]  # Usar '\\' para Windows
+    
+    if request.method == 'POST':
+        fecha_inicio = request.form['fecha_inicio']
+        fecha_final = request.form['fecha_final']
+        
+        conn = db.conectar()
+        cursor = conn.cursor()
+        
+        # Consulta para obtener datos de entradas y salidas
+        query = sql.SQL("""
+                        SELECT fecha, hora_entrada, hora_salida
+                        FROM turnos
+                        WHERE id_usuariofk = %s AND fecha BETWEEN %s AND %s
+                    """)
+        params = (user_id, fecha_inicio, fecha_final)
+        cursor.execute(query, params)
+        datos = cursor.fetchall()
+        
+        cursor.close()
+        db.desconectar(conn)
+    
+    return render_template('tr-entradas-salidas.html', datos=datos, nomcompleto_usuario=nomcompleto_usuario, foto_usuario=foto_usuario)
 
-    try:
-        if request.method == 'POST':
-            usuario_entradas = request.form['usuario_entradas']  # Esto es para obtener el valor del campo 'usuario_entradas'
-            fecha_inicio = request.form['fecha_inicio']  # Esto es para obtener el valor del campo 'fecha_inicio'
-            fecha_final = request.form['fecha_final']  # Esto es para obtener el valor del campo 'fecha_final'
-
-            conn = db.conectar()  # Esto es para usar la función de conexión personalizada
-            cursor = conn.cursor()
-
-            # Esto es para construir la consulta condicionalmente
-            if usuario_entradas:
-                query = sql.SQL("""
-                    SELECT id_usuario, fecha, hora_entrada, hora_salida FROM turnos
-                    WHERE id_usuario = %s AND fecha BETWEEN %s AND %s
-                """)
-                params = (usuario_entradas, fecha_inicio, fecha_final)
-            else:
-                query = sql.SQL("""
-                    SELECT id_usuario, fecha, hora_entrada, hora_salida FROM turnos
-                    WHERE fecha BETWEEN %s AND %s
-                """)
-                params = (fecha_inicio, fecha_final)
-
-            cursor.execute(query, params)
-            datos = cursor.fetchall()
-
-            cursor.close()
-            db.desconectar(conn)  # Esto es para usar la función de desconexión personalizada
-
-    except Exception as e:
-        # Esto es para mostrar un mensaje de error en caso de excepción
-        return f"Hubo un error en la solicitud: {e}", 500
-
-    # Esto es para renderizar la plantilla con los resultados
-    return render_template('tr-entradas-salidas.html', datos=datos)
 
 @app.route('/logout', methods=['POST'])
 def logout():

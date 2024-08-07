@@ -88,21 +88,27 @@ function previewImage(event) {
 
 ////Cambia automáticamente la foto de cartas recomendación
 
-function previewCartas(event) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    
-    if (file) {
-        reader.onload = function(e) {
-            // Obtén el elemento de imagen y actualiza su src
-            document.getElementById('cartasImage').src = e.target.result;
+$(document).ready(function() {
+    $('#foto_usuario').change(function(event) {
+        var reader = new FileReader();
+        reader.onload = function(event) {
+            $('#foto_usuario_preview').attr('src', event.target.result);
         }
-        // Lee el archivo como una URL de datos
-        reader.readAsDataURL(file);
-    }
-}
+        reader.readAsDataURL(this.files[0]);
+    });
+
+    $('#cartas_reco').change(function(event) {
+        var reader = new FileReader();
+        reader.onload = function(event) {
+            $('#cartas_reco_preview').attr('src', event.target.result);
+        }
+        reader.readAsDataURL(this.files[0]);
+    });
+});
+
 
 ///Login ventana
 function mostrarMensaje() {
     alert("Comuniquese con su administrador");
 }
+

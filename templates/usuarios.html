@@ -41,9 +41,9 @@
             <!-- Primera columna -->
             <div class="columna-form">
                 <label for="foto_usuario">Imagen de Perfil:</label>
-                <img class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' + (foto_filename if foto_filename else 'Maria-Lopez.jpg')) }}" alt="Imagen de Perfil">
+                <img id="foto_usuario_preview" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' + (foto_filename if foto_filename else 'Maria-Lopez.jpg')) }}" alt="Imagen de Perfil">
                 <input id="foto_usuario" type="file" name="foto_usuario"><br>
-                
+
                 <label for="id_usuario">ID Usuario:</label>
                 <input type="text" id="id_usuario" name="id_usuario" required><br>
                 
@@ -108,6 +108,7 @@
                     <option value="privado">Privado</option>
                 </select><br>
                 <label for="cartas_reco">Cartas recomendación:</label>
+                <img id="cartas_reco_preview" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/CartasRecomendacion/' + (cartas_filename if cartas_filename else 'default-recommendation.jpeg')) }}" alt="Cartas de Recomendación">
                 <input id="cartas_reco" type="file" name="cartasreco_usuario"><br>
             </div>
             

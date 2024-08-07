@@ -10,11 +10,7 @@
     </div>
     <div class="nomuser">
         <!--Nombre de usuario -->
-        <h2>Mariana Lopez</h2>
-    </div>
-    <div class="fotoperfil">
-        <!--Foto de perfil -->
-        <img id="profileImage" src="ruta/default_image.jpg" alt="Perfil" />
+        <h2>{{ session.get('user_name', 'Nombre de Usuario') }}</h2>
     </div>
     <div class="logout">
         <!--Cerrar sesión -->

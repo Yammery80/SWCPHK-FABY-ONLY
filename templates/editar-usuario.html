@@ -105,13 +105,9 @@
                         </select><br>
                         
                         <!-- Cartas de Recomendación -->
-                        <label for="cartasreco_usuario">Cartas de Recomendación:</label>
-                        {% if datos[17] %}
-                            <img id="cartasImage" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/CartasRecomendacion/' + datos[17]) }}" alt="Imagen de Cartas Recomendación">
-                        {% else %}
-                            <img id="cartasImage" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/CartasRecomendacion/maria-lopez.jpeg') }}" alt="Imagen de Cartas Recomendación">
-                        {% endif %}
-                        <input id="cartasreco_usuario" type="file" name="cartasreco_usuario" onchange="previewCartasImage(event)"><br>
+                        <label for="cartas_reco">Cartas recomendación:</label>
+                        <img id="cartas_reco_preview" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/CartasRecomendacion/' + (cartas_filename if cartas_filename else 'default-recommendation.jpeg')) }}" alt="Cartas de Recomendación">
+                        <input id="cartas_reco" type="file" name="cartasreco_usuario"><br>
                     </div>
                     
                 </div>

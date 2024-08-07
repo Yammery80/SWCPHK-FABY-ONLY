@@ -1,33 +1,25 @@
-<section class="barra">
-    <!--LOGO -->
-    <div class="logo">
-        <img class="logo-banner" src="../static/assets/logo-banner.jpg" alt="Logo_hakkunna-matata">
-    </div>
-    <div class="nomhak">
-        <!--Nombre del establecimiento -->
-        <h1>Hakkuna Matata</h1>
-        <h2>"Un lugar para relajarte"</h2>
-    </div>
-    <div class="nomuser">
-        <!--Nombre de usuario -->
-        <h2>{{ nomcompleto_usuario }}</h2>
-    </div>
-    <div class="fotoperfil">
-        <!-- Foto de perfil -->
-        {% if foto_usuario %}
-            <img class="logo-banner" src="{{ url_for('static', filename='Documents-SWCPHK/FotosPerfiles/' ~ foto_usuario.split('/')[-1]) }}" alt="Foto de perfil">
-        {% else %}
-            <!-- Imagen por defecto si no hay foto de perfil -->
-            <img class="logo-banner" src="{{ url_for('static', filename='Documents-SWCPHK/FotosPerfiles/default.jpg') }}" alt="Foto de perfil">
-        {% endif %}
-    </div>
 
-    <div class="logout">
-        <!--Cerrar sesión -->
-        <form action="{{ url_for('logout') }}" method="post" style="display: inline;">
-            <button type="submit" style="background: none; border: none;">
-                <img class="logo-banner" src="../static/assets/logout.png" alt="Cerrar sesión">
-            </button>
-        </form>
-    </div>
-</section>
+    <section class="barra">
+        <!--LOGO -->
+        <div class="logo">
+            <img class="logo-banner" src="../static/assets/logo-banner.jpg" alt="Logo_hakkunna-matata">
+        </div>
+        <div class="nomhak">
+            <!--Nombre del establecimiento -->
+            <h1>Hakkuna Matata</h1>
+            <h2>"Un lugar para relajarte"</h2>
+        </div>
+        <div class="nomuser">
+            <!--Nombre de usuario -->
+            <h2>{{ nomcompleto_usuario }}</h2>
+        </div>
+
+        <div class="logout">
+            <!--Cerrar sesión -->
+            <form action="{{ url_for('logout') }}" method="post" style="display: inline;">
+                <button type="submit" style="background: none; border: none;">
+                    <img class="logo-banner" src="../static/assets/logout.png" alt="Cerrar sesión">
+                </button>
+            </form>
+        </div>
+    </section>
