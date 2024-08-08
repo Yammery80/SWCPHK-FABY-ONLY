@@ -1,4 +1,5 @@
 {% extends 'bootstrap/base.html' %}
+
 {% block head %}
     {{ super() }}
     <title>
@@ -6,11 +7,12 @@
             Sistema Web para Ciber Papelería "Hakkunna Matata"
         {% endblock %}
     </title>
-    <link rel="stylesheet" href="/static/style/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 {% endblock %}
 
 {% block body %}
-
     {% block navbar %}
     {% include 'banner.html' %}
     {% include 'navigation.html' %}
@@ -19,25 +21,56 @@
     {% block content %}
     <div class="caja">
         <h2>Entradas y Salidas</h2>
+
+        <!-- Formulario para consultar entradas y salidas -->
         <form action="/" method="post">
             <div class="camposconsulta">
                 <div class="campo">
                     <label for="id_usuario">ID Usuario: </label>
-                    <input type="text" id="id_usuario" name="id_usuario" placeholder="MariPereH19Tr" required>
+                    <input type="text" id="id_usuario" name="id_usuario" value="{{ session.get('id_usuario', '') }}" placeholder="MariPereH19Tr" required>
                 </div>
                 <div class="campo">
                     <label for="e_fechaentrada">Fecha Entrada:</label>
-                    <input type="date" id="e_fechaentrada" name="e_fechaentrada" required>
+                    <input type="date" id="e_fechaentrada" name="e_fechaentrada" value="{{ session.get('e_fechaentrada', '') }}" required>
                 </div>
                 <div class="campo">
                     <label for="e_fechasalida">Fecha Salida:</label>
-                    <input type="date" id="e_fechasalida" name="e_fechasalida" required>
+                    <input type="date" id="e_fechasalida" name="e_fechasalida" value="{{ session.get('e_fechasalida', '') }}" required>
                 </div>
             </div>
             <div class="submit-container">
                 <input type="submit" value="Consultar">
             </div>
         </form>
+        
+        
+
+        <!-- Botón para calcular el sueldo -->
+        <div class="submit-sueldo">
+            <form action="/" method="post" id="form-calcular-sueldo">
+                <input type="hidden" name="id_usuario" value="{{ session.get('id_usuario', '') }}">
+                <input type="hidden" name="e_fechaentrada" value="{{ session.get('e_fechaentrada', '') }}">
+                <input type="hidden" name="e_fechasalida" value="{{ session.get('e_fechasalida', '') }}">
+                <input type="hidden" name="calcular_sueldo" value="true">
+                <input type="submit" value="Calcular sueldo">
+            </form>
+        </div>
+        
+
+        <!-- Mostrar mensajes -->
+        {% if mensaje %}
+            <div class="alert alert-warning">
+                {{ mensaje }}
+            </div>
+        {% endif %}
+
+        {% if sueldo_calculado is not none %}
+            <div>
+                <h3>Sueldo Calculado: {{ sueldo_calculado }}</h3>
+            </div>
+        {% endif %}
+        
+        <!-- Tabla para mostrar los resultados -->
         <table class="table table-success table-striped">
             <thead>
                 <tr>
@@ -49,28 +82,50 @@
                 </tr>
             </thead>
             <tbody>
-                {% for entrada in datos %}
-                <tr>
-                    <td>{{ entrada[0] }}</td>
-                    <td>{{ entrada[1] }}</td>
-                    <td>{{ entrada[2] }}</td>
-                    <td>{{ entrada[3] }}</td>
-                    <td>{{ entrada[4] }}</td>
-                </tr>
+                {% if datos %}
+                    {% for entrada in datos %}
+                    <tr>
+                        <td>{{ entrada[0] }}</td>
+                        <td>{{ entrada[1] }}</td>
+                        <td>{{ entrada[2].strftime('%Y-%m-%d') }}</td>
+                        <td>{{ entrada[3].strftime('%H:%M') }}</td>
+                        <td>{{ entrada[4].strftime('%H:%M') }}</td>
+                    </tr>
+                    {% endfor %}
                 {% else %}
-                <tr>
-                    <td colspan="5">No se encontraron Usuarios.</td>
-                </tr>
-                {% endfor %}
+                    <tr>
+                        <td colspan="5">
+                            {% if mensaje %}
+                                {{ mensaje }}
+                            {% else %}
+                                No se encontraron entradas.
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
             </tbody>
         </table>
-        <!-- Si necesitas un botón para calcular el sueldo, debes incluirlo en un formulario o manejarlo adecuadamente -->
-        <div class="submit-sueldo">
-            <form action="/calcular_sueldo" method="post">
-                <input type="submit" value="Calcular sueldo">
-            </form>
+
+    </div>
+    <!-- Popup Sueldo -->
+    <div id="popup-sueldo" class="popup-sueldo" style="display: none;">
+        <div class="popup-content-sueldo">
+            <h2>Sueldo Total</h2>
+            {% if datos and datos|length > 0 %}
+                <h1>Las horas totales de {{ datos[0][1] }} son: {{ horas_trabajadas_total }}</h1>
+            {% else %}
+                <h1>No se encontraron datos.</h1>
+            {% endif %}
+            <p>Sueldo a pagar es: {{ sueldo_calculado }}</p>
+            <div class="time">
+                <p>Fecha actual: {{ fecha_actual }}</p>
+            </div>
+            <button id="acceptButton-s" class="button-sueldo">Aceptar</button>
+            <button id="cancelButton-s" class="button-sueldo">Cancelar</button>
         </div>
     </div>
+    
+    <!-- Elemento oculto para pasar datos a JavaScript -->
+    <div id="sueldo-data" data-sueldo-calculado="{{ sueldo_calculado }}"></div>
     {% endblock %}
-
 {% endblock %}

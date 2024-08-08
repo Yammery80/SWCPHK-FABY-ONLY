@@ -12,8 +12,10 @@ import os
 from werkzeug.security import  check_password_hash
 from decimal import Decimal
 from datetime import time
-from datetime import datetime
+from datetime import datetime, timedelta
+from decimal import Decimal, getcontext
 
+getcontext().prec = 10
 
 app = Flask(__name__)
 app.secret_key = 'Yamilindel2704'  # Necesario para usar flash messages
@@ -22,50 +24,110 @@ app.config['UPLOAD_FOLDER'] = 'static/assets/Documents-SWCPHK/CartasRecomendacio
 bootstrap = Bootstrap(app)
 
 # Lado administrador
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    datos = []  # Esto es para inicializar datos como una lista vacía
+    datos = []
+    horas_trabajadas_total = Decimal(0)
+    sueldo_calculado = Decimal(0)
+    mensaje = None
+    fecha_actual = datetime.now().strftime('%Y-%m-%d')
+
+    if request.method == 'POST':
+        id_usuario = request.form.get('id_usuario', '')
+        e_fechaentrada = request.form.get('e_fechaentrada', '')
+        e_fechasalida = request.form.get('e_fechasalida', '')
+
+        # Imprimir los parámetros para verificar que se están capturando correctamente
+        print(f"ID Usuario: {id_usuario}")
+        print(f"Fecha Entrada: {e_fechaentrada}")
+        print(f"Fecha Salida: {e_fechasalida}")
+
+        session['id_usuario'] = id_usuario
+        session['e_fechaentrada'] = e_fechaentrada
+        session['e_fechasalida'] = e_fechasalida
+
+        if 'calcular_sueldo' in request.form:
+            horas_trabajadas_total, sueldo_calculado = calcular_sueldo(session.get('id_usuario'), session.get('e_fechaentrada'), session.get('e_fechasalida'))
+            if sueldo_calculado == Decimal(0):
+                mensaje = "No se encontró información para calcular el sueldo."
+        else:
+            datos = get_data_from_db(id_usuario, e_fechaentrada, e_fechasalida)
+            if not datos:
+                mensaje = "No se encontraron datos."
+
+    return render_template('base.html', datos=datos, horas_trabajadas_total=horas_trabajadas_total, sueldo_calculado=sueldo_calculado, mensaje=mensaje, fecha_actual=fecha_actual)
+
+def get_data_from_db(id_usuario, e_fechaentrada, e_fechasalida):
     try:
-        if request.method == 'POST':
-            id_usuario = request.form.get('id_usuario', '')
-            e_fechaentrada = request.form.get('e_fechaentrada', '')
-            e_fechasalida = request.form.get('e_fechasalida', '')
+        conn = db.conectar()
+        cursor = conn.cursor()
 
-            conn = db.conectar()  # Esto es para usar la función de conexión personalizada
-            cursor = conn.cursor()
+        if not (id_usuario and e_fechaentrada and e_fechasalida):
+            return []
 
-            # Esto es para construir la consulta condicionalmente
-            if id_usuario:
-                query = sql.SQL("""
-                    SELECT * FROM entrada_salidas
-                    WHERE id_usuariofk = %s AND fecha BETWEEN %s AND %s
-                """)
-                params = (id_usuario, e_fechaentrada, e_fechasalida)
-            else:
-                query = sql.SQL("""
-                    SELECT * FROM entrada_salidas
-                    WHERE fecha BETWEEN %s AND %s
-                """)
-                params = (e_fechaentrada, e_fechasalida)
+        query = """
+            SELECT id_usuariofk, nomcompleto_usuario, fecha, hora_entrada, hora_salida
+            FROM entrada_salidas
+            WHERE id_usuariofk = %s AND fecha BETWEEN %s AND %s
+        """
+        params = (id_usuario, e_fechaentrada, e_fechasalida)
 
-            cursor.execute(query, params)
-            datos = cursor.fetchall()
+        cursor.execute(query, params)
+        datos = cursor.fetchall()
 
+        return datos
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
+    finally:
+        cursor.close()
+        db.desconectar(conn)
+
+def calcular_sueldo(id_usuario, e_fechaentrada, e_fechasalida):
+    try:
+        if not e_fechaentrada or not e_fechasalida:
+            print("Las fechas de entrada y salida no pueden estar vacías.")
+            return Decimal(0), Decimal(0)  # Regresa horas_trabajadas_total y sueldo_calculado
+
+        conn = db.conectar()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT pagohora_usuario FROM infopersonal WHERE id_usuario = %s", (id_usuario,))
+        pagohora_usuario = cursor.fetchone()
+
+        if not pagohora_usuario:
+            print("No se encontró el pago por hora del usuario.")
             cursor.close()
-            db.desconectar(conn)  # Esto es para usar la función de desconexión personalizada
+            db.desconectar(conn)
+            return Decimal(0), Decimal(0)
+
+        pagohora_usuario = Decimal(pagohora_usuario[0])
+
+        cursor.execute("""
+            SELECT hora_entrada, hora_salida
+            FROM entrada_salidas
+            WHERE id_usuariofk = %s AND fecha BETWEEN %s AND %s
+        """, (id_usuario, e_fechaentrada, e_fechasalida))
+        registros = cursor.fetchall()
+
+        horas_trabajadas_total = Decimal(0)
+        for entrada, salida in registros:
+            fecha_dummy = datetime(1900, 1, 1)
+            entrada_datetime = datetime.combine(fecha_dummy, entrada)
+            salida_datetime = datetime.combine(fecha_dummy, salida)
+            horas_trabajadas = Decimal((salida_datetime - entrada_datetime).total_seconds()) / Decimal(3600)
+            horas_trabajadas_total += horas_trabajadas
+
+        cursor.close()
+        db.desconectar(conn)
+
+        sueldo_calculado = horas_trabajadas_total * pagohora_usuario
+
+        return horas_trabajadas_total, sueldo_calculado
 
     except Exception as e:
-        # Esto es para mostrar un mensaje de error en caso de excepción
-        return f"Hubo un error en la solicitud: {e}", 500
-
-    # Esto es para renderizar la plantilla con los resultados
-    return render_template('base.html', datos=datos)
-
-
-## Registro de nuevo
-
-
+        print(f"Error en calcular_sueldo: {e}")
+        return Decimal(0), Decimal(0)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

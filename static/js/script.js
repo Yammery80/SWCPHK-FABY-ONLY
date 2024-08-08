@@ -1,3 +1,26 @@
+//Muestra ventana de Sueldos pagados
+
+// Mostrar el popup si se ha calculado el sueldo
+document.addEventListener('DOMContentLoaded', function() {
+    const sueldoDataElement = document.getElementById('sueldo-data');
+    const sueldoCalculado = parseFloat(sueldoDataElement.getAttribute('data-sueldo-calculado'));
+
+    if (sueldoCalculado !== 0) {
+        document.getElementById('popup-sueldo').style.display = 'block';
+    }
+
+    // Funcionalidad de los botones
+    document.getElementById('acceptButton-s').addEventListener('click', function() {
+        document.getElementById('popup-sueldo').style.display = 'none';
+    });
+
+    document.getElementById('cancelButton-s').addEventListener('click', function() {
+        document.getElementById('popup-sueldo').style.display = 'none';
+    });
+});
+
+
+//Muestra ventana de Trabajador y horas de turno
 document.addEventListener('DOMContentLoaded', function() {
     var popup = document.getElementById('popup');
     var acceptButton = document.getElementById('acceptButton');
