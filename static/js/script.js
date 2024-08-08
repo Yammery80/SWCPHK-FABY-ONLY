@@ -20,9 +20,39 @@ $(document).ready(function() {
         $('#popup-sueldo').hide();
     });
 
-    // Funcionalidad para el botón de aceptar en el popup de sueldo
+    // Manejar clic en el botón de guardar en el popup de sueldo
     $('#acceptButton-s').click(function() {
-        $('#popup-sueldo').hide();
+        // Obtener los datos necesarios
+        const sueldoCalculado = parseFloat($('#sueldo-data').attr('data-sueldo-calculado'));
+        const idUsuario = $('#form-consulta input[name="id_usuario"]').val();
+        const fechaActual = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
+
+        // Enviar datos al servidor
+        fetch('/guardar_pago', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                fecha_pago: fechaActual,
+                monto_total_pago: sueldoCalculado,
+                id_usuariofok: idUsuario
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Pago guardado con éxito');
+                // Ocultar el popup y limpiar datos
+                $('#popup-sueldo').hide();
+                $('#form-consulta input[type="text"]').val('');
+                $('#form-consulta input[type="date"]').val('');
+                $('#tabla-datos tbody').empty();
+            } else {
+                console.error('Error al guardar el pago:', data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
     });
 
     // Mostrar ventana de Trabajador y horas de turno

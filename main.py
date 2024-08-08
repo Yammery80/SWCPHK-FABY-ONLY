@@ -129,6 +129,39 @@ def calcular_sueldo(id_usuario, e_fechaentrada, e_fechasalida):
     except Exception as e:
         print(f"Error en calcular_sueldo: {e}")
         return Decimal(0), Decimal(0)
+    
+
+@app.route('/guardar_pago', methods=['POST'])
+def guardar_pago():
+    conn = None
+    try:
+        # Obtener datos del request
+        data = request.get_json()
+        fecha_pago = data['fecha_pago']
+        monto_total_pago = data['monto_total_pago']
+        id_usuariofok = data['id_usuariofok']
+
+        # Conectar a la base de datos usando el pool de conexiones
+        conn = db.conectar()
+        with conn.cursor() as cur:
+            query = sql.SQL("""
+                INSERT INTO public.pagos (fecha_pago, montototal_pago, id_usuariofok)
+                VALUES (%s, %s, %s)
+            """)
+            cur.execute(query, (fecha_pago, monto_total_pago, id_usuariofok))
+            conn.commit()
+
+        return jsonify({'success': True})
+
+    except Exception as e:
+        print(f'Error al guardar el pago: {e}')
+        return jsonify({'success': False, 'error': str(e)})
+
+    finally:
+        # Asegúrate de liberar la conexión de vuelta al pool
+        if conn is not None:
+            db.desconectar(conn)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
