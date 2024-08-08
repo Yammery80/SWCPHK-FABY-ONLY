@@ -13,16 +13,24 @@ h2 {
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: center; /* Centra verticalmente */
+    justify-content: center; /* Centra horizontalmente */
     z-index: 1000;
+    font-size: 14px;
 }
 
 .popup-content-sueldo {
+    margin: 10% 30%;
     background: white;
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 5px;
     text-align: center;
+    color: #000;
+    width: 90%; /* Ancho máximo del popup */
+    max-width: 600px; /* Ajusta el tamaño máximo */
+    height: auto;
+    font-size: 14px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Opcional: agrega sombra para mejorar el diseño */
 }
 
 .button-sueldo {
@@ -33,7 +41,9 @@ h2 {
     cursor: pointer;
     background: #2d5a27;
     color: white;
+    font-size: 16px; /* Aumenta el tamaño del texto si es necesario */
 }
+
 
 /* Login */
 .form-login {
@@ -446,6 +456,7 @@ h2 {
     margin: 20px 0;
 }
 button {
+    margin: 10px;
     padding: 10px 20px;
     background-color: #2d5a27;
     color: white;

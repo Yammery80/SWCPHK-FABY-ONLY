@@ -37,7 +37,6 @@ def index():
         e_fechaentrada = request.form.get('e_fechaentrada', '')
         e_fechasalida = request.form.get('e_fechasalida', '')
 
-        # Imprimir los parámetros para verificar que se están capturando correctamente
         print(f"ID Usuario: {id_usuario}")
         print(f"Fecha Entrada: {e_fechaentrada}")
         print(f"Fecha Salida: {e_fechasalida}")
@@ -46,14 +45,16 @@ def index():
         session['e_fechaentrada'] = e_fechaentrada
         session['e_fechasalida'] = e_fechasalida
 
+        # Consultar datos primero
+        datos = get_data_from_db(id_usuario, e_fechaentrada, e_fechasalida)
+        
         if 'calcular_sueldo' in request.form:
-            horas_trabajadas_total, sueldo_calculado = calcular_sueldo(session.get('id_usuario'), session.get('e_fechaentrada'), session.get('e_fechasalida'))
-            if sueldo_calculado == Decimal(0):
-                mensaje = "No se encontró información para calcular el sueldo."
-        else:
-            datos = get_data_from_db(id_usuario, e_fechaentrada, e_fechasalida)
-            if not datos:
-                mensaje = "No se encontraron datos."
+            if datos:
+                horas_trabajadas_total, sueldo_calculado = calcular_sueldo(session.get('id_usuario'), session.get('e_fechaentrada'), session.get('e_fechasalida'))
+                if sueldo_calculado == Decimal(0):
+                    mensaje = "No se encontró información para calcular el sueldo."
+            else:
+                mensaje = "No se encontraron datos para calcular el sueldo."
 
     return render_template('base.html', datos=datos, horas_trabajadas_total=horas_trabajadas_total, sueldo_calculado=sueldo_calculado, mensaje=mensaje, fecha_actual=fecha_actual)
 

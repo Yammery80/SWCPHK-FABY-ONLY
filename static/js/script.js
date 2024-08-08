@@ -1,27 +1,31 @@
-//Muestra ventana de Sueldos pagados
-
-// Mostrar el popup si se ha calculado el sueldo
-document.addEventListener('DOMContentLoaded', function() {
-    const sueldoDataElement = document.getElementById('sueldo-data');
-    const sueldoCalculado = parseFloat(sueldoDataElement.getAttribute('data-sueldo-calculado'));
+$(document).ready(function() {
+    // Mostrar ventana de Sueldos pagados
+    const sueldoDataElement = $('#sueldo-data');
+    const sueldoCalculado = parseFloat(sueldoDataElement.attr('data-sueldo-calculado'));
 
     if (sueldoCalculado !== 0) {
-        document.getElementById('popup-sueldo').style.display = 'block';
+        $('#popup-sueldo').show();
     }
 
-    // Funcionalidad de los botones
-    document.getElementById('acceptButton-s').addEventListener('click', function() {
-        document.getElementById('popup-sueldo').style.display = 'none';
+    // Manejar clic en el botón de cancelar en el popup de sueldo
+    $('#cancelButton-s').click(function() {
+        // Limpiar los campos del formulario de consulta
+        $('#form-consulta input[type="text"]').val('');
+        $('#form-consulta input[type="date"]').val('');
+
+        // Limpiar la tabla de datos
+        $('#tabla-datos tbody').empty();
+
+        // Ocultar el popup
+        $('#popup-sueldo').hide();
     });
 
-    document.getElementById('cancelButton-s').addEventListener('click', function() {
-        document.getElementById('popup-sueldo').style.display = 'none';
+    // Funcionalidad para el botón de aceptar en el popup de sueldo
+    $('#acceptButton-s').click(function() {
+        $('#popup-sueldo').hide();
     });
-});
 
-
-//Muestra ventana de Trabajador y horas de turno
-document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar ventana de Trabajador y horas de turno
     var popup = document.getElementById('popup');
     var acceptButton = document.getElementById('acceptButton');
     var cancelButton = document.getElementById('cancelButton');
@@ -81,37 +85,30 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Botón Cancelar clickeado'); // Línea de depuración
         popup.style.display = 'none';
     });
-});
 
-
-////Crea ventana vergente para Usuario existente
-
-$(document).ready(function() {
+    // Crea ventana emergente para Usuario existente
     $(".alert").fadeIn();
 
     setTimeout(function() {
         $(".alert").fadeOut();
     }, 5000); // 5 seconds
-});
 
-////Cambia automáticamente la foto de perfil
-function previewImage(event) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
+    // Cambia automáticamente la foto de perfil
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
 
-    if (file) {
-        reader.onload = function(e) {
-            // Obtén el elemento de imagen y actualiza su src
-            document.getElementById('profileImage').src = e.target.result;
+        if (file) {
+            reader.onload = function(e) {
+                // Obtén el elemento de imagen y actualiza su src
+                document.getElementById('profileImage').src = e.target.result;
+            }
+            // Lee el archivo como una URL de datos
+            reader.readAsDataURL(file);
         }
-        // Lee el archivo como una URL de datos
-        reader.readAsDataURL(file);
     }
-}
 
-////Cambia automáticamente la foto de cartas recomendación
-
-$(document).ready(function() {
+    // Cambia automáticamente la foto de cartas recomendación
     $('#foto_usuario').change(function(event) {
         var reader = new FileReader();
         reader.onload = function(event) {
@@ -127,11 +124,9 @@ $(document).ready(function() {
         }
         reader.readAsDataURL(this.files[0]);
     });
+
+    // Login ventana
+    function mostrarMensaje() {
+        alert("Comuniquese con su administrador");
+    }
 });
-
-
-///Login ventana
-function mostrarMensaje() {
-    alert("Comuniquese con su administrador");
-}
-

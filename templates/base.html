@@ -23,7 +23,7 @@
         <h2>Entradas y Salidas</h2>
 
         <!-- Formulario para consultar entradas y salidas -->
-        <form action="/" method="post">
+        <form action="/" method="post" id="form-consulta">
             <div class="camposconsulta">
                 <div class="campo">
                     <label for="id_usuario">ID Usuario: </label>
@@ -64,14 +64,9 @@
             </div>
         {% endif %}
 
-        {% if sueldo_calculado is not none %}
-            <div>
-                <h3>Sueldo Calculado: {{ sueldo_calculado }}</h3>
-            </div>
-        {% endif %}
         
         <!-- Tabla para mostrar los resultados -->
-        <table class="table table-success table-striped">
+        <table id="tabla-datos" class="table table-success table-striped">
             <thead>
                 <tr>
                     <th scope="col">ID Usuario</th>
@@ -111,7 +106,7 @@
     <div id="popup-sueldo" class="popup-sueldo" style="display: none;">
         <div class="popup-content-sueldo">
             <h2>Sueldo Total</h2>
-            {% if datos and datos|length > 0 %}
+            {% if datos %}
                 <h1>Las horas totales de {{ datos[0][1] }} son: {{ horas_trabajadas_total }}</h1>
             {% else %}
                 <h1>No se encontraron datos.</h1>
@@ -120,7 +115,7 @@
             <div class="time">
                 <p>Fecha actual: {{ fecha_actual }}</p>
             </div>
-            <button id="acceptButton-s" class="button-sueldo">Aceptar</button>
+            <button id="acceptButton-s" class="button-sueldo">Guardar</button>
             <button id="cancelButton-s" class="button-sueldo">Cancelar</button>
         </div>
     </div>
