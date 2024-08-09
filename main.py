@@ -14,8 +14,21 @@ from decimal import Decimal
 from datetime import time
 from datetime import datetime, timedelta
 from decimal import Decimal, getcontext
-
+from flask import send_file
+from reportlab.lib.pagesizes import letter, A4, landscape
+from reportlab.pdfgen import canvas
+import io
+from flask import request, jsonify
+import requests 
 getcontext().prec = 10
+from reportlab.pdfgen import canvas
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import Paragraph, Table, TableStyle
+from reportlab.lib import colors
+from io import BytesIO as io
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from io import BytesIO
 
 app = Flask(__name__)
 app.secret_key = 'Yamilindel2704'  # Necesario para usar flash messages
@@ -148,20 +161,143 @@ def guardar_pago():
             """)
             cur.execute(query, (fecha_pago, monto_total_pago, id_usuariofok))
             conn.commit()
-        flash('Hora guardada con éxito', 'success')
-        return jsonify({'success': True})
+
+        return {'success': True}  # Cambiar a dict
 
     except Exception as e:
         print(f'Error al guardar el pago: {e}')
-        flash(f'Error al guardar la hora: {e}', 'error')
-        return jsonify({'success': False, 'error': str(e)})
+        return {'success': False, 'error': str(e)}  # Cambiar a dict
 
     finally:
         if conn is not None:
             db.desconectar(conn)
 
 
+#   Botón de guardar y generar PDF
+@app.route('/guardar_y_generar_pdf', methods=['POST'])
+def guardar_y_generar_pdf():
+    conn = None
+    try:
+        # Obtener datos de la solicitud
+        data = request.get_json()
+        fecha_pago = data['fecha_pago']
+        monto_total_pago = data['monto_total_pago']
+        id_usuariofok = data['id_usuariofok']
+        registros = data['registros']
 
+        # Imprimir datos para depuración
+        print('Datos recibidos:', data)
+
+        # Verificar la estructura de los registros
+        if not registros or not all('horaEntrada' in reg and 'horaSalida' in reg for reg in registros):
+            raise ValueError('Uno o más registros no contienen las claves "horaEntrada" o "horaSalida"')
+
+        # Calcular total de horas trabajadas
+        def calcular_total_horas(registros):
+            total_horas = 0
+            for reg in registros:
+                # Suponiendo que tienes las horas de entrada y salida en formato HH:MM
+                from datetime import datetime
+
+                formato = "%H:%M"
+                entrada = datetime.strptime(reg['horaEntrada'], formato)
+                salida = datetime.strptime(reg['horaSalida'], formato)
+                diferencia = (salida - entrada).total_seconds() / 3600.0  # Convertir segundos a horas
+                total_horas += diferencia
+            return total_horas
+
+        total_horas_trabajadas = calcular_total_horas(registros)
+
+        # Guardar el pago en la base de datos
+        conn = db.conectar()
+        with conn.cursor() as cur:
+            query = """
+                INSERT INTO public.pagos (fecha_pago, montototal_pago, id_usuariofok)
+                VALUES (%s, %s, %s)
+            """
+            cur.execute(query, (fecha_pago, monto_total_pago, id_usuariofok))
+            conn.commit()
+
+        # Crear un buffer para el PDF
+        buffer = BytesIO()
+        c = canvas.Canvas(buffer, pagesize=letter)
+        width, height = letter
+
+        # Agregar el logo del establecimiento
+        logo_path = 'static/assets/Documents-SWCPHK/Imagenes-interfaz/logo-banner.jpg'  # Reemplaza con la ruta correcta
+        c.drawImage(logo_path, 50, height - 100, width=100, height=100)
+
+        # Agregar nombre del establecimiento y subtítulo
+        c.setFont('Helvetica-Bold', 14)
+        c.drawString(160, height - 45, "Hakkunna-Matata")
+        c.setFont('Helvetica', 12)
+        c.drawString(160, height - 60, "Un lugar para relajarte")
+
+        # Título centrado
+        c.setFont('Helvetica-Bold', 18)
+        c.drawCentredString(width / 2, height - 130, "Pago de sueldo")
+
+        # Crear estilos para la lista
+        styles = getSampleStyleSheet()
+        bold_style = ParagraphStyle(name='BoldStyle', parent=styles['Normal'], fontName='Helvetica-Bold')
+        normal_style = ParagraphStyle(name='NormalStyle', parent=styles['Normal'], fontName='Helvetica')
+
+        # Información de la lista
+        data_list = [
+            ('ID de trabajador:', id_usuariofok),
+            ('Fecha del pago:', fecha_pago),
+            ('Total de horas trabajadas:', f'{total_horas_trabajadas:.2f}'),
+            ('Monto total:', f'{monto_total_pago:.2f}')
+        ]
+
+        y_position = height - 180
+        for item in data_list:
+            para = Paragraph(f"<b>{item[0]}</b> {item[1]}", normal_style)
+            para.wrapOn(c, width, height)
+            para.drawOn(c, 100, y_position)
+            y_position -= 20
+
+        # Tabla de datos
+        table_data = [
+            ['ID Usuario', 'Usuario', 'Fecha', 'Hora de Entrada', 'Hora de Salida']
+        ]
+        for reg in registros:
+            table_data.append([reg['idUsuario'], reg['usuario'], reg['fecha'], reg['horaEntrada'], reg['horaSalida']])
+
+        table = Table(table_data, colWidths=[100, 100, 100, 100, 100], hAlign='CENTER')
+        style = TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.047, 0.341, 0.145)),  # RGB(12, 87, 37)
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ])
+        table.setStyle(style)
+
+        # Alternar color de fondo de los registros
+        row_count = len(table_data)
+        for i in range(1, row_count):
+            if i % 2 == 1:  # Alternar cada fila (pares e impares)
+                table.setStyle(TableStyle([('BACKGROUND', (0, i), (-1, i), colors.lightgrey)]))
+
+        # Agregar tabla al PDF
+        table.wrapOn(c, width, height)
+        table.drawOn(c, 100, y_position - 40)  # Ajustar la posición según sea necesario
+
+        c.save()
+        buffer.seek(0)
+        return send_file(buffer, as_attachment=True, download_name='sueldo.pdf', mimetype='application/pdf')
+
+    except Exception as e:
+        print(f'Error al guardar el pago o generar el PDF: {e}')
+        return {'success': False, 'error': str(e)}
+
+    finally:
+        if conn is not None:
+            db.desconectar(conn)
+
+#login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':

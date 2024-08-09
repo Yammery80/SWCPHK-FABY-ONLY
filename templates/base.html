@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -93,24 +95,25 @@
         </table>
 
     </div>
-    <!-- Popup Sueldo -->
-    <div id="popup-sueldo" class="popup-sueldo" style="display: none;">
-        <div class="popup-content-sueldo">
-            <h2>Sueldo Total</h2>
-            {% if datos %}
-                <h1>Las horas totales de {{ datos[0][1] }} son: {{ horas_trabajadas_total }}</h1>
-            {% else %}
-                <h1>No se encontraron datos.</h1>
-            {% endif %}
-            <p>Sueldo a pagar es: {{ sueldo_calculado }}</p>
-            <div class="time">
-                <p>Fecha actual: {{ fecha_actual }}</p>
-            </div>
-            <button id="acceptButton-s" class="button-sueldo">Guardar</button>
-            <button id="cancelButton-s" class="button-sueldo">Cancelar</button>
+<!-- Popup Sueldo -->
+<div id="popup-sueldo" class="popup-sueldo" style="display: none;">
+    <div class="popup-content-sueldo">
+        <h2>Sueldo Total</h2>
+        {% if datos %}
+            <h1>Las horas totales de {{ datos[0][1] }} son: {{ horas_trabajadas_total }}</h1>
+        {% else %}
+            <h1>No se encontraron datos.</h1>
+        {% endif %}
+        <p>Sueldo a pagar es: {{ sueldo_calculado }}</p>
+        <div class="time">
+            <p>Fecha actual: {{ fecha_actual }}</p>
         </div>
+        <button id="pdfButton-s" class="button-sueldo">Guardar y Genera PDF</button>
+        <button id="acceptButton-s" class="button-sueldo">Guardar</button>
+        <button id="cancelButton-s" class="button-sueldo">Cancelar</button>
     </div>
-    
+</div>
+
     <!-- Elemento oculto para pasar datos a JavaScript -->
     <div id="sueldo-data" data-sueldo-calculado="{{ sueldo_calculado }}"></div>
             <!-- Mostrar mensajes flash -->
@@ -125,5 +128,9 @@
                 </div>
             {% endif %}
             {% endwith %}
+
+            <div id="total-horas" style="display:none;">Total Horas: {{ horas_trabajadas_total }}</div>
+            <div id="sueldo-total" style="display:none;">Sueldo Total: {{ sueldo_calculado }}</div>
+
     {% endblock %}
 {% endblock %}

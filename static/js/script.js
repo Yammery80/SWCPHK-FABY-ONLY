@@ -55,6 +55,59 @@ $(document).ready(function() {
         .catch(error => console.error('Error:', error));
     });
 
+    // Manejar clic en el botón de guardar y generar PDF en el popup de sueldo
+    $('#pdfButton-s').click(function() {
+        // Obtener los datos necesarios
+        const sueldoCalculado = parseFloat($('#sueldo-data').attr('data-sueldo-calculado'));
+        const idUsuario = $('#form-consulta input[name="id_usuario"]').val();
+        const fechaActual = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
+    
+        // Recopilar datos de la tabla
+        const tablaDatos = [];
+        $('#tabla-datos tbody tr').each(function() {
+            const row = $(this);
+            const idUsuario = row.find('td').eq(0).text();
+            const usuario = row.find('td').eq(1).text();
+            const fecha = row.find('td').eq(2).text();
+            const horaEntrada = row.find('td').eq(3).text();
+            const horaSalida = row.find('td').eq(4).text();
+            tablaDatos.push({ idUsuario, usuario, fecha, horaEntrada, horaSalida });
+        });
+
+        // Enviar datos al servidor
+        fetch('/guardar_y_generar_pdf', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                fecha_pago: fechaActual,
+                monto_total_pago: sueldoCalculado,
+                id_usuariofok: idUsuario,
+                registros: tablaDatos
+            })
+        })
+        .then(response => response.blob())
+        .then(blob => {
+            // Crear un enlace para descargar el PDF
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sueldo.pdf';
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+            // Limpiar datos ingresados y vaciar la tabla
+            $('#form-consulta input[type="text"]').val('');
+            $('#form-consulta input[type="date"]').val('');
+            $('#tabla-datos tbody').empty();
+    
+            // Cerrar la ventana emergente
+            $('#popup-sueldo').hide();
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
     // Mostrar ventana de Trabajador y horas de turno
     var popup = document.getElementById('popup');
     var acceptButton = document.getElementById('acceptButton');
@@ -157,6 +210,11 @@ $(document).ready(function() {
 
     // Login ventana
     function mostrarMensaje() {
-        alert("Comuniquese con su administrador");
+        var flashMessage = document.getElementById('flash-message');
+        flashMessage.style.display = 'block'; // Mostrar la ventana emergente
+
+        setTimeout(function() {
+            flashMessage.style.display = 'none'; // Ocultar la ventana emergente después de 1.5 segundos
+        }, 1500); // 1500 milisegundos = 1.5 segundos
     }
 });

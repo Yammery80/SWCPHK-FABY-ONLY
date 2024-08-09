@@ -15,6 +15,25 @@ h2 {
     margin-bottom: 10px;
 }
 
+/* Login */
+
+.flash-message {
+    display: none; /* Inicialmente oculta */
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-width: 300px;
+    text-align: center;
+}
+
+
 /*Entradas y Salidas*/
 .popup-sueldo {
     position: fixed;
@@ -54,6 +73,55 @@ h2 {
     color: white;
     font-size: 16px; /* Aumenta el tamaño del texto si es necesario */
 }
+
+.popup-pdf {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.btn {
+    margin: 5px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+
+/* PDF VENTANA EMERGENTE*/
+
+.popup-sueldo, .popup-pdf {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-content-sueldo, .popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
+
 
 /* Sueldos pagados */
 .editar-sueldo-pagado {
