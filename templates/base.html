@@ -55,16 +55,7 @@
                 <input type="submit" value="Calcular sueldo">
             </form>
         </div>
-        
 
-        <!-- Mostrar mensajes -->
-        {% if mensaje %}
-            <div class="alert alert-warning">
-                {{ mensaje }}
-            </div>
-        {% endif %}
-
-        
         <!-- Tabla para mostrar los resultados -->
         <table id="tabla-datos" class="table table-success table-striped">
             <thead>
@@ -122,5 +113,17 @@
     
     <!-- Elemento oculto para pasar datos a JavaScript -->
     <div id="sueldo-data" data-sueldo-calculado="{{ sueldo_calculado }}"></div>
+            <!-- Mostrar mensajes flash -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% endwith %}
     {% endblock %}
 {% endblock %}

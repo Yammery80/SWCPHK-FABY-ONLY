@@ -135,13 +135,11 @@ def calcular_sueldo(id_usuario, e_fechaentrada, e_fechasalida):
 def guardar_pago():
     conn = None
     try:
-        # Obtener datos del request
         data = request.get_json()
         fecha_pago = data['fecha_pago']
         monto_total_pago = data['monto_total_pago']
         id_usuariofok = data['id_usuariofok']
 
-        # Conectar a la base de datos usando el pool de conexiones
         conn = db.conectar()
         with conn.cursor() as cur:
             query = sql.SQL("""
@@ -150,17 +148,18 @@ def guardar_pago():
             """)
             cur.execute(query, (fecha_pago, monto_total_pago, id_usuariofok))
             conn.commit()
-
+        flash('Hora guardada con éxito', 'success')
         return jsonify({'success': True})
 
     except Exception as e:
         print(f'Error al guardar el pago: {e}')
+        flash(f'Error al guardar la hora: {e}', 'error')
         return jsonify({'success': False, 'error': str(e)})
 
     finally:
-        # Asegúrate de liberar la conexión de vuelta al pool
         if conn is not None:
             db.desconectar(conn)
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -553,84 +552,91 @@ def update2_usuario(id_usuario):
 
     return render_template('consultar_usuario.html', id_usuario=id_usuario)
 
-
 @app.route('/sueldospagado', methods=['GET', 'POST'])
 def spagado():
-    datos = []  # Esto es para inicializar datos como una lista vacía
+    datos = []  # Inicializar datos como una lista vacía
 
     try:
         if request.method == 'POST':
-            id_pago = request.form['id_pago']  # Esto es para obtener el valor del campo 'id_pago'
-            usuario_entradas = request.form['usuario_entradas']  # Esto es para obtener el valor del campo 'usuario_entradas'
-            fecha_inicio = request.form['fecha_inicio']  # Esto es para obtener el valor del campo 'fecha_inicio'
-            fecha_final = request.form['fecha_final']  # Esto es para obtener el valor del campo 'fecha_final'
+            id_pago = request.form.get('id_pago')
+            id_usuariofok = request.form.get('id_usuariofok')
+            fecha_iniciofok = request.form.get('e_fechaentradafok')
+            fecha_finalfok = request.form.get('e_fechasalidafok')
 
-            conn = db.conectar()  # Esto es para usar la función de conexión personalizada
+            print("id_pago:", id_pago)
+            print("id_usuariofok:", id_usuariofok)
+            print("fecha_iniciofok:", fecha_iniciofok)
+            print("fecha_finalfok:", fecha_finalfok)
+
+            conn = db.conectar()  # Usa la función de conexión personalizada
             cursor = conn.cursor()
 
-            # Esto es para construir la consulta condicionalmente
-            if id_pago and usuario_entradas:
-                query = sql.SQL("""
-                    SELECT id_usuario, fecha, hora_entrada, hora_salida
-                    FROM turnos
-                    WHERE id_usuario = %s AND id_pago = %s AND fecha BETWEEN %s AND %s
-                """)
-                params = (usuario_entradas, id_pago, fecha_inicio, fecha_final)
+            # Construir la consulta condicionalmente
+            if id_pago and id_usuariofok:
+                query = """
+                    SELECT id_pago, id_usuariofok, nomcompleto_usuario, fecha_pago, montototal_pago
+                    FROM public.sueldos_pagados
+                    WHERE id_usuariofok = %s AND id_pago = %s AND fecha_pago BETWEEN %s AND %s
+                """
+                params = (id_usuariofok, id_pago, fecha_iniciofok, fecha_finalfok)
             else:
-                query = sql.SQL("""
-                    SELECT id_usuario, fecha, hora_entrada, hora_salida
-                    FROM turnos
-                    WHERE fecha BETWEEN %s AND %s
-                """)
-                params = (fecha_inicio, fecha_final)
+                query = """
+                     SELECT id_pago, id_usuariofok, nomcompleto_usuario, fecha_pago, montototal_pago
+                     FROM public.sueldos_pagados
+                     WHERE fecha_pago BETWEEN %s AND %s
+                """
+                params = (fecha_iniciofok, fecha_finalfok)
 
             cursor.execute(query, params)
             datos = cursor.fetchall()
 
             cursor.close()
-            db.desconectar(conn)  # Esto es para usar la función de desconexión personalizada
+            db.desconectar(conn)  # Usa la función de desconexión personalizada
 
     except Exception as e:
-        # Esto es para mostrar un mensaje de error en caso de excepción
+        # Mostrar un mensaje de error detallado en caso de excepción
         return f"Hubo un error en la solicitud: {e}", 500
 
-    # Esto es para renderizar la plantilla con los resultados
+    # Renderizar la plantilla con los resultados
+    pass
     return render_template('sueldospagados.html', datos=datos)
 
-
-@app.route('/delete_spagado/<string:id_usuario>', methods=['POST'])
-def delete_spagado(id_usuario):
-    conn = db.conectar()  # Esto es para usar la función de conexión personalizada
-    cursor = conn.cursor()
-    # Esto es para borrar el registro con el id_usuario seleccionado
-    cursor.execute('DELETE FROM usuarios WHERE id_usuario=%s', (id_usuario,))
-    conn.commit()
-    cursor.close()
-    db.desconectar(conn)  # Esto es para usar la función de desconexión personalizada
-    return redirect(url_for('spagado'))
-
-@app.route('/update1_spagado/<string:id_usuario>', methods=['GET', 'POST'])
-def update1_spagado(id_usuario):
+@app.route('/update1_spagado/<int:id_pago>', methods=['GET', 'POST'])
+def update1_spagado(id_pago):
     conn = db.conectar()  # Esto es para usar la función de conexión personalizada
     cursor = conn.cursor()
     # Esto es para recuperar el registro del id_usuario seleccionado
-    cursor.execute('''SELECT * FROM usuarios WHERE id_usuario=%s''', (id_usuario,))
+    cursor.execute('''SELECT * FROM sueldos_pagados WHERE id_pago=%s''', (id_pago,))
     datos = cursor.fetchall()
     cursor.close()
     db.desconectar(conn)  # Esto es para usar la función de desconexión personalizada
     return render_template('editar_spagado.html', datos=datos)
 
-@app.route('/update2_spagado/<string:id_usuario>', methods=['POST'])
-def update2_spagado(id_usuario):
-    usuario_usuario = request.form['nombre']  # Esto es para obtener el valor del campo 'nombre' del formulario
-    conn = db.conectar()  # Esto es para usar la función de conexión personalizada
+@app.route('/update2_spagado/<int:id_pago>', methods=['POST'])
+def update2_spagado(id_pago):
+    fecha_pago = request.form['fecha-s']  # Obtiene la nueva fecha
+    conn = db.conectar()
     cursor = conn.cursor()
-    # Esto es para actualizar el registro del usuario
-    cursor.execute('''UPDATE usuarios SET usuario_usuario=%s WHERE id_usuario=%s''', (usuario_usuario, id_usuario,))
+    # Actualiza la fecha_pago en la vista
+    cursor.execute('UPDATE sueldos_pagados SET fecha_pago=%s WHERE id_pago=%s', (fecha_pago, id_pago,))
     conn.commit()
     cursor.close()
-    db.desconectar(conn)  # Esto es para usar la función de desconexión personalizada
+    db.desconectar(conn)
     return redirect(url_for('spagado'))
+
+@app.route('/delete_spagado/<int:id_pago>', methods=['POST'])
+def delete_spagado(id_pago):
+    conn = db.conectar()  # Usa la función de conexión personalizada
+    cursor = conn.cursor()
+    
+    # Elimina el registro de la vista 'sueldos_pagados' basado en el id_pago
+    cursor.execute('DELETE FROM sueldos_pagados WHERE id_pago=%s', (id_pago,))
+    conn.commit()
+    cursor.close()
+    db.desconectar(conn)  # Usa la función de desconexión personalizada
+    
+    return redirect(url_for('spagado'))
+
 
 @app.route('/configuracion')
 def config():

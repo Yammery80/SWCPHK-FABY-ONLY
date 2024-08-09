@@ -24,19 +24,19 @@
             <div class="camposconsulta">
                 <div class="campo">
                     <label for="id_pago">ID Pago: </label>
-                    <input type="text" id="id_pago" name="id_pago" placeholder="1" required>
+                    <input type="number" id="id_pago" name="id_pago" placeholder="1">
                 </div>
                 <div class="campo">
-                    <label for="id_usuario">ID Usuario: </label>
-                    <input type="text" id="id_usuario" name="id_usuario" placeholder="MariPereH19Tr" required>
+                    <label for="id_usuariofok">ID Usuario: </label>
+                    <input type="text" id="id_usuariofok" name="id_usuariofok" placeholder="MariPereH19Tr" required>
                 </div>
                 <div class="campo">
-                    <label for="e_fechaentrada">Fecha Entrada:</label>
-                    <input type="date" id="e_fechaentrada" name="e_fechaentrada" required>
+                    <label for="e_fechaentradafok">Fecha Entrada:</label>
+                    <input type="date" id="e_fechaentradafok" name="e_fechaentradafok" required>
                 </div>
                 <div class="campo">
-                    <label for="e_fechasalida">Fecha Salida:</label>
-                    <input type="date" id="e_fechasalida" name="e_fechasalida" required>
+                    <label for="e_fechasalidafok">Fecha Salida:</label>
+                    <input type="date" id="e_fechasalidafok" name="e_fechasalidafok" required>
                 </div>
             </div>
             <div class="submit-container">
@@ -50,8 +50,6 @@
                     <th scope="col">ID Usuario</th>
                     <th scope="col">Usuario</th>
                     <th scope="col">Fecha</th>
-                    <th scope="col">Hora de Entrada</th>
-                    <th scope="col">Hora de Salida</th>
                     <th scope="col">Monto</th>
                     <th scope="col">Editar</th>
                 </tr>
@@ -64,27 +62,22 @@
                     <td>{{ pagado[2] }}</td>
                     <td>{{ pagado[3] }}</td>
                     <td>{{ pagado[4] }}</td>
-                    <td>{{ pagado[5] }}</td>
-                    <td>{{ pagado[6] }}</td>
                     <td>
-                        <form action="{{ url_for('update1_spagado', id_usuario=pagado[0]) }}" method="POST">
+                        <form action="{{ url_for('update1_spagado', id_pago=pagado[0]) }}" method="POST">
                             <button type="submit" class="btn btn-primary">Editar</button>
-                        </form>
-                        <form action="{{ url_for('delete_spagado', id_usuario=pagado[0]) }}" method="POST">
+                        </form>        
+                        <form action="{{ url_for('delete_spagado', id_pago=pagado[0]) }}" method="POST">
                             <button type="submit" class="btn btn-danger">Eliminar</button>
-                        </form><br>
+                        </form>
                     </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="8">No se encontraron Usuarios.</td>
+                    <td colspan="6">No se encontraron Usuarios.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <div class="submit-sueldo">
-            <input type="submit" value="Calcular sueldo">
-        </div>
     </div>
     {% endblock %}
 
