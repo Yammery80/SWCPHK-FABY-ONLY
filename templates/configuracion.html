@@ -8,6 +8,7 @@
         {% endblock %}
     </title>
     <link rel="stylesheet" href="../static/style/style.css">
+    <script src="../static/js/script.js" defer></script>
 {% endblock %}
 
 {% block body %}
@@ -18,53 +19,75 @@
 
     {% block content %}
     <div class="caja">
-    <div class="createuser">
-        <div class="usuario-title">
-            <h2>Configuración</h2>
+        <div class="createuser">
+            <div class="usuario-title">
+                <h2>Configuración</h2>
+            </div>
+            <form action="{{ url_for('configuracion') }}" method="post" enctype="multipart/form-data" class="formulario-user">
+                <div class="form-createu">
+                    <div class="columna-form">
+                        <label for="logo">Logo:</label>
+                        <input id="logo" type="file" name="logo" onchange="previewImage(event)">
+                        {% if config.logo_sistem %}
+                            <img id="logo-preview" class="imagen" src="{{ url_for('static', filename='uploads/' + config.logo_sistem) }}" alt="logo-establecimiento">
+                        {% else %}
+                            <img id="logo-preview" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/Imágenes-interfaz/logo-banner.jpg') }}" alt="logo-establecimiento">
+                        {% endif %}
+                        <label for="nom-local">Nombre del establecimiento:</label>
+                        <input type="text" id="nom-local" name="nom-local" value="{{ config.nombre_establecimiento }}" required><br>
+                        <label for="tipo-servicio">Tipo Servicio:</label>
+                        <select name="tipo-servicio" id="tipo-servicio">
+                            <option value="">----</option>
+                            <option value="Ciber-Papeleria" {% if config.tipo_servicio == 'Ciber-Papeleria' %}selected{% endif %}>Ciber-Papeleria</option>
+                            <option value="Abarrotes" {% if config.tipo_servicio == 'Abarrotes' %}selected{% endif %}>Abarrotes</option>
+                            <option value="Ropa" {% if config.tipo_servicio == 'Ropa' %}selected{% endif %}>Ropa</option>
+                        </select><br>
+                        <input class="submit-user" type="submit" value="Actualizar">
+                    </div>
+                    <div class="columna-form">
+                        <label for="domiciolio-local">Domicilio:</label>
+                        <input type="text" id="domiciolio-local" name="domiciolio-local" value="{{ config.domicilio }}" required><br>
+                        <label for="num-tel-local">Número telefónico:</label>
+                        <input type="number" id="num-tel-local" name="num-tel-local" value="{{ config.numero_telefonico }}" required><br>
+                        <label for="tipografia-sistema">Tipografía de Letra:</label>
+                        <select name="tipografia-sistema" id="tipografia-sistema">
+                            <option value="">----</option>
+                            <option value="Arial" {% if config.tipografia_letra == 'Arial' %}selected{% endif %}>Arial</option>
+                            <option value="Aclonica" {% if config.tipografia_letra == 'Aclonica' %}selected{% endif %}>Aclonica</option>
+                            <option value="Calibri" {% if config.tipografia_letra == 'Calibri' %}selected{% endif %}>Calibri</option>
+                        </select><br>
+                        <label for="tamaño-local">Tamaño de empresa:</label>
+                        <select name="tamaño-local" id="tamaño-local">
+                            <option value="">----</option>
+                            <option value="chica" {% if config.tamano_empresa == 'chica' %}selected{% endif %}>Chica</option>
+                            <option value="mediana" {% if config.tamano_empresa == 'mediana' %}selected{% endif %}>Mediana</option>
+                            <option value="grande" {% if config.tamano_empresa == 'grande' %}selected{% endif %}>Grande</option>
+                        </select><br>
+                    </div>
+                    <div class="columna-form">
+                        <label for="imagen-banner">Imagen banner:</label>
+                        <input id="imagen-banner" type="file" name="imagen-banner" accept="image/*"><br>
+                
+                        {% if config.imagen_banner %}
+                            <img id="banner-preview" class="imagen" src="{{ url_for('static', filename='uploads/' + config.imagen_banner) }}" alt="imagen-banner">
+                        {% else %}
+                            <p>No hay imagen de banner disponible.</p>
+                            <img id="banner-preview" class="imagen" src="{{ url_for('static', filename='default-banner.png') }}" alt="imagen-banner">
+                        {% endif %}
+                        <label for="color-interfaz">Color interfaz:</label>
+                        <input 
+                            type="color" 
+                            name="color-interfaz" 
+                            value="{{ config.color_interfaz if config.color_interfaz and config.color_interfaz.startswith('#') else '#000000' }}"
+                        >
+                        <label for="politicas">Políticas y términos de la empresa:</label>
+                        <img id="politicas-img" class="politics" src="{{ url_for('static', filename='assets/pdf-politics_and_terms.png') }}" alt="politicas-imagen">
+                        <input id="politicas-file" type="file" name="politicas" accept=".pdf" style="display: none;">
+                        <span id="politicas-filename">No hay archivo seleccionado</span><br>
+                    </div>
+                </div>
+            </form>
         </div>
-        <form action="" class="formulario-user">
-            <div class="form-createu">
-                <div class="columna-form">
-                    <label for="imagen">Logo:</label>
-                    <img class="imagen" src="../static/assets/logo-banner.jpg" alt="logo-establecimiento">
-                    <input id="logo" type="file" name="file" id="file"><br>
-                    <label for="nom-local">Nombre del establecimiento:</label>
-                    <input type="text" id="nom-local" name="nom-local" required><br>
-                    <label for="tipo-servicio">Tipo Servicio:</label>
-                    <select name="tipo-servicio" id="tipo-servicio">
-                        <option value="inicio">----</option>
-                        <option value="Ciber-Papeleria">Ciber-Papeleria</option>
-                        <option value="Abarrotes">Abarrotes</option>
-                        <option value="Ropa">Ropa</option>
-                      </select><br>
-                    <input class="submit-user" type="submit" value="Listo">
-                </div>
-                <div class="columna-form">
-                    <label for="domiciolio-local">Domicilio:</label>
-                    <input type="text" id="domiciolio-local" name="domiciolio-local" required><br>
-                    <label for="num-tel-local">Número telefónico:</label>
-                    <input type="number" id="num-tel-local" name="num-tel-local" required><br>
-                    <label for="Tipografia-sistema">Tipografía de letra:</label>
-                    <input type="text" id="nom-local" name="nom-local" required><br>
-                    <label for="tamaño-local">Tamaño de empresa:</label>
-                    <select name="tamaño-local" id="tamaño-local">
-                        <option value="inicio">----</option>
-                        <option value="chica">Chica</option>
-                        <option value="mediana">Mediana</option>
-                        <option value="grande">Grande</option>
-                      </select><br>
-                </div>
-                <div class="columna-form">
-                    <label for="imagen-banner">Imagen banner:</label>
-                    <input id="imagen-banner" type="file" name="file" id="imagen-banner"><br/>
-                    <label for="color-interfaz">Color interfaz:</label>
-                    <input type="color" name="color-interfaz" value="#000000">
-                    <label for="politics">Politicas y términos de la empresa:</label>
-                    <img class="politics" src="../static/assets/pdf-politics_and_terms.png" alt="politics">
-                </div>
-                </div>
-        </form>
     </div>
-</div>
     {% endblock %}
 {% endblock %}

@@ -632,3 +632,10 @@ button:hover {
     color: #000000;
     border: 1px solid #721c24;
 }
+/* Configuración */
+/*Politicas*/
+.politics {
+    max-width: 100%;
+    height: auto;
+    cursor: pointer; /* Indicar que la imagen es clickeable */
+}

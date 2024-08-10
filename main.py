@@ -19,7 +19,7 @@ from reportlab.lib.pagesizes import letter, A4, landscape
 from reportlab.pdfgen import canvas
 import io
 from flask import request, jsonify
-import requests 
+import requests
 getcontext().prec = 10
 from reportlab.pdfgen import canvas
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -30,10 +30,20 @@ from reportlab.lib import colors
 from reportlab.lib.units import inch
 from io import BytesIO
 
+
 app = Flask(__name__)
 app.secret_key = 'Yamilindel2704'  # Necesario para usar flash messages
 app.config['UPLOAD_FOLDER'] = 'static/assets/Documents-SWCPHK/FotosPerfiles'  # Carpeta donde se guardarán las imágenes
 app.config['UPLOAD_FOLDER'] = 'static/assets/Documents-SWCPHK/CartasRecomendacion'  # Carpeta donde se guardarán las imágenes
+app.config['UPLOAD_FOLDER'] = 'static/assets/' #Acceder a la carpeta de recursos
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'} #Permite este tipo de enxtensiones
+# Directorio donde se guardarán los archivos subidos de configuración de interfaz
+UPLOAD_FOLDER = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+def allowed_file(filename):
+    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
 bootstrap = Bootstrap(app)
 
 # Lado administrador
@@ -772,16 +782,112 @@ def delete_spagado(id_pago):
     db.desconectar(conn)  # Usa la función de desconexión personalizada
     
     return redirect(url_for('spagado'))
-
-
-@app.route('/configuracion')
-def config():
-    conn = db.conectar()  # Esto es para usar la función de conexión personalizada
+#Datos precargados de configuración
+def get_config():
+    conn = db.conectar()
     cursor = conn.cursor()
-    # Aquí podría ejecutar una consulta en la base de datos si fuera necesario
+    cursor.execute("""
+        SELECT logo_sistem, nombre_establecimiento, tipo_servicio, domicilio, numero_telefonico,
+               tipografia_letra, tamano_empresa, imagen_banner, color_interfaz, politicas
+        FROM public.configuracion
+        WHERE id_config = 1;
+    """)
+    row = cursor.fetchone()
     cursor.close()
-    db.desconectar(conn)  # Esto es para usar la función de desconexión personalizada
-    return render_template('configuracion.html')
+    db.desconectar(conn)
+    if row:
+        return {
+            'logo_sistem': row[0],
+            'nombre_establecimiento': row[1],
+            'tipo_servicio': row[2],
+            'domicilio': row[3],
+            'numero_telefonico': row[4],
+            'tipografia_letra': row[5],
+            'tamano_empresa': row[6],
+            'imagen_banner': row[7],
+            'color_interfaz': row[8],
+            'politicas': row[9]
+        }
+    return {}
+
+#Configuracion
+@app.route('/configuracion', methods=['GET', 'POST'])
+def configuracion():
+    if request.method == 'POST':
+        # Obtener archivos y campos del formulario
+        logo = request.files.get('logo')
+        nombre_local = request.form.get('nom-local')
+        tipo_servicio = request.form.get('tipo-servicio')
+        domicilio = request.form.get('domiciolio-local')
+        num_tel_local = request.form.get('num-tel-local')
+        tipografia_sistema = request.form.get('tipografia-sistema')
+        tamaño_local = request.form.get('tamaño-local')
+        imagen_banner = request.files.get('imagen-banner')
+        color_interfaz = request.form.get('color-interfaz')
+        politicas = request.files.get('politicas')
+
+        # Verificar y guardar el logo
+        if logo:
+            # Asegúrate de que el directorio de carga existe
+            if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                os.makedirs(app.config['UPLOAD_FOLDER'])
+            
+            # Guardar el archivo en la carpeta uploads
+            logo_filename = secure_filename(logo.filename)
+            logo_path = os.path.join(app.config['UPLOAD_FOLDER'], logo_filename)
+            logo.save(logo_path)
+        else:
+            logo_filename = None
+        
+        # Verificar y guardar el banner
+        if imagen_banner and allowed_file(imagen_banner.filename):
+            imagen_banner_filename = secure_filename(imagen_banner.filename)
+            imagen_banner_path = os.path.join(app.config['UPLOAD_FOLDER'], imagen_banner_filename)
+            imagen_banner.save(imagen_banner_path)
+        else:
+            imagen_banner_filename = None
+
+        # Verificar y guardar las políticas
+        if politicas and allowed_file(politicas.filename):
+            politicas_filename = secure_filename(politicas.filename)
+            politicas_path = os.path.join(app.config['UPLOAD_FOLDER'], politicas_filename)
+            politicas.save(politicas_path)
+        else:
+            politicas_filename = None
+
+        # Conectar a la base de datos y actualizar la configuración
+        conn = db.conectar()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            INSERT INTO public.configuracion (id_config, logo_sistem, nombre_establecimiento, tipo_servicio,
+                                              domicilio, numero_telefonico, tipografia_letra, tamano_empresa,
+                                              imagen_banner, color_interfaz, politicas)
+            VALUES (1, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (id_config)
+            DO UPDATE SET logo_sistem = EXCLUDED.logo_sistem,
+                          nombre_establecimiento = EXCLUDED.nombre_establecimiento,
+                          tipo_servicio = EXCLUDED.tipo_servicio,
+                          domicilio = EXCLUDED.domicilio,
+                          numero_telefonico = EXCLUDED.numero_telefonico,
+                          tipografia_letra = EXCLUDED.tipografia_letra,
+                          tamano_empresa = EXCLUDED.tamano_empresa,
+                          imagen_banner = EXCLUDED.imagen_banner,
+                          color_interfaz = EXCLUDED.color_interfaz,
+                          politicas = EXCLUDED.politicas;
+        """, (logo_filename, nombre_local, tipo_servicio, domicilio, num_tel_local,
+              tipografia_sistema, tamaño_local, imagen_banner_filename,
+              color_interfaz, politicas_filename))
+        
+        conn.commit()
+        cursor.close()
+        db.desconectar(conn)
+
+        return redirect(url_for('configuracion'))
+
+    # Obtener configuración actual
+    config = get_config()
+    return render_template('configuracion.html', config=config)
 
 
 #Vinculos de trabajador

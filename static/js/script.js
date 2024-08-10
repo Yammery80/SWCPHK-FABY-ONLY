@@ -1,3 +1,144 @@
+
+
+//cambio de imagen en la interfaz del logo del establecimiento
+document.addEventListener('DOMContentLoaded', function() {
+    // Manejo de cambio de imagen del logo solo interfaz
+    const fileInput = document.getElementById('logo');
+    const image = document.querySelector('.imagen');
+
+    fileInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                image.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        }
+    });
+});
+//Icono de politicas del establecimiento
+document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('politicas-file');
+    var filenameDisplay = document.getElementById('politicas-filename');
+    var image = document.getElementById('politicas-img');
+
+    // Mostrar el campo de archivo cuando se hace clic en la imagen
+    image.addEventListener('click', function() {
+        input.click();
+    });
+
+    // Cuando el usuario selecciona un archivo, actualizar el texto con el nombre del archivo
+    input.addEventListener('change', function(event) {
+        var file = event.target.files[0];
+        if (file) {
+            filenameDisplay.textContent = file.name; // Muestra el nombre del archivo
+        } else {
+            filenameDisplay.textContent = 'No hay archivo seleccionado';
+        }
+    });
+});
+
+//Actualización de cartas de recomendación
+document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('imagen-banner');
+    var preview = document.getElementById('banner-preview');
+
+    input.addEventListener('change', function(event) {
+        var file = event.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            // Revertir a la imagen original si no se selecciona un archivo
+            preview.src = "{{ url_for('static', filename='uploads/' + (config.imagen_banner if config.imagen_banner else 'default-banner.png')) }}";
+        }
+    });
+});
+
+
+///Actualización de cartas de recomendación
+$(document).ready(function() {
+    $('#cartas_reco').change(function(event) {
+        // Obtén el archivo del input
+        var file = this.files[0];
+
+        // Verifica si hay un archivo seleccionado
+        if (file) {
+            var reader = new FileReader();
+
+            // Define qué hacer cuando el archivo se cargue
+            reader.onload = function(event) {
+                // Actualiza la fuente de la imagen con el resultado del FileReader
+                $('#cartas_reco_preview').attr('src', event.target.result);
+            };
+
+            // Lee el archivo como una URL de datos
+            reader.readAsDataURL(file);
+        } else {
+            // Si no hay archivo, podrías establecer una imagen predeterminada o manejar el caso de error
+            $('#cartas_reco_preview').attr('src', 'assets/Documents-SWCPHK/CartasRecomendacion/default-recommendation.jpeg');
+        }
+    });
+});
+
+///Imagen de de configuracion de interfaz
+document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('imagen-banner');
+    var preview = document.getElementById('banner-preview');
+
+    input.addEventListener('change', function(event) {
+        var file = event.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            // Revertir a la imagen original si no se selecciona un archivo
+            preview.src = "{{ url_for('static', filename='uploads/' + (config.imagen_banner if config.imagen_banner else 'default-banner.png')) }}";
+        }
+    });
+});
+
+   // Login ventana
+   function mostrarMensaje() {
+    var flashMessage = document.getElementById('flash-message');
+    flashMessage.style.display = 'block'; // Mostrar la ventana emergente
+
+    setTimeout(function() {
+        flashMessage.style.display = 'none'; // Ocultar la ventana emergente después de 1.5 segundos
+    }, 1500); // 1500 milisegundos = 1.5 segundos
+   }
+
+//Actiulizacion de foto de usuarios
+document.addEventListener('DOMContentLoaded', function() {
+    const fotoUsuarioInput = document.getElementById('foto_usuario');
+    const fotoUsuarioPreview = document.getElementById('foto_usuario_preview');
+
+    if (fotoUsuarioInput && fotoUsuarioPreview) {
+        fotoUsuarioInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            if (file) {
+                reader.onload = function(e) {
+                    fotoUsuarioPreview.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    } else {
+        console.error('Elemento(s) con ID "foto_usuario" o "foto_usuario_preview" no encontrado(s).');
+    }
+});    
+
 $(document).ready(function() {
     // Mostrar ventana de Sueldos pagados
     const sueldoDataElement = $('#sueldo-data');
@@ -169,52 +310,16 @@ $(document).ready(function() {
         popup.style.display = 'none';
     });
 
-    // Crea ventana emergente para Usuario existente
-    $(".alert").fadeIn();
-
-    setTimeout(function() {
-        $(".alert").fadeOut();
-    }, 5000); // 5 seconds
-
-    // Cambia automáticamente la foto de perfil
-    function previewImage(event) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-
-        if (file) {
-            reader.onload = function(e) {
-                // Obtén el elemento de imagen y actualiza su src
-                document.getElementById('profileImage').src = e.target.result;
-            }
-            // Lee el archivo como una URL de datos
-            reader.readAsDataURL(file);
-        }
-    }
-
-    // Cambia automáticamente la foto de cartas recomendación
-    $('#foto_usuario').change(function(event) {
-        var reader = new FileReader();
-        reader.onload = function(event) {
-            $('#foto_usuario_preview').attr('src', event.target.result);
-        }
-        reader.readAsDataURL(this.files[0]);
-    });
-
-    $('#cartas_reco').change(function(event) {
-        var reader = new FileReader();
-        reader.onload = function(event) {
-            $('#cartas_reco_preview').attr('src', event.target.result);
-        }
-        reader.readAsDataURL(this.files[0]);
-    });
-
-    // Login ventana
-    function mostrarMensaje() {
-        var flashMessage = document.getElementById('flash-message');
-        flashMessage.style.display = 'block'; // Mostrar la ventana emergente
-
-        setTimeout(function() {
-            flashMessage.style.display = 'none'; // Ocultar la ventana emergente después de 1.5 segundos
-        }, 1500); // 1500 milisegundos = 1.5 segundos
-    }
 });
+
+// Crea ventana emergente para Usuario existente
+$(".alert").fadeIn();
+
+setTimeout(function() {
+    $(".alert").fadeOut();
+}, 5000); // 5 seconds
+
+//Configuración
+///imagen
+
+
