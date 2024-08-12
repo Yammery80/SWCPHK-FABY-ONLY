@@ -9,113 +9,250 @@
     </title>
     <link rel="stylesheet" href="../static/style/style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="{{ url_for('static', filename='../static/js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <style>
+        .barra {
+            height: 150px;
+            display: flex;
+            align-items: center; /* Alinea verticalmente los elementos dentro de la barra */
+            justify-content: space-between; /* Distribuye el espacio sobrante entre los elementos */
+            background-image: url("{{ url_for('static', filename='uploads/' + config.imagen_banner) }}");
+            background-repeat: no-repeat;
+            background-size: cover;
+            padding: 2px; /* Ajusta el espaciado alrededor de los elementos según sea necesario */
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
+    <!-- Añadir la clase basada en la configuración de tipografía -->
+    <body class="{% if config.tipografia_letra == 'Arial' %}tipografia-arial{% elif config.tipografia_letra == 'Aclonica' %}tipografia-aclonica{% elif config.tipografia_letra == 'Calibri' %}tipografia-calibri{% endif %}">
+            {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <div class="flashusers">
+                    {% for categorias, menjs in messages %}
+                        <div class="log log-{{ categorias }}">{{ menjs }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% endwith %}
     {% block navbar %}
         {% include 'banner.html' %}
         {% include 'navigation.html' %}
     {% endblock %}
 
     {% block content %}
-    <div class="caja">
-    <div class="createuser">
-        <div class="usuario-title">
-            <a class="btn btn-secondary" href="{{ url_for('consultausers') }}">Consultar Usuarios</a>
-            <h2>Usuarios</h2>
+    <div class="caja-user">
+        <div class="createuser">
+            <div class="usuario-title">
+                <a class="btn btn-secondary" href="{{ url_for('consultausers') }}">Consultar Usuarios</a>
+                <h2>Usuarios</h2>
+            </div>
+            <!-- Mensajes Flash -->
+
+    
+            <form action="/usuario" method="post" enctype="multipart/form-data" class="formulario-user">
+                <div class="form-createu">
+                    <!-- Primera columna -->
+                    <div class="columna-form">
+                        <label for="foto_usuario">Imagen de Perfil:</label>
+                        <img id="foto_usuario_preview" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' + (foto_filename if foto_filename else 'Maria-Lopez.jpg')) }}" alt="Imagen de Perfil">
+                        <input id="foto_usuario" type="file" name="foto_usuario"><br>
+    
+                        <label for="id_usuario">ID Usuario:</label>
+                        <input type="text" id="id_usuario" name="id_usuario" autocomplete="new-id"><br>
+                        
+                        <label for="nomcompleto_usuario">Nombre Completo:</label>
+                        <input type="text" id="nomcompleto_usuario" name="nomcompleto_usuario" required><br>
+                        
+                        <label for="tipo_usuario">Tipo Usuario:</label>
+                        <select name="tipo_usuario" id="tipo_usuario">
+                            <option value="Administrador">Administrador</option>
+                            <option value="Trabajador">Trabajador</option>
+                        </select><br>
+                        
+                        <label for="descripcion_usuario">Descripción:</label><br>
+                        <textarea name="descripcion_usuario" id="descripcion_usuario" rows="4" cols="30" placeholder="Descripción"></textarea><br>
+                    </div>
+                    
+                    <!-- Segunda columna -->
+                    <div class="columna-form">
+                        <label for="edad_usuario">Edad:</label>
+                        <input type="number" id="edad_usuario" name="edad_usuario" required><br>
+                        
+                        <label for="domicilio_usuario">Domicilio:</label>
+                        <input type="text" id="domicilio_usuario" name="domicilio_usuario" required><br>
+                        
+                        <label for="numtel_usuario">Número telefónico:</label>
+                        <input type="number" id="numtel_usuario" name="numtel_usuario" required><br>
+                        
+                        <label for="telemer_usuario">Número emergencia:</label>
+                        <input type="number" id="telemer_usuario" name="telemer_usuario" required><br>
+                    </div>
+                    
+                    <!-- Tercera columna -->
+                    <div class="columna-form">
+                        <label for="contrasena_usuario">Contraseña:</label>
+                        <input type="password" id="contrasena_usuario" name="contrasena_usuario" autocomplete="new-password"><br>
+                        
+                        <label for="confirmarcontrasena_usuario">Confirmar Contraseña:</label>
+                        <input type="password" id="confirmarcontrasena_usuario" name="confirmarcontrasena_usuario" required><br>
+                        
+                        <label for="hora_entrada">Hora entrada:</label>
+                        <input type="time" id="hora_entrada" name="horaentrada_usuario"><br>
+                        
+                        <label for="hora_salida">Hora salida:</label>
+                        <input type="time" id="hora_salida" name="horasalida_usuario"><br>
+                    </div>
+                    
+                    <!-- Cuarta columna -->
+                    <div class="columna-form">
+                        <label for="pago_base">Pago base:</label>
+                        <input type="number" id="pago_base" name="pagobase_usuario"><br>
+                        
+                        <label for="pago_hora">Pago hora:</label>
+                        <input type="number" id="pago_hora" name="pagohora_usuario"><br>
+                        
+                        <label for="numero_medico">Número seguro médico:</label>
+                        <input type="number" id="numero_medico" name="nummedico_usuario" required><br>
+    
+                        <label for="tiposegmedico_usuario">Tipo Seguro Médico:</label>
+                        <select name="tiposegmedico_usuario" id="tiposegmedico_usuario">
+                            <option value="publico">Público</option>
+                            <option value="privado">Privado</option>
+                        </select><br>
+    
+                        <label for="cartas_reco">Cartas recomendación:</label>
+                        <img id="cartas_reco_preview" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/CartasRecomendacion/' + (cartas_filename if cartas_filename else 'default-recommendation.jpg')) }}" alt="Cartas de Recomendación">
+                        <input id="cartas_reco" type="file" name="cartasreco_usuario"><br>
+                    </div>
+                    
+                    <input class="submit-user" type="submit" value="Crear">
+                </div>
+            </form>
         </div>
-    <!-- Mensajes Flash -->
-    {% with messages = get_flashed_messages(with_categories=True) %}
-    {% if messages %}
-        <div class="flash-messages">
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
-{% endwith %}
-
-    <form action="/usuario" method="post" enctype="multipart/form-data" class="formulario-user">
-        <div class="form-createu">
-            <!-- Primera columna -->
-            <div class="columna-form">
-                <label for="foto_usuario">Imagen de Perfil:</label>
-                <img id="foto_usuario_preview" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' + (foto_filename if foto_filename else 'Maria-Lopez.jpg')) }}" alt="Imagen de Perfil">
-                <input id="foto_usuario" type="file" name="foto_usuario"><br>
-
-                <label for="id_usuario">ID Usuario:</label>
-                <input type="text" id="id_usuario" name="id_usuario" required><br>
-                
-                <label for="nomcompleto_usuario">Nombre Completo:</label>
-                <input type="text" id="nomcompleto_usuario" name="nomcompleto_usuario" required><br>
-                
-                <label for="tipo_usuario">Tipo Usuario:</label>
-                <select name="tipo_usuario" id="tipo_usuario">
-                    <option value="Administrador">Administrador</option>
-                    <option value="Trabajador">Trabajador</option>
-                </select><br>
-                
-                <label for="descripcion_usuario">Descripción:</label><br>
-                <textarea name="descripcion_usuario" id="descripcion_usuario" rows="4" cols="30" placeholder="Descripción"></textarea><br>
-            </div>
-            
-            <!-- Segunda columna -->
-            <div class="columna-form">
-                <label for="edad_usuario">Edad:</label>
-                <input type="number" id="edad_usuario" name="edad_usuario" required><br>
-                
-                <label for="domicilio_usuario">Domicilio:</label>
-                <input type="text" id="domicilio_usuario" name="domicilio_usuario" required><br>
-                
-                <label for="numtel_usuario">Número telefónico:</label>
-                <input type="number" id="numtel_usuario" name="numtel_usuario" required><br>
-                
-                <label for="telemer_usuario">Número emergencia:</label>
-                <input type="number" id="telemer_usuario" name="telemer_usuario" required><br>
-                
-            </div>
-            
-            <!-- Tercera columna -->
-            <div class="columna-form">
-                <label for="contrasena_usuario">Contraseña:</label>
-                <input type="password" id="contrasena_usuario" name="contrasena_usuario" required><br>
-                
-                <label for="confirmarcontrasena_usuario">Confirmar Contraseña:</label>
-                <input type="password" id="confirmarcontrasena_usuario" name="confirmarcontrasena_usuario" required><br>
-                
-                <label for="hora_entrada">Hora entrada:</label>
-                <input type="time" id="hora_entrada" name="horaentrada_usuario"><br>
-                
-                <label for="hora_salida">Hora salida:</label>
-                <input type="time" id="hora_salida" name="horasalida_usuario"><br>
-            </div>
-            
-            <!-- Cuarta columna -->
-            <div class="columna-form">
-                <label for="pago_base">Pago base:</label>
-                <input type="number" id="pago_base" name="pagobase_usuario"><br>
-                
-                <label for="pago_hora">Pago hora:</label>
-                <input type="number" id="pago_hora" name="pagohora_usuario"><br>
-                
-                <label for="numero_medico">Número seguro médico:</label>
-                <input type="number" id="numero_medico" name="nummedico_usuario" required><br>
-
-                <label for="tiposegmedico_usuario">Tipo Seguro Médico:</label>
-                <select name="tiposegmedico_usuario" id="tiposegmedico_usuario">
-                    <option value="publico">Público</option>
-                    <option value="privado">Privado</option>
-                </select><br>
-                <label for="cartas_reco">Cartas recomendación:</label>
-                <img id="cartas_reco_preview" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/CartasRecomendacion/' + (cartas_filename if cartas_filename else 'default-recommendation.jpeg')) }}" alt="Cartas de Recomendación">
-                <input id="cartas_reco" type="file" name="cartasreco_usuario"><br>
-
-            </div>
-            
-            <input class="submit-user" type="submit" value="Crear">
-        </div>
-    </form>
+    </div>
+    
     {% endblock %}
-{% endblock %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    var colorInterfaz = "{{ config.color_interfaz }}";
 
+    // Función para determinar si el color es oscuro
+    function isDarkColor(hex) {
+        // Convertir hex a RGB
+        var r = parseInt(hex.slice(1, 3), 16);
+        var g = parseInt(hex.slice(3, 5), 16);
+        var b = parseInt(hex.slice(5, 7), 16);
+        // Calcular la luminancia
+        var luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        return luminance < 0.5;
+    }
+
+    // Función para aplicar estilos a los elementos
+    function applyDynamicStyles() {
+        // Aplicar color de borde al contenedor
+        var caja = document.querySelector('div.caja');
+        if (caja) {
+            caja.style.border = '2px solid ' + colorInterfaz;
+        }
+
+        // Aplicar color de fondo y texto al botón de crear
+        var submitButton = document.querySelector('input.submit-user');
+        if (submitButton) {
+            if (isDarkColor(colorInterfaz)) {
+                submitButton.style.backgroundColor = colorInterfaz;
+                submitButton.style.color = 'white';
+            } else {
+                submitButton.style.backgroundColor = colorInterfaz;
+                submitButton.style.color = 'black';
+            }
+        }
+
+        // Aplicar color de fondo y texto al enlace de consultar usuarios
+        var consultLink = document.querySelector('a.btn.btn-secondary');
+        if (consultLink) {
+            if (isDarkColor(colorInterfaz)) {
+                consultLink.style.backgroundColor = colorInterfaz;
+                consultLink.style.color = 'white';
+                consultLink.style.border = '1px solid ' + colorInterfaz;
+            } else {
+                consultLink.style.backgroundColor = colorInterfaz;
+                consultLink.style.color = 'black';
+                consultLink.style.border = '1px solid ' + colorInterfaz;
+            }
+        }
+    }
+
+    // Ejecutar la función para aplicar los estilos
+    applyDynamicStyles();
+});
+
+//Imagen barra de navegación
+document.addEventListener('DOMContentLoaded', function() {
+    var bannerImageUrl = "{{ url_for('static', filename='uploads/' + config.imagen_banner) }}";
+    var logoutImageLight = "{{ url_for('static', filename='assets/logout_oscuro.png') }}";
+    var logoutImageDark = "{{ url_for('static', filename='assets/logout.png') }}";
+
+    function isDarkColor(hex) {
+        // Convertir hex a RGB
+        var r = parseInt(hex.slice(1, 3), 16);
+        var g = parseInt(hex.slice(3, 5), 16);
+        var b = parseInt(hex.slice(5, 7), 16);
+        // Calcular la luminancia
+        var luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        return luminance < 0.5;
+    }
+
+    function getAverageColor(imageUrl, callback) {
+        var img = new Image();
+        img.crossOrigin = 'Anonymous'; // Para evitar problemas de CORS
+        img.src = imageUrl;
+        img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var data = imageData.data;
+            var r = 0, g = 0, b = 0;
+            var pixelCount = data.length / 4;
+            for (var i = 0; i < data.length; i += 4) {
+                r += data[i];
+                g += data[i + 1];
+                b += data[i + 2];
+            }
+            r = Math.round(r / pixelCount);
+            g = Math.round(g / pixelCount);
+            b = Math.round(b / pixelCount);
+            var hex = '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+            callback(hex);
+        };
+    }
+
+    function applyTextColorBasedOnImage() {
+        getAverageColor(bannerImageUrl, function(hexColor) {
+            var isDark = isDarkColor(hexColor);
+            var textColor = isDark ? 'white' : 'black';
+            var logoutImageSrc = isDark ? logoutImageDark : logoutImageLight;
+            
+            document.querySelectorAll('.barra h1, .barra h2').forEach(function(element) {
+                element.style.color = textColor;
+            });
+
+            document.getElementById('logoutImage').src = logoutImageSrc;
+        });
+    }
+
+    applyTextColorBasedOnImage();
+});
+
+
+    </script>
+    </body>
+    <footer>
+        <p>@FABY 2024</p>
+        <p>El Carmen Xalpatlahuaya S/N</p>
+    </footer>
+{% endblock %}

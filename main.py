@@ -33,8 +33,8 @@ from io import BytesIO
 
 app = Flask(__name__)
 app.secret_key = 'Yamilindel2704'  # Necesario para usar flash messages
-app.config['UPLOAD_FOLDER'] = 'static/assets/Documents-SWCPHK/FotosPerfiles'  # Carpeta donde se guardarán las imágenes
-app.config['UPLOAD_FOLDER'] = 'static/assets/Documents-SWCPHK/CartasRecomendacion'  # Carpeta donde se guardarán las imágenes
+app.config['UPLOAD_FOLDER-f'] = 'static/assets/Documents-SWCPHK/FotosPerfiles'  # Carpeta donde se guardarán las imágenes
+app.config['UPLOAD_FOLDER-c'] = 'static/assets/Documents-SWCPHK/CartasRecomendacion'  # Carpeta donde se guardarán las imágenes
 app.config['UPLOAD_FOLDER'] = 'static/assets/' #Acceder a la carpeta de recursos
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'} #Permite este tipo de enxtensiones
 # Directorio donde se guardarán los archivos subidos de configuración de interfaz
@@ -54,21 +54,16 @@ def index():
     sueldo_calculado = Decimal(0)
     mensaje = None
     fecha_actual = datetime.now().strftime('%Y-%m-%d')
-
+    config = get_config()
     if request.method == 'POST':
         id_usuario = request.form.get('id_usuario', '')
         e_fechaentrada = request.form.get('e_fechaentrada', '')
         e_fechasalida = request.form.get('e_fechasalida', '')
 
-        print(f"ID Usuario: {id_usuario}")
-        print(f"Fecha Entrada: {e_fechaentrada}")
-        print(f"Fecha Salida: {e_fechasalida}")
-
         session['id_usuario'] = id_usuario
         session['e_fechaentrada'] = e_fechaentrada
         session['e_fechasalida'] = e_fechasalida
 
-        # Consultar datos primero
         datos = get_data_from_db(id_usuario, e_fechaentrada, e_fechasalida)
         
         if 'calcular_sueldo' in request.form:
@@ -78,8 +73,16 @@ def index():
                     mensaje = "No se encontró información para calcular el sueldo."
             else:
                 mensaje = "No se encontraron datos para calcular el sueldo."
-
-    return render_template('base.html', datos=datos, horas_trabajadas_total=horas_trabajadas_total, sueldo_calculado=sueldo_calculado, mensaje=mensaje, fecha_actual=fecha_actual)
+# Obtener datos de configuración
+    return render_template(
+        'base.html',
+        datos=datos,
+        horas_trabajadas_total=horas_trabajadas_total,
+        sueldo_calculado=sueldo_calculado,
+        mensaje=mensaje,
+        fecha_actual=fecha_actual,
+        config=config  # Pasar los datos de configuración a la plantilla
+    )
 
 def get_data_from_db(id_usuario, e_fechaentrada, e_fechasalida):
     try:
@@ -171,7 +174,6 @@ def guardar_pago():
             """)
             cur.execute(query, (fecha_pago, monto_total_pago, id_usuariofok))
             conn.commit()
-
         return {'success': True}  # Cambiar a dict
 
     except Exception as e:
@@ -227,7 +229,7 @@ def guardar_y_generar_pdf():
             """
             cur.execute(query, (fecha_pago, monto_total_pago, id_usuariofok))
             conn.commit()
-
+        flash('Pago guardado y PDF generado exitosamente', 'exito')
         # Crear un buffer para el PDF
         buffer = BytesIO()
         c = canvas.Canvas(buffer, pagesize=letter)
@@ -310,6 +312,8 @@ def guardar_y_generar_pdf():
 #login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    config = get_config()  # Obtener la configuración
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -359,7 +363,7 @@ def login():
 
         return redirect(url_for('login'))
 
-    return render_template('login.html')
+    return render_template('login.html', config=config)
 
 # Error de página
 
@@ -367,6 +371,9 @@ def login():
 def error404(error):
     return render_template('404.html')
 
+
+
+#Usuario
 @app.route('/usuario', methods=['GET', 'POST'])
 def usuario():
     if request.method == 'POST':
@@ -393,21 +400,21 @@ def usuario():
 
             # Validar que las contraseñas coincidan
             if contrasena_usuario != confirmarcontrasena_usuario:
-                flash("Las contraseñas no coinciden", "error")
+                flash("Las contraseñas no coinciden", "peligroso")
                 return redirect(url_for('usuario'))
 
             # Guardar la imagen de perfil
             foto_filename = None
             if foto_usuario:
                 foto_filename = foto_usuario.filename
-                foto_path = os.path.join(app.config['UPLOAD_FOLDER'], foto_filename)
+                foto_path = os.path.join(app.config['UPLOAD_FOLDER-f'], foto_filename)
                 foto_usuario.save(foto_path)
             
             # Guardar las cartas de recomendación
             cartas_filename = None
             if cartasreco_usuario:
                 cartas_filename = cartasreco_usuario.filename
-                cartas_path = os.path.join(app.config['UPLOAD_FOLDER'], cartas_filename)
+                cartas_path = os.path.join(app.config['UPLOAD_FOLDER-c'], cartas_filename)
                 cartasreco_usuario.save(cartas_path)
 
             # Conectar a la base de datos
@@ -417,7 +424,7 @@ def usuario():
             # Verificar si el ID de usuario ya existe
             cursor.execute("SELECT COUNT(*) FROM public.infopersonal WHERE id_usuario = %s;", (id_usuario,))
             if cursor.fetchone()[0] > 0:
-                flash("Usuario ya existente", "error")
+                flash("Usuario ya existente", "peligroso")
                 return redirect(url_for('usuario'))
 
             # Preparar la consulta SQL
@@ -429,15 +436,15 @@ def usuario():
             
             # Ejecutar la consulta SQL
             cursor.execute(insert_query, (
-                foto_filename, id_usuario, nomcompleto_usuario, tipo_usuario, descripcion_usuario, edad_usuario, domicilio_usuario, numtel_usuario, telemer_usuario,contrasena_usuario, confirmarcontrasena_usuario, horaentrada_usuario, horasalida_usuario, pagobase_usuario, pagohora_usuario, nummedico_usuario, tiposegmedico_usuario, cartas_filename))
+                foto_filename, id_usuario, nomcompleto_usuario, tipo_usuario, descripcion_usuario, edad_usuario, domicilio_usuario, numtel_usuario, telemer_usuario, contrasena_usuario, confirmarcontrasena_usuario, horaentrada_usuario, horasalida_usuario, pagobase_usuario, pagohora_usuario, nummedico_usuario, tiposegmedico_usuario, cartas_filename))
             conn.commit()
             
-            flash("Usuario creado con éxito", "success")
+            flash("Usuario creado con éxito", "exitoso")
             return redirect(url_for('usuario'))
 
         except Exception as e:
             print("Error:", e)
-            flash("Hubo un error al crear el usuario", "error")
+            flash("Hubo un error al crear el usuario", "peligroso")
             return redirect(url_for('usuario'))
         finally:
             if cursor:
@@ -464,78 +471,79 @@ def usuario():
             
         except Exception as e:
             print("Error:", e)
-            flash("Hubo un error al recuperar los datos del usuario", "error")
+            flash("Hubo un error al recuperar los datos del usuario", "peligroso")
         finally:
             if cursor:
                 cursor.close()
             if conn:
                 db.desconectar(conn)
-    
-    return render_template('usuarios.html', foto_filename=foto_filename, cartas_filename=cartas_filename)
 
+    # Obtener datos de configuración
+    config = get_config()
+
+    return render_template('usuarios.html', foto_filename=foto_filename, cartas_filename=cartas_filename, config=config)
 
 #Consulta de Usuarios
 @app.route('/consultausers', methods=['GET', 'POST'])
 def consultausers():
-    datos = []  # Esto es para inicializar datos como una lista vacía
+    datos = []  # Inicializar datos como una lista vacía
 
     try:
-        conn = db.conectar()  # Esto es para usar la función de conexión personalizada
+        conn = db.conectar()  # Usar la función de conexión personalizada
         cursor = conn.cursor()
 
+        # Obtener datos de configuración
+        config = get_config()
+
         if request.method == 'POST':
-            id_usuario = request.form.get('id_usuario')  # Usamos .get() para evitar KeyError
+            id_usuario = request.form.get('id_usuario')
             tipo_usuario = request.form.get('tipo_usuario')
 
-            # Esto es para construir la consulta condicionalmente
+            # Construir la consulta condicionalmente
             if id_usuario and tipo_usuario:
                 query = sql.SQL("""
                     SELECT foto_usuario, id_usuario, nomcompleto_usuario, tipo_usuario, descripcion_usuario, edad_usuario,
-               domicilio_usuario, numtel_usuario, telemer_usuario, contrasena_usuario, confirmarcontrasena_usuario,
-               horaentrada_usuario, horasalida_usuario, pagobase_usuario, pagohora_usuario, nummedico_usuario,
-               tiposegmedico_usuario, cartasreco_usuario
+                           domicilio_usuario, numtel_usuario, telemer_usuario, contrasena_usuario, confirmarcontrasena_usuario,
+                           horaentrada_usuario, horasalida_usuario, pagobase_usuario, pagohora_usuario, nummedico_usuario,
+                           tiposegmedico_usuario, cartasreco_usuario, intentos_fallidos, cuenta_bloqueada
                     FROM infopersonal WHERE id_usuario = %s AND tipo_usuario = %s
                 """)
                 params = (id_usuario, tipo_usuario)
             elif id_usuario:
                 query = sql.SQL("""
                     SELECT foto_usuario, id_usuario, nomcompleto_usuario, tipo_usuario, descripcion_usuario, edad_usuario,
-               domicilio_usuario, numtel_usuario, telemer_usuario, contrasena_usuario, confirmarcontrasena_usuario,
-               horaentrada_usuario, horasalida_usuario, pagobase_usuario, pagohora_usuario, nummedico_usuario,
-               tiposegmedico_usuario, cartasreco_usuario
+                           domicilio_usuario, numtel_usuario, telemer_usuario, contrasena_usuario, confirmarcontrasena_usuario,
+                           horaentrada_usuario, horasalida_usuario, pagobase_usuario, pagohora_usuario, nummedico_usuario,
+                           tiposegmedico_usuario, cartasreco_usuario, intentos_fallidos, cuenta_bloqueada
                     FROM infopersonal WHERE id_usuario = %s
                 """)
                 params = (id_usuario,)
             elif tipo_usuario:
                 query = sql.SQL("""
                     SELECT foto_usuario, id_usuario, nomcompleto_usuario, tipo_usuario, descripcion_usuario, edad_usuario,
-               domicilio_usuario, numtel_usuario, telemer_usuario, contrasena_usuario, confirmarcontrasena_usuario,
-               horaentrada_usuario, horasalida_usuario, pagobase_usuario, pagohora_usuario, nummedico_usuario,
-               tiposegmedico_usuario, cartasreco_usuario
+                           domicilio_usuario, numtel_usuario, telemer_usuario, contrasena_usuario, confirmarcontrasena_usuario,
+                           horaentrada_usuario, horasalida_usuario, pagobase_usuario, pagohora_usuario, nummedico_usuario,
+                           tiposegmedico_usuario, cartasreco_usuario, intentos_fallidos, cuenta_bloqueada
                     FROM infopersonal WHERE tipo_usuario = %s
                 """)
                 params = (tipo_usuario,)
             else:
                 query = sql.SQL("""
                     SELECT foto_usuario, id_usuario, nomcompleto_usuario, tipo_usuario, descripcion_usuario, edad_usuario,
-               domicilio_usuario, numtel_usuario, telemer_usuario, contrasena_usuario, confirmarcontrasena_usuario,
-               horaentrada_usuario, horasalida_usuario, pagobase_usuario, pagohora_usuario, nummedico_usuario,
-               tiposegmedico_usuario, cartasreco_usuario
+                           domicilio_usuario, numtel_usuario, telemer_usuario, contrasena_usuario, confirmarcontrasena_usuario,
+                           horaentrada_usuario, horasalida_usuario, pagobase_usuario, pagohora_usuario, nummedico_usuario,
+                           tiposegmedico_usuario, cartasreco_usuario, intentos_fallidos, cuenta_bloqueada
                     FROM infopersonal
                 """)
                 params = ()
-
             cursor.execute(query, params)
             datos = cursor.fetchall()
             cursor.close()
-            db.desconectar(conn)  # Esto es para usar la función de desconexión personalizada
-
+            db.desconectar(conn)  # Usar la función de desconexión personalizada
     except Exception as e:
-        # Esto es para mostrar un mensaje de error en caso de excepción
         return f"Hubo un error en la solicitud: {e}", 500
 
-    # Esto es para renderizar la plantilla con los resultados
-    return render_template('consultar_usuario.html', datos=datos)
+    return render_template('consultar_usuario.html', datos=datos, config=config)
 
 
 @app.route('/delete_usuario/<string:id_usuario>', methods=['POST'])
@@ -554,11 +562,15 @@ def update1_usuario(id_usuario):
     conn = db.conectar()
     cursor = conn.cursor()
     try:
+        # Obtener datos de configuración
+        config = get_config()
+
+        # Obtener datos del usuario
         cursor.execute('''
             SELECT foto_usuario, id_usuario, nomcompleto_usuario, tipo_usuario, descripcion_usuario, edad_usuario,
                    domicilio_usuario, numtel_usuario, telemer_usuario, contrasena_usuario, confirmarcontrasena_usuario,
                    horaentrada_usuario, horasalida_usuario, pagobase_usuario, pagohora_usuario, nummedico_usuario,
-                   tiposegmedico_usuario, cartasreco_usuario
+                   tiposegmedico_usuario, cartasreco_usuario, intentos_fallidos, cuenta_bloqueada
             FROM infopersonal
             WHERE id_usuario=%s
         ''', (id_usuario,))
@@ -585,7 +597,8 @@ def update1_usuario(id_usuario):
         cursor.close()
         db.desconectar(conn)
     
-    return render_template('editar-usuario.html', datos=datos, horaentrada=horaentrada, horasalida=horasalida)
+    return render_template('editar-usuario.html', datos=datos, horaentrada=horaentrada, horasalida=horasalida, config=config)
+
 
 @app.route('/update2_usuario/<string:id_usuario>', methods=['GET', 'POST'])
 def update2_usuario(id_usuario):
@@ -595,8 +608,8 @@ def update2_usuario(id_usuario):
         cartasreco_usuario = request.files.get('cartasreco_usuario')
 
         # Rutas para guardar los archivos
-        cartasreco_folder = 'C:\\SWCPHK-OFFICIAL\\static\\assets\\Documents-SWCPHK\\CartasRecomendacion'
-        foto_folder = 'C:\\SWCPHK-OFFICIAL\\static\\assets\\Documents-SWCPHK\\FotosPerfiles'
+        cartasreco_folder = 'assets\\Documents-SWCPHK\\CartasRecomendacion'
+        foto_folder = 'assets\\Documents-SWCPHK\\FotosPerfiles'
         os.makedirs(cartasreco_folder, exist_ok=True)
         os.makedirs(foto_folder, exist_ok=True)
 
@@ -630,6 +643,8 @@ def update2_usuario(id_usuario):
         pagohora_usuario = request.form.get('pagohora_usuario')
         nummedico_usuario = request.form.get('nummedico_usuario')
         tiposegmedico_usuario = request.form.get('tiposegmedico_usuario')
+        intentos_fallidos = request.form.get('intentos_fallidos')
+        cuenta_bloqueada = request.form.get('cuenta_bloqueada')
 
         conn = None
         cursor = None
@@ -656,7 +671,9 @@ def update2_usuario(id_usuario):
                     confirmarcontrasena_usuario = %s,
                     cartasreco_usuario = %s,
                     foto_usuario = %s,
-                    domicilio_usuario = %s
+                    domicilio_usuario = %s,
+                    intentos_fallidos = %s,
+                    cuenta_bloqueada = %s
                 WHERE id_usuario = %s;
             '''
 
@@ -679,24 +696,28 @@ def update2_usuario(id_usuario):
                 cartasreco_path,
                 foto_path,
                 domicilio_usuario,
-                id_usuario
+                intentos_fallidos,
+                cuenta_bloqueada,
+                id_usuario  # Asegúrate de poner id_usuario al final
             )
 
             cursor.execute(update_query, params)
             conn.commit()
-            flash("Datos actualizados correctamente", "success")
+            flash("Datos actualizados correctamente", "exitouser")
             return redirect(url_for('consultausers'))
         except Exception as e:
             if conn:
                 conn.rollback()
-            flash(f"Error al actualizar los datos: {e}", "error")
+            flash(f"Error al actualizar los datos: {e}", "erroruser")
         finally:
             if cursor:
                 cursor.close()
             if conn:
                 db.desconectar(conn)
+    # Obtener datos de configuración
+    config = get_config()
+    return render_template('consultar_usuario.html', id_usuario=id_usuario, config=config)
 
-    return render_template('consultar_usuario.html', id_usuario=id_usuario)
 
 @app.route('/sueldospagado', methods=['GET', 'POST'])
 def spagado():
@@ -743,20 +764,31 @@ def spagado():
         # Mostrar un mensaje de error detallado en caso de excepción
         return f"Hubo un error en la solicitud: {e}", 500
 
-    # Renderizar la plantilla con los resultados
-    pass
-    return render_template('sueldospagados.html', datos=datos)
+    # Obtener datos de configuración
+    config = get_config()
+
+    # Renderizar la plantilla con los resultados y la configuración
+    return render_template('sueldospagados.html', datos=datos, config=config)
+
 
 @app.route('/update1_spagado/<int:id_pago>', methods=['GET', 'POST'])
 def update1_spagado(id_pago):
     conn = db.conectar()  # Esto es para usar la función de conexión personalizada
     cursor = conn.cursor()
-    # Esto es para recuperar el registro del id_usuario seleccionado
-    cursor.execute('''SELECT * FROM sueldos_pagados WHERE id_pago=%s''', (id_pago,))
-    datos = cursor.fetchall()
-    cursor.close()
-    db.desconectar(conn)  # Esto es para usar la función de desconexión personalizada
-    return render_template('editar_spagado.html', datos=datos)
+    
+    try:
+        # Recuperar el registro del id_pago seleccionado
+        cursor.execute('''SELECT * FROM sueldos_pagados WHERE id_pago=%s''', (id_pago,))
+        datos = cursor.fetchall()
+    finally:
+        cursor.close()
+        db.desconectar(conn)  # Esto es para usar la función de desconexión personalizada
+
+    # Obtener datos de configuración
+    config = get_config()
+
+    return render_template('editar_spagado.html', datos=datos, config=config)
+
 
 @app.route('/update2_spagado/<int:id_pago>', methods=['POST'])
 def update2_spagado(id_pago):
@@ -782,33 +814,7 @@ def delete_spagado(id_pago):
     db.desconectar(conn)  # Usa la función de desconexión personalizada
     
     return redirect(url_for('spagado'))
-#Datos precargados de configuración
-def get_config():
-    conn = db.conectar()
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT logo_sistem, nombre_establecimiento, tipo_servicio, domicilio, numero_telefonico,
-               tipografia_letra, tamano_empresa, imagen_banner, color_interfaz, politicas
-        FROM public.configuracion
-        WHERE id_config = 1;
-    """)
-    row = cursor.fetchone()
-    cursor.close()
-    db.desconectar(conn)
-    if row:
-        return {
-            'logo_sistem': row[0],
-            'nombre_establecimiento': row[1],
-            'tipo_servicio': row[2],
-            'domicilio': row[3],
-            'numero_telefonico': row[4],
-            'tipografia_letra': row[5],
-            'tamano_empresa': row[6],
-            'imagen_banner': row[7],
-            'color_interfaz': row[8],
-            'politicas': row[9]
-        }
-    return {}
+
 
 #Configuracion
 @app.route('/configuracion', methods=['GET', 'POST'])
@@ -826,69 +832,94 @@ def configuracion():
         color_interfaz = request.form.get('color-interfaz')
         politicas = request.files.get('politicas')
 
-        # Verificar y guardar el logo
-        if logo:
-            # Asegúrate de que el directorio de carga existe
-            if not os.path.exists(app.config['UPLOAD_FOLDER']):
-                os.makedirs(app.config['UPLOAD_FOLDER'])
-            
-            # Guardar el archivo en la carpeta uploads
-            logo_filename = secure_filename(logo.filename)
-            logo_path = os.path.join(app.config['UPLOAD_FOLDER'], logo_filename)
-            logo.save(logo_path)
-        else:
-            logo_filename = None
-        
-        # Verificar y guardar el banner
-        if imagen_banner and allowed_file(imagen_banner.filename):
-            imagen_banner_filename = secure_filename(imagen_banner.filename)
-            imagen_banner_path = os.path.join(app.config['UPLOAD_FOLDER'], imagen_banner_filename)
-            imagen_banner.save(imagen_banner_path)
-        else:
-            imagen_banner_filename = None
+        try:
+            # Verificar y guardar el logo
+            if logo and allowed_file(logo.filename):
+                if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                    os.makedirs(app.config['UPLOAD_FOLDER'])
+                logo_filename = secure_filename(logo.filename)
+                logo_path = os.path.join(app.config['UPLOAD_FOLDER'], logo_filename)
+                logo.save(logo_path)
+            else:
+                logo_filename = None
 
-        # Verificar y guardar las políticas
-        if politicas and allowed_file(politicas.filename):
-            politicas_filename = secure_filename(politicas.filename)
-            politicas_path = os.path.join(app.config['UPLOAD_FOLDER'], politicas_filename)
-            politicas.save(politicas_path)
-        else:
-            politicas_filename = None
+            # Verificar y guardar el banner
+            if imagen_banner and allowed_file(imagen_banner.filename):
+                imagen_banner_filename = secure_filename(imagen_banner.filename)
+                imagen_banner_path = os.path.join(app.config['UPLOAD_FOLDER'], imagen_banner_filename)
+                imagen_banner.save(imagen_banner_path)
+            else:
+                imagen_banner_filename = None
 
-        # Conectar a la base de datos y actualizar la configuración
-        conn = db.conectar()
-        cursor = conn.cursor()
-        
-        cursor.execute("""
-            INSERT INTO public.configuracion (id_config, logo_sistem, nombre_establecimiento, tipo_servicio,
-                                              domicilio, numero_telefonico, tipografia_letra, tamano_empresa,
-                                              imagen_banner, color_interfaz, politicas)
-            VALUES (1, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            ON CONFLICT (id_config)
-            DO UPDATE SET logo_sistem = EXCLUDED.logo_sistem,
-                          nombre_establecimiento = EXCLUDED.nombre_establecimiento,
-                          tipo_servicio = EXCLUDED.tipo_servicio,
-                          domicilio = EXCLUDED.domicilio,
-                          numero_telefonico = EXCLUDED.numero_telefonico,
-                          tipografia_letra = EXCLUDED.tipografia_letra,
-                          tamano_empresa = EXCLUDED.tamano_empresa,
-                          imagen_banner = EXCLUDED.imagen_banner,
-                          color_interfaz = EXCLUDED.color_interfaz,
-                          politicas = EXCLUDED.politicas;
-        """, (logo_filename, nombre_local, tipo_servicio, domicilio, num_tel_local,
-              tipografia_sistema, tamaño_local, imagen_banner_filename,
-              color_interfaz, politicas_filename))
-        
-        conn.commit()
-        cursor.close()
-        db.desconectar(conn)
+            # Verificar y guardar las políticas
+            if politicas and allowed_file(politicas.filename):
+                politicas_filename = secure_filename(politicas.filename)
+                politicas_path = os.path.join(app.config['UPLOAD_FOLDER'], politicas_filename)
+                politicas.save(politicas_path)
+            else:
+                politicas_filename = None
 
-        return redirect(url_for('configuracion'))
+            # Conectar a la base de datos y actualizar la configuración
+            conn = db.conectar()
+            cursor = conn.cursor()
 
+            cursor.execute("""
+                INSERT INTO public.configuracion (id_config, logo_sistem, nombre_establecimiento, tipo_servicio,
+                                                  domicilio, numero_telefonico, tipografia_letra, tamano_empresa,
+                                                  imagen_banner, color_interfaz, politicas)
+                VALUES (1, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (id_config)
+                DO UPDATE SET logo_sistem = EXCLUDED.logo_sistem,
+                              nombre_establecimiento = EXCLUDED.nombre_establecimiento,
+                              tipo_servicio = EXCLUDED.tipo_servicio,
+                              domicilio = EXCLUDED.domicilio,
+                              numero_telefonico = EXCLUDED.numero_telefonico,
+                              tipografia_letra = EXCLUDED.tipografia_letra,
+                              tamano_empresa = EXCLUDED.tamano_empresa,
+                              imagen_banner = EXCLUDED.imagen_banner,
+                              color_interfaz = EXCLUDED.color_interfaz,
+                              politicas = EXCLUDED.politicas;
+            """, (logo_filename, nombre_local, tipo_servicio, domicilio, num_tel_local,
+                  tipografia_sistema, tamaño_local, imagen_banner_filename,
+                  color_interfaz, politicas_filename))
+
+            conn.commit()
+            cursor.close()
+            db.desconectar(conn)
+
+            flash('Éxito al actualizar.', 'exito')
+            return redirect(url_for('configuracion'))
+        except Exception as e:
+            # Manejar cualquier excepción y mostrar el mensaje de error
+            flash(f'Error al actualizar configuración: {str(e)}', 'error')
+            return redirect(url_for('configuracion'))
+    
     # Obtener configuración actual
     config = get_config()
     return render_template('configuracion.html', config=config)
 
+def get_config():
+    conn = db.conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM public.configuracion WHERE id_config = 1;")
+    result = cursor.fetchone()
+    cursor.close()
+    db.desconectar(conn)
+
+    if result:
+        return {
+            'logo_sistem': result[1],
+            'nombre_establecimiento': result[2],
+            'tipo_servicio': result[3],
+            'domicilio': result[4],
+            'numero_telefonico': result[5],
+            'tipografia_letra': result[6],
+            'tamano_empresa': result[7],
+            'imagen_banner': result[8],
+            'color_interfaz': result[9],
+            'politicas': result[10]
+        }
+    return {}
 
 #Vinculos de trabajador
 @app.route('/trabajadorinicio')
@@ -912,7 +943,10 @@ def trinicio():
         nomcompleto_usuario = "Desconocido"
         foto_usuario = None
 
-    return render_template('tr-base.html', nomcompleto_usuario=nomcompleto_usuario, foto_usuario=foto_usuario)
+    # Obtener configuración actual
+    config = get_config()
+
+    return render_template('tr-base.html', nomcompleto_usuario=nomcompleto_usuario, foto_usuario=foto_usuario, config=config)
 
 @app.route('/guardar_hora', methods=['POST'])
 def guardar_hora():
@@ -969,7 +1003,6 @@ def guardar_hora():
         print(f"Error en la función guardar_hora: {e}")
         return jsonify({'success': False, 'error': 'Error en la función guardar_hora'}), 500
 
-
 @app.route('/trabajadoreys', methods=['GET', 'POST'])
 def treys():
     datos = []  # Inicializar datos
@@ -982,41 +1015,45 @@ def treys():
         return redirect(url_for('login'))
     
     # Consulta la información del usuario desde la base de datos
-    with db.conectar() as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT nomcompleto_usuario, foto_usuario FROM infopersonal WHERE id_usuario = %s", (user_id,))
-        user_info = cursor.fetchone()
-        cursor.close()
+    try:
+        with db.conectar() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT nomcompleto_usuario, foto_usuario FROM infopersonal WHERE id_usuario = %s", (user_id,))
+                user_info = cursor.fetchone()
     
-    if user_info:
-        nomcompleto_usuario, foto_usuario = user_info
-        # Extraer solo el nombre del archivo
-        if foto_usuario:
-            foto_usuario = foto_usuario.split('\\')[-1]  # Usar '\\' para Windows
-    
+        if user_info:
+            nomcompleto_usuario, foto_usuario = user_info
+            # Extraer solo el nombre del archivo
+            if foto_usuario:
+                foto_usuario = foto_usuario.split('\\')[-1]  # Usar '\\' para Windows
+    except Exception as e:
+        # Manejo de errores, puedes registrar el error si lo deseas
+        print(f"Error al obtener información del usuario: {e}")
+
     if request.method == 'POST':
         fecha_inicio = request.form['fecha_inicio']
         fecha_final = request.form['fecha_final']
         
-        conn = db.conectar()
-        cursor = conn.cursor()
-        
-        # Consulta para obtener datos de entradas y salidas
-        query = sql.SQL("""
+        try:
+            with db.conectar() as conn:
+                with conn.cursor() as cursor:
+                    # Consulta para obtener datos de entradas y salidas
+                    query = """
                         SELECT fecha, hora_entrada, hora_salida
                         FROM turnos
                         WHERE id_usuariofk = %s AND fecha BETWEEN %s AND %s
-                    """)
-        params = (user_id, fecha_inicio, fecha_final)
-        cursor.execute(query, params)
-        datos = cursor.fetchall()
-        
-        cursor.close()
-        db.desconectar(conn)
+                    """
+                    params = (user_id, fecha_inicio, fecha_final)
+                    cursor.execute(query, params)
+                    datos = cursor.fetchall()
+        except Exception as e:
+            # Manejo de errores, puedes registrar el error si lo deseas
+            print(f"Error al consultar entradas y salidas: {e}")
     
-    return render_template('tr-entradas-salidas.html', datos=datos, nomcompleto_usuario=nomcompleto_usuario, foto_usuario=foto_usuario)
+    # Obtener configuración actual
+    config = get_config()
 
-
+    return render_template('tr-entradas-salidas.html', datos=datos, nomcompleto_usuario=nomcompleto_usuario, foto_usuario=foto_usuario, config=config)
 @app.route('/logout', methods=['POST'])
 def logout():
     session.pop('user_id', None)

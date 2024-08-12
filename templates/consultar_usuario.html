@@ -10,120 +10,277 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='../static/js/script.js') }}"></script>
+    <style>
+        .barra {
+            height: 150px;
+            display: flex;
+            align-items: center; /* Alinea verticalmente los elementos dentro de la barra */
+            justify-content: space-between; /* Distribuye el espacio sobrante entre los elementos */
+            background-image: url("{{ url_for('static', filename='uploads/' + config.imagen_banner) }}");
+            background-repeat: no-repeat;
+            background-size: cover;
+            padding: 2px; /* Ajusta el espaciado alrededor de los elementos según sea necesario */
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
-    {% block navbar %}
-        {% include 'banner.html' %}
-        {% include 'navigation.html' %}
-    {% endblock %}
+    <body class="{% if config.tipografia_letra == 'Arial' %}tipografia-arial{% elif config.tipografia_letra == 'Aclonica' %}tipografia-aclonica{% elif config.tipografia_letra == 'Calibri' %}tipografia-calibri{% endif %}">
+        {% block navbar %}
+            {% include 'banner.html' %}
+            {% include 'navigation.html' %}
+        {% endblock %}
 
-    {% block content %}
-    <!-- Mensajes Flash -->
-    {% with messages = get_flashed_messages(with_categories=True) %}
-    {% if messages %}
-        <div class="flash-messages">
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
-{% endwith %}
+        {% block content %}
+        <!-- Mensajes Flash -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
 
-    <div class="caja">
-        <div class="createuser">
-            <div class="usuario-title">
-                <a class="btn btn-secondary" href="{{ url_for('usuario') }}">Regresar</a>
-                <h2>Consultar Usuarios</h2>
-            </div>
-        <form action="/consultausers" method="post">
-            <div class="camposconsulta">
-                <div class="campo">
-                    <label for="id_usuario">ID Usuario:</label>
-                <input type="text" id="id_usuario" name="id_usuario" placeholder="falo19htr24">
+        <div class="caja">
+            <div class="createuser">
+                <div class="usuario-title">
+                    <a class="btn btn-secondary" href="{{ url_for('usuario') }}">Regresar</a>
+                    <h2>Consultar Usuarios</h2>
                 </div>
-                <div class="campo">
-                    <label for="tipo_usuario">Tipo Usuario:</label>
-                <select name="tipo_usuario" id="tipo_usuario">
-                    <option value="Administrador">Administrador</option>
-                    <option value="Trabajador">Trabajador</option>
-                </select>
+            <form action="/consultausers" method="post">
+                <div class="camposconsulta">
+                    <div class="campo">
+                        <label for="id_usuario">ID Usuario:</label>
+                    <input type="text" id="id_usuario" name="id_usuario" placeholder="falo19htr24">
+                    </div>
+                    <div class="campo">
+                        <label for="tipo_usuario">Tipo Usuario:</label>
+                    <select name="tipo_usuario" id="tipo_usuario">
+                        <option value="Administrador">Administrador</option>
+                        <option value="Trabajador">Trabajador</option>
+                    </select>
+                    </div>
                 </div>
+                <div class="submit-container">
+                    <input type="submit" value="Consultar">
+                </div>
+            </form>
+            <div class="caja-content">
+                <table class="table table-success table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Foto</th>
+                            <th scope="col">ID Usuario</th>
+                            <th scope="col">Nombre Completo</th>
+                            <th scope="col">Tipo Usuario</th>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Edad</th>
+                            <th scope="col">Domicilio</th>
+                            <th scope="col">Número Telefónico</th>
+                            <th scope="col">Teléfono Emergencia</th>
+                            <th scope="col" class="contrasena-cont">Contraseña</th>
+                            <th scope="col" >Confirmar Contraseña</th>
+                            <th scope="col">Hora Entrada</th>
+                            <th scope="col">Hora Salida</th>
+                            <th scope="col">Pago Base</th>
+                            <th scope="col">Pago Hora</th>
+                            <th scope="col">Número Médico</th>
+                            <th scope="col">Tipo Seguro Médico</th>
+                            <th scope="col">Cartas Recomendación</th>
+                            <th scope="col">Intentos de inicio de sesion</th>
+                            <th scope="col">¿Cuenta bloqueda?</th>
+                            <th scope="col">Editar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cuser in datos %}
+                        <tr>
+                            <!-- Mostrar Foto del Usuario -->
+                            <td>
+                                {% if cuser[0] %}
+                                    <img src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' ~ cuser[0]) }}" alt="Foto" width="50">
+                                {% else %}
+                                    No Disponible
+                                {% endif %}
+                            </td>
+                            <!-- Mostrar ID Usuario -->
+                            <td>{{ cuser[1] }}</td>
+                            <!-- Mostrar Nombre Completo -->
+                            <td>{{ cuser[2] }}</td>
+                            <!-- Mostrar Tipo Usuario -->
+                            <td>{{ cuser[3] }}</td>
+                            <!-- Mostrar Descripción -->
+                            <td>{{ cuser[4] }}</td>
+                            <!-- Mostrar Edad -->
+                            <td>{{ cuser[5] }}</td>
+                            <!-- Mostrar Domicilio -->
+                            <td>{{ cuser[6] }}</td>
+                            <!-- Mostrar Número Telefónico -->
+                            <td>{{ cuser[7] }}</td>
+                            <!-- Mostrar Teléfono Emergencia -->
+                            <td>{{ cuser[8] }}</td>
+                            <!-- Mostrar Contraseña -->
+                            <td>{{ cuser[9] }}</td>
+                            <!-- Mostrar Confirmar Contraseña -->
+                            <td>{{ cuser[10] }}</td>
+                            <!-- Mostrar Hora Entrada -->
+                            <td>{{ cuser[11] }}</td>
+                            <!-- Mostrar Hora Salida -->
+                            <td>{{ cuser[12] }}</td>
+                            <!-- Mostrar Pago Base -->
+                            <td>{{ cuser[13] }}</td>
+                            <!-- Mostrar Pago Hora -->
+                            <td>{{ cuser[14] }}</td>
+                            <!-- Mostrar Número Médico -->
+                            <td>{{ cuser[15] }}</td>
+                            <!-- Mostrar Tipo Seguro Médico -->
+                            <td>{{ cuser[16] }}</td>
+                            <!-- Mostrar Cartas Recomendación -->
+                            <td>
+                                {% if cuser[17] %}
+                                    <img src="{{ url_for('static', filename='static/assets/Documents-SWCPHK/FotosPerfiles/' ~ cuser[17]) }}" alt="Cartas de Recomendación" width="50">
+                                {% else %}
+                                    No Disponible
+                                {% endif %}
+                            </td>
+                            <!-- Mostrar Intentos Fallidos -->
+                            <td>{{ cuser[18] }}</td>
+                            <!-- Mostrar Cuenta Bloqueada -->
+                            <td>{{ cuser[19] }}</td>
+                            </td>
+                            <td>
+                                <form action="{{ url_for('update1_usuario', id_usuario=cuser[1]) }}" method="POST">
+                                    <button type="submit" class="btn btn-primary">Editar</button>
+                                </form><br>
+                                <form action="{{ url_for('delete_usuario', id_usuario=cuser[1]) }}" method="POST">
+                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="20">No se encontraron Usuarios.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-            <div class="submit-container">
-                <input type="submit" value="Consultar">
-            </div>
-        </form>
-        <div class="caja-content">
-            <table class="table table-success table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">Foto</th>
-                        <th scope="col">ID Usuario</th>
-                        <th scope="col">Nombre Completo</th>
-                        <th scope="col">Tipo Usuario</th>
-                        <th scope="col">Descripción</th>
-                        <th scope="col">Edad</th>
-                        <th scope="col">Domicilio</th>
-                        <th scope="col">Número Telefónico</th>
-                        <th scope="col">Teléfono Emergencia</th>
-                        <th scope="col" class="contrasena-cont">Contraseña</th>
-                        <th scope="col" >Confirmar Contraseña</th>
-                        <th scope="col">Hora Entrada</th>
-                        <th scope="col">Hora Salida</th>
-                        <th scope="col">Pago Base</th>
-                        <th scope="col">Pago Hora</th>
-                        <th scope="col">Número Médico</th>
-                        <th scope="col">Tipo Seguro Médico</th>
-                        <th scope="col">Cartas Recomendación</th>
-                        <th scope="col">Editar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for cuser in datos %}
-                    <tr>
-                        <td>{{ cuser[0] }}</td>
-                        <td>{{ cuser[1] }}</td>
-                        <td>{{ cuser[2] }}</td>
-                        <td>{{ cuser[3] }}</td>
-                        <td>{{ cuser[4] }}</td>
-                        <td>{{ cuser[5] }}</td>
-                        <td>{{ cuser[6] }}</td>
-                        <td>{{ cuser[7] }}</td>
-                        <td>{{ cuser[8] }}</td>
-                        <td>{{ cuser[9] }}</td>
-                        <td>{{ cuser[10] }}</td>
-                        <td>{{ cuser[11] }}</td>
-                        <td>{{ cuser[12] }}</td>
-                        <td>{{ cuser[13] }}</td>
-                        <td>{{ cuser[14] }}</td>
-                        <td>{{ cuser[15] }}</td>
-                        <td>{{ cuser[16] }}</td>
-                        <td>
-                            {% if cuser[17] %}
-                                <img src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' ~ cuser[17]) }}" alt="Foto" width="50">
-                            {% else %}
-                                No Disponible
-                            {% endif %}
-                        </td>
-                        <td>
-                            <form action="{{ url_for('update1_usuario', id_usuario=cuser[1]) }}" method="POST">
-                                <button type="submit" class="btn btn-primary">Editar</button>
-                            </form><br>
-                            <form action="{{ url_for('delete_usuario', id_usuario=cuser[1]) }}" method="POST">
-                                <button type="submit" class="btn btn-danger">Eliminar</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="18">No se encontraron Usuarios.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
         </div>
-    </div>
-    </div>
-    {% endblock %}
+        </div>
+        {% endblock %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+    var colorInterfaz = "{{ config.color_interfaz }}";
+
+    // Función para determinar si el color es oscuro
+    function isDarkColor(hex) {
+        var r = parseInt(hex.slice(1, 3), 16);
+        var g = parseInt(hex.slice(3, 5), 16);
+        var b = parseInt(hex.slice(5, 7), 16);
+        var luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        return luminance < 0.5;
+    }
+
+    // Función para aplicar estilos a los elementos
+    function applyDynamicStyles() {
+        // Aplicar color al borde de .caja
+        var caja = document.querySelector('.caja');
+        if (caja) {
+            caja.style.borderColor = colorInterfaz;
+        }
+
+        // Aplicar color de fondo y texto a los botones
+        var buttons = document.querySelectorAll('input[type="submit"], a.btn');
+        buttons.forEach(function(button) {
+            if (isDarkColor(colorInterfaz)) {
+                button.style.backgroundColor = colorInterfaz;
+                button.style.color = 'white';
+            } else {
+                button.style.backgroundColor = colorInterfaz;
+                button.style.color = 'black';
+            }
+        });
+
+        // Aplicar color al borde de las etiquetas
+        var labels = document.querySelectorAll('.campo label');
+        labels.forEach(function(label) {
+            if (label) {
+                label.style.borderColor = colorInterfaz;
+            }
+        });
+    }
+
+    // Ejecutar la función para aplicar los estilos
+    applyDynamicStyles();
+});
+
+//Imagen barra de navegación
+document.addEventListener('DOMContentLoaded', function() {
+    var bannerImageUrl = "{{ url_for('static', filename='uploads/' + config.imagen_banner) }}";
+    var logoutImageLight = "{{ url_for('static', filename='assets/logout_oscuro.png') }}";
+    var logoutImageDark = "{{ url_for('static', filename='assets/logout.png') }}";
+
+    function isDarkColor(hex) {
+        // Convertir hex a RGB
+        var r = parseInt(hex.slice(1, 3), 16);
+        var g = parseInt(hex.slice(3, 5), 16);
+        var b = parseInt(hex.slice(5, 7), 16);
+        // Calcular la luminancia
+        var luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        return luminance < 0.5;
+    }
+
+    function getAverageColor(imageUrl, callback) {
+        var img = new Image();
+        img.crossOrigin = 'Anonymous'; // Para evitar problemas de CORS
+        img.src = imageUrl;
+        img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var data = imageData.data;
+            var r = 0, g = 0, b = 0;
+            var pixelCount = data.length / 4;
+            for (var i = 0; i < data.length; i += 4) {
+                r += data[i];
+                g += data[i + 1];
+                b += data[i + 2];
+            }
+            r = Math.round(r / pixelCount);
+            g = Math.round(g / pixelCount);
+            b = Math.round(b / pixelCount);
+            var hex = '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+            callback(hex);
+        };
+    }
+
+    function applyTextColorBasedOnImage() {
+        getAverageColor(bannerImageUrl, function(hexColor) {
+            var isDark = isDarkColor(hexColor);
+            var textColor = isDark ? 'white' : 'black';
+            var logoutImageSrc = isDark ? logoutImageDark : logoutImageLight;
+            
+            document.querySelectorAll('.barra h1, .barra h2').forEach(function(element) {
+                element.style.color = textColor;
+            });
+
+            document.getElementById('logoutImage').src = logoutImageSrc;
+        });
+    }
+
+    applyTextColorBasedOnImage();
+});
+
+
+        </script>
+</body>
+<footer>
+    <p>@FABY 2024</p>
+    <p>El Carmen Xalpatlahuaya S/N</p>
+</footer>
 {% endblock %}

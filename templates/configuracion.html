@@ -9,85 +9,209 @@
     </title>
     <link rel="stylesheet" href="../static/style/style.css">
     <script src="../static/js/script.js" defer></script>
+    <style>
+        .barra {
+            height: 150px;
+            display: flex;
+            align-items: center; /* Alinea verticalmente los elementos dentro de la barra */
+            justify-content: space-between; /* Distribuye el espacio sobrante entre los elementos */
+            background-image: url("{{ url_for('static', filename='uploads/' + config.imagen_banner) }}");
+            background-repeat: no-repeat;
+            background-size: cover;
+            padding: 2px; /* Ajusta el espaciado alrededor de los elementos según sea necesario */
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
-    {% block navbar %}
-        {% include 'banner.html' %}
-        {% include 'navigation.html' %}
-    {% endblock %}
-
-    {% block content %}
-    <div class="caja">
-        <div class="createuser">
-            <div class="usuario-title">
-                <h2>Configuración</h2>
+    <body class="{% if config.tipografia_letra == 'Arial' %}tipografia-arial{% elif config.tipografia_letra == 'Aclonica' %}tipografia-aclonica{% elif config.tipografia_letra == 'Calibri' %}tipografia-calibri{% endif %}" data-user-id="{{ session['user_id'] or 'No ID' }}">
+        {% with mensajes = get_flashed_messages(with_categories=True) %}
+        {% if mensajes %}
+            <div class="flashconfig">
+                {% for categoria, mjs in mensajes %}
+                    <div class="cont cont-{{ categoria }}">{{ mjs }}</div>
+                {% endfor %}
             </div>
-            <form action="{{ url_for('configuracion') }}" method="post" enctype="multipart/form-data" class="formulario-user">
-                <div class="form-createu">
-                    <div class="columna-form">
-                        <label for="logo">Logo:</label>
-                        <input id="logo" type="file" name="logo" onchange="previewImage(event)">
-                        {% if config.logo_sistem %}
-                            <img id="logo-preview" class="imagen" src="{{ url_for('static', filename='uploads/' + config.logo_sistem) }}" alt="logo-establecimiento">
-                        {% else %}
-                            <img id="logo-preview" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/Imágenes-interfaz/logo-banner.jpg') }}" alt="logo-establecimiento">
-                        {% endif %}
-                        <label for="nom-local">Nombre del establecimiento:</label>
-                        <input type="text" id="nom-local" name="nom-local" value="{{ config.nombre_establecimiento }}" required><br>
-                        <label for="tipo-servicio">Tipo Servicio:</label>
-                        <select name="tipo-servicio" id="tipo-servicio">
-                            <option value="">----</option>
-                            <option value="Ciber-Papeleria" {% if config.tipo_servicio == 'Ciber-Papeleria' %}selected{% endif %}>Ciber-Papeleria</option>
-                            <option value="Abarrotes" {% if config.tipo_servicio == 'Abarrotes' %}selected{% endif %}>Abarrotes</option>
-                            <option value="Ropa" {% if config.tipo_servicio == 'Ropa' %}selected{% endif %}>Ropa</option>
-                        </select><br>
-                        <input class="submit-user" type="submit" value="Actualizar">
-                    </div>
-                    <div class="columna-form">
-                        <label for="domiciolio-local">Domicilio:</label>
-                        <input type="text" id="domiciolio-local" name="domiciolio-local" value="{{ config.domicilio }}" required><br>
-                        <label for="num-tel-local">Número telefónico:</label>
-                        <input type="number" id="num-tel-local" name="num-tel-local" value="{{ config.numero_telefonico }}" required><br>
-                        <label for="tipografia-sistema">Tipografía de Letra:</label>
-                        <select name="tipografia-sistema" id="tipografia-sistema">
-                            <option value="">----</option>
-                            <option value="Arial" {% if config.tipografia_letra == 'Arial' %}selected{% endif %}>Arial</option>
-                            <option value="Aclonica" {% if config.tipografia_letra == 'Aclonica' %}selected{% endif %}>Aclonica</option>
-                            <option value="Calibri" {% if config.tipografia_letra == 'Calibri' %}selected{% endif %}>Calibri</option>
-                        </select><br>
-                        <label for="tamaño-local">Tamaño de empresa:</label>
-                        <select name="tamaño-local" id="tamaño-local">
-                            <option value="">----</option>
-                            <option value="chica" {% if config.tamano_empresa == 'chica' %}selected{% endif %}>Chica</option>
-                            <option value="mediana" {% if config.tamano_empresa == 'mediana' %}selected{% endif %}>Mediana</option>
-                            <option value="grande" {% if config.tamano_empresa == 'grande' %}selected{% endif %}>Grande</option>
-                        </select><br>
-                    </div>
-                    <div class="columna-form">
-                        <label for="imagen-banner">Imagen banner:</label>
-                        <input id="imagen-banner" type="file" name="imagen-banner" accept="image/*"><br>
-                
-                        {% if config.imagen_banner %}
-                            <img id="banner-preview" class="imagen" src="{{ url_for('static', filename='uploads/' + config.imagen_banner) }}" alt="imagen-banner">
-                        {% else %}
-                            <p>No hay imagen de banner disponible.</p>
-                            <img id="banner-preview" class="imagen" src="{{ url_for('static', filename='default-banner.png') }}" alt="imagen-banner">
-                        {% endif %}
-                        <label for="color-interfaz">Color interfaz:</label>
-                        <input 
-                            type="color" 
-                            name="color-interfaz" 
-                            value="{{ config.color_interfaz if config.color_interfaz and config.color_interfaz.startswith('#') else '#000000' }}"
-                        >
-                        <label for="politicas">Políticas y términos de la empresa:</label>
-                        <img id="politicas-img" class="politics" src="{{ url_for('static', filename='assets/pdf-politics_and_terms.png') }}" alt="politicas-imagen">
-                        <input id="politicas-file" type="file" name="politicas" accept=".pdf" style="display: none;">
-                        <span id="politicas-filename">No hay archivo seleccionado</span><br>
-                    </div>
+        {% endif %}
+    {% endwith %}
+        
+        {% block navbar %}
+            {% include 'banner.html' %}
+            {% include 'navigation.html' %}
+        {% endblock %}
+
+        {% block content %}
+        <div class="caja">
+            <div class="createuser">
+                <div class="usuario-title">
+                    <h2>Configuración</h2>
                 </div>
-            </form>
+                <form action="{{ url_for('configuracion') }}" method="post" enctype="multipart/form-data" class="formulario-user">
+                <div class="form-createu">
+                <div class="columna-form">
+                    <label for="logo">Logo:</label>
+                    <input id="logo" type="file" name="logo" onchange="previewImage(event)">
+                    {% if config.logo_sistem %}
+                        <img id="logo-preview" class="imagen" src="{{ url_for('static', filename='uploads/' + config.logo_sistem) }}" alt="logo-establecimiento">
+                    {% else %}
+                        <img id="logo-preview" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/Imágenes-interfaz/default-logo.jpg') }}" alt="logo-establecimiento">
+                    {% endif %}
+                    <label for="nom-local">Nombre del establecimiento:</label>
+                    <input type="text" id="nom-local" name="nom-local" value="{{ config.nombre_establecimiento }}" required><br>
+                    <label for="tipo-servicio">Eslogan:</label>
+                    <input type="text" id="tipo-servicio" name="tipo-servicio" value="{{ config.tipo_servicio }}" required><br>
+                    <input class="submit-user" type="submit" value="Actualizar">
+                </div>
+                <div class="columna-form">
+                    <label for="domiciolio-local">Domicilio:</label>
+                    <input type="text" id="domiciolio-local" name="domiciolio-local" value="{{ config.domicilio }}" required><br>
+                    <label for="num-tel-local">Número telefónico:</label>
+                    <input type="number" id="num-tel-local" name="num-tel-local" value="{{ config.numero_telefonico }}" required><br>
+                    <label for="tipografia-sistema">Tipografía de Letra:</label>
+                    <select name="tipografia-sistema" id="tipografia-sistema">
+                        <option value="">----</option>
+                        <option value="Arial" {% if config.tipografia_letra == 'Arial' %}selected{% endif %}>Arial</option>
+                        <option value="Aclonica" {% if config.tipografia_letra == 'Aclonica' %}selected{% endif %}>Aclonica</option>
+                        <option value="Calibri" {% if config.tipografia_letra == 'Calibri' %}selected{% endif %}>Calibri</option>
+                    </select><br>
+                    <label for="tamaño-local">Tamaño de empresa:</label>
+                    <select name="tamaño-local" id="tamaño-local">
+                        <option value="">----</option>
+                        <option value="chica" {% if config.tamano_empresa == 'chica' %}selected{% endif %}>Chica</option>
+                        <option value="mediana" {% if config.tamano_empresa == 'mediana' %}selected{% endif %}>Mediana</option>
+                        <option value="grande" {% if config.tamano_empresa == 'grande' %}selected{% endif %}>Grande</option>
+                    </select><br>
+                </div>
+                <div class="columna-form">
+                    <label for="imagen-banner">Imagen banner:</label>
+                    <input id="imagen-banner" type="file" name="imagen-banner" accept="image/*"><br>
+                    {% if config.imagen_banner %}
+                        <img id="banner-preview" class="imagen" src="{{ url_for('static', filename='uploads/' + config.imagen_banner) }}" alt="imagen-banner">
+                    {% else %}
+                        <p>No hay imagen de banner disponible.</p>
+                        <img id="banner-preview" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/Imágenes-interfaz/default-banner.png') }}" alt="imagen-banner">
+                    {% endif %}
+                    <label for="color-interfaz">Color interfaz:</label>
+                    <input 
+                        type="color" 
+                        name="color-interfaz" 
+                        value="{{ config.color_interfaz if config.color_interfaz and config.color_interfaz.startswith('#') else '#000000' }}"
+                    >
+                    <label for="politicas">Políticas y términos de la empresa:</label>
+                    <img id="politicas-img" class="politics" src="{{ url_for('static', filename='assets/pdf-politics_and_terms.png') }}" alt="politicas-imagen">
+                    <input id="politicas-file" type="file" name="politicas" accept=".pdf" style="display: none;">
+                    <span id="politicas-filename">No hay archivo seleccionado</span><br>
+                </div>
+            </div>
+                </form>
+            </div>
         </div>
-    </div>
-    {% endblock %}
+        {% endblock %}
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    var colorInterfaz = "{{ config.color_interfaz }}";
+
+    // Función para determinar si el color es oscuro
+    function isDarkColor(hex) {
+        // Convertir hex a RGB
+        var r = parseInt(hex.slice(1, 3), 16);
+        var g = parseInt(hex.slice(3, 5), 16);
+        var b = parseInt(hex.slice(5, 7), 16);
+        // Calcular la luminancia
+        var luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        return luminance < 0.5;
+    }
+
+    // Función para determinar si el color es claro
+    function isLightColor(hex) {
+        return !isDarkColor(hex);
+    }
+
+    // Aplicar color al borde de .caja
+    var caja = document.querySelector('.caja');
+    if (caja) {
+        caja.style.borderColor = colorInterfaz;
+    }
+
+    // Aplicar color al botón de tipo submit
+    var submitUserButton = document.querySelector('.submit-user');
+    if (submitUserButton) {
+        if (isLightColor(colorInterfaz)) {
+            submitUserButton.style.backgroundColor = colorInterfaz;
+            submitUserButton.style.color = 'black';
+            submitUserButton.style.borderColor = 'black';
+        } else {
+            submitUserButton.style.backgroundColor = colorInterfaz;
+            submitUserButton.style.color = 'white';
+            submitUserButton.style.borderColor = 'white';
+        }
+    }
+});
+
+//Imagen barra de navegación
+document.addEventListener('DOMContentLoaded', function() {
+    var bannerImageUrl = "{{ url_for('static', filename='uploads/' + config.imagen_banner) }}";
+    var logoutImageLight = "{{ url_for('static', filename='assets/logout_oscuro.png') }}";
+    var logoutImageDark = "{{ url_for('static', filename='assets/logout.png') }}";
+
+    function isDarkColor(hex) {
+        // Convertir hex a RGB
+        var r = parseInt(hex.slice(1, 3), 16);
+        var g = parseInt(hex.slice(3, 5), 16);
+        var b = parseInt(hex.slice(5, 7), 16);
+        // Calcular la luminancia
+        var luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        return luminance < 0.5;
+    }
+
+    function getAverageColor(imageUrl, callback) {
+        var img = new Image();
+        img.crossOrigin = 'Anonymous'; // Para evitar problemas de CORS
+        img.src = imageUrl;
+        img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var data = imageData.data;
+            var r = 0, g = 0, b = 0;
+            var pixelCount = data.length / 4;
+            for (var i = 0; i < data.length; i += 4) {
+                r += data[i];
+                g += data[i + 1];
+                b += data[i + 2];
+            }
+            r = Math.round(r / pixelCount);
+            g = Math.round(g / pixelCount);
+            b = Math.round(b / pixelCount);
+            var hex = '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+            callback(hex);
+        };
+    }
+
+    function applyTextColorBasedOnImage() {
+        getAverageColor(bannerImageUrl, function(hexColor) {
+            var isDark = isDarkColor(hexColor);
+            var textColor = isDark ? 'white' : 'black';
+            var logoutImageSrc = isDark ? logoutImageDark : logoutImageLight;
+            
+            document.querySelectorAll('.barra h1, .barra h2').forEach(function(element) {
+                element.style.color = textColor;
+            });
+
+            document.getElementById('logoutImage').src = logoutImageSrc;
+        });
+    }
+
+    applyTextColorBasedOnImage();
+});
+
+        </script>
+    </body>
+    <footer>
+        <p>@FABY 2024</p>
+        <p>El Carmen Xalpatlahuaya S/N</p>
+    </footer>
 {% endblock %}

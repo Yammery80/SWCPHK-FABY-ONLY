@@ -1,36 +1,205 @@
 @import url('https://fonts.googleapis.com/css2?family=Aclonica&display=swap');
+
+/* Estilos de interfaz globales */
+
+/* Estilo por defecto en caso de que no se seleccione ninguna tipografía */
+body {
+    font-family: Arial, sans-serif; /* Fuente por defecto */
+}
+
+/* Aquí aplicamos estilos de la tipografía globalmente */
+body.tipografia-arial {
+    font-family: Arial, sans-serif;
+}
+
+body.tipografia-aclonica {
+    font-family: Aclonica, sans-serif;
+}
+
+body.tipografia-calibri {
+    font-family: Calibri, sans-serif;
+}
+
+.text-light {
+    color: #ffffff; /* Blanco para fondos oscuros */
+}
+
+.text-dark {
+    color: #000000; /* Negro para fondos claros */
+}
+
+
 h2 {
     margin: 0;
     text-align: center;
 }
 
 /*Mensajes FLASH*/
-
-.flash-messages {
-    margin-top: 20px;
-}
-
-.flash-messages .alert {
-    padding: 10px;
-    margin-bottom: 10px;
-}
-
-/* Login */
-
-.flash-message {
-    display: none; /* Inicialmente oculta */
+.flashglo {
     position: fixed;
     top: 20px;
     right: 20px;
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    padding: 15px;
     border-radius: 5px;
-    padding: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     z-index: 1000;
-    max-width: 300px;
-    text-align: center;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+}
+
+.flashglo .vent {
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.flashglo .vent-success {
+    background-color: rgba(76, 175, 80, 0.9); /* Verde */
+}
+
+.flashglo .vent-warning {
+    background-color: rgba(255, 193, 7, 0.9); /* Amarillo */
+}
+
+.flashglo .vent-danger {
+    background-color: rgba(236, 67, 55, 1.0); /* Rojo */
+}
+
+#message-container.success {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px;
+    z-index: 1000;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    margin-bottom: 10px;
+    background-color: rgba(76, 175, 80, 1.0);
+    color: rgba(0, 0, 0, 0.9);
+}
+
+#message-container.error {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px;
+    z-index: 1000;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    margin-bottom: 10px;
+    background-color: rgba(236, 67, 55, 1.0);
+    color: #000;
+}
+.flashusers .log-exitoso {
+    position: fixed;
+    top: 30px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    color: rgb(0, 0, 0);
+    margin-bottom: 10px;
+    background-color: rgba(76, 175, 80, 1.0); /* Verde */
+}
+
+.flashusers .log-peligroso {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    color: rgb(0, 0, 0);
+    margin-bottom: 10px;
+    background-color: rgba(236, 67, 55, 1.0); /* Rojo */
+}
+
+.flashconfig .cont-exito {
+    position: fixed;
+    top: 30px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    color: rgb(0, 0, 0);
+    margin-bottom: 10px;
+    background-color: rgba(76, 175, 80, 1.0); /* Verde */
+}
+
+.flashconfig .cont-error {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    color: rgb(0, 0, 0);
+    margin-bottom: 10px;
+    background-color: rgba(236, 67, 55, 1.0); /* Rojo */
+}
+
+.flashusers .edit-exitouser {
+    position: fixed;
+    top: 30px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    color: rgb(0, 0, 0);
+    margin-bottom: 10px;
+    background-color: rgba(76, 175, 80, 1.0); /* Verde */
+}
+
+.flashusers .edit-erroruser {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    color: rgb(0, 0, 0);
+    margin-bottom: 10px;
+    background-color: rgba(236, 67, 55, 1.0); /* Rojo */
+}
+
+/* Estilo para la ventana emergente flash */
+.flashmessage-login {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px;
+    background-color: rgba(236, 67, 55, 1.0); /* Color de fondo rojo para error */
+    color: white;
+    border-radius: 5px;
+    z-index: 1000;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+}
+
+.flashmessage-login p {
+    margin: 0;
 }
 
 
@@ -92,15 +261,39 @@ h2 {
     border-radius: 5px;
     text-align: center;
 }
-
+/*Sueldos pagados administrador*/
 .btn {
     margin: 5px;
     padding: 10px 20px;
     border: none;
     cursor: pointer;
 }
-
-
+.btn-primary{
+    color: #fff;
+    background-color: #11af1e;
+    margin: 5px;
+    padding: 3px 6px;
+    border-radius:0px ;
+}
+.btn-primary:hover{
+    color: #fff;
+    background-color: #053609;
+}
+.btn-danger{
+    color: #fff;
+    background-color: #af1111;
+    margin: 5px;
+    padding: 3px 6px;
+    border-radius:0px ;
+}
+.btn-danger:hover{
+    color: #fff;
+    background-color: #470808;
+}
+.table{
+margin-left: 40px;
+width: 1200px;
+}
 /* PDF VENTANA EMERGENTE*/
 
 .popup-sueldo, .popup-pdf {
@@ -121,7 +314,15 @@ h2 {
     border-radius: 5px;
     text-align: center;
 }
-
+.popup-sueldo .popup-content-sueldo h2{
+    font-size: 5rem;
+}
+.popup-sueldo .popup-content-sueldo h1{
+    font-size: 2rem;
+}
+.popup-sueldo .popup-content-sueldo p{
+    font-size: 2rem;
+}
 
 /* Sueldos pagados */
 .editar-sueldo-pagado {
@@ -177,7 +378,7 @@ h2 {
 }
 .editar-sueldo-pagado button{
     margin-top: 5px; /* Espacio arriba de los botones y enlace */
-    align-self: center; 
+    align-self: center;
 }
 .editar-sueldo-pagado a {
     margin-top: 2px; /* Espacio arriba de los botones y enlace */
@@ -185,6 +386,7 @@ h2 {
 }
 
 /* Login */
+/* Estilo para el contenedor del formulario */
 .form-login {
     background-color: #fff; /* Fondo blanco para el formulario */
     position: absolute;
@@ -198,62 +400,73 @@ h2 {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Sombra sutil */
 }
 
+/* Contenedor para las imágenes y el nombre del establecimiento */
 .content-login {
     display: flex;
     position: relative; /* Necesario para el posicionamiento absoluto de los elementos internos */
     overflow: hidden; /* Oculta cualquier desbordamiento de los elementos internos */
 }
 
+/* Contenedor para las imágenes de inicio de sesión */
 .imagen-login {
     position: relative;
     flex: 1; /* Permite que el contenedor ocupe el espacio disponible */
     overflow: hidden; /* Oculta cualquier parte de la imagen que sobresalga */
 }
 
+/* Contenedor para el logo y la imagen de fondo */
 .logo-login-swcphk {
     position: relative; /* Necesario para el posicionamiento absoluto de los elementos internos */
     width: 100%; /* Asegura que el contenedor ocupe todo el espacio disponible */
     height: 100%; /* Asegura que el contenedor ocupe todo el espacio disponible */
-}
-
-.logo-banner-s {
-    position: absolute; /* Posiciona la imagen absolutamente dentro de .logo-login-swcphk */
-    top: 45%; /* Ajusta la posición vertical */
-    left: 50%; /* Ajusta la posición horizontal */
-    transform: translate(-50%, -50%); /* Centra la imagen en relación con el contenedor */
-    z-index: 1; /* Asegura que esta imagen esté encima de la imagen de fondo */
-    width: 250px;
-    max-width: 100%; /* Asegura que la imagen no se desborde del contenedor */
-    height: auto; /* Mantiene la proporción de la imagen */
     border-radius: 50%; /* Hace que las imágenes sean circulares */
 }
 
+/* Estilo para la imagen del banner */
+.logo-banner-s {
+    position: absolute; /* Posiciona la imagen absolutamente dentro de .logo-login-swcphk */
+    top: 50%; /* Ajusta la posición vertical */
+    left: 50%; /* Ajusta la posición horizontal */
+    transform: translate(-50%, -50%); /* Centra la imagen en relación con el contenedor */
+    z-index: -1; /* Asegura que esta imagen esté encima de la imagen de fondo */
+    max-width: 100%; /* Asegura que la imagen no se desborde del contenedor */
+    height: auto; /* Mantiene la proporción de la imagen */
+}
+
+/* Estilo para la imagen de fondo */
 .image-swcphk-login {
-    width: 100%; /* Asegura que la imagen de fondo ocupe todo el contenedor */
-    height: 100%; /* Asegura que la imagen cubra el contenedor */
+    width: 200px; /* Asegura que la imagen de fondo ocupe todo el contenedor */
+    height: 200px; /* Asegura que la imagen cubra el contenedor */
     display: block;
     z-index: 0; /* Asegura que esta imagen esté detrás de la imagen de logo */
     object-fit: cover; /* Ajusta la imagen para cubrir el contenedor sin deformarse */
+    border-radius: 50%; /* Hace que las imágenes sean circulares */
+    transform: translate(20%, 25%); /* Centra la imagen en relación con el contenedor */
 }
 
+/* Contenedor para el nombre del establecimiento */
 .login-swcphk-name {
     position: absolute; /* Posiciona el texto absolutamente dentro de .logo-login-swcphk */
-    top: calc(50% + 110px); /* Coloca el texto justo debajo de la imagen del logo */
-    left: 45%;
-    transform: translateX(-45%); /* Centra el texto horizontalmente */
+    top: calc(50% + 100px);
+    left: 80px;
+    transform: translateX(-10%);
     text-align: center; /* Centra el texto dentro del contenedor */
     z-index: 2; /* Asegura que el texto esté encima de la imagen de fondo */
     color: white; /* Cambia el color del texto si es necesario para que contraste con la imagen de fondo */
 }
 
-.login-swcphk-name p{
-    margin: 2px 0; /* Espacio entre las líneas de texto */
-}
-.nom-log{
-    font-size: 2rem;
-    font-weight: 700;
+.login-swcphk-name p {
+    margin: 1px 0; /* Espacio entre las líneas de texto */
+    width: 100%;
 }
 
+/* Estilo para el nombre del establecimiento */
+.nom-log {
+    font-size: 1.7rem; /* Tamaño del texto */
+    font-weight: 700; /* Peso del texto */
+}
+
+/* Estilo para el contenedor de los datos de inicio de sesión */
 .datos-login {
     margin: 0px 20px;
     flex: 1;
@@ -263,17 +476,18 @@ h2 {
     width: 100%;
 }
 
+/* Estilo para el título del formulario de inicio de sesión */
 .titulo {
-    font-family: "Aclonica", sans-serif;
-    color: rgb(12, 87, 37);
-    font-size: 2.5em;
-    font-weight: 700;
-    margin-bottom: 20px;
-    margin-top: 20px;
+    color: rgb(12, 87, 37); /* Color del texto */
+    font-size: 2.5em; /* Tamaño del texto */
+    font-weight: 700; /* Peso del texto */
+    margin-bottom: 20px; /* Espacio inferior */
+    margin-top: 20px; /* Espacio superior */
     text-align: center; /* Centra el título */
     width: 100%; /* Asegura que el título ocupe todo el ancho disponible */
 }
 
+/* Estilo para el formulario de datos */
 .datos-form {
     display: flex;
     flex-direction: column;
@@ -281,52 +495,57 @@ h2 {
     width: 95%;
 }
 
+/* Estilo para los campos del formulario */
 .campo-form {
     width: 100%;
     margin-bottom: 10px; /* Espacio entre campos */
 }
 
+/* Estilo para las etiquetas de los campos del formulario */
 .campo-form label {
-    color: rgb(12, 87, 37);
-    font-size: 1.2em;
-    font-weight: 700;
-    letter-spacing: 1px;
-    margin-bottom: 5px;
+    color: rgb(12, 87, 37); /* Color del texto */
+    font-size: 1.2em; /* Tamaño del texto */
+    font-weight: 700; /* Peso del texto */
+    letter-spacing: 1px; /* Espaciado entre letras */
+    margin-bottom: 5px; /* Espacio inferior */
     text-align: left; /* Alinea las etiquetas a la izquierda */
 }
 
+/* Estilo para los inputs de texto y contraseña */
 .campo-form input[type="text"],
 .campo-form input[type="password"] {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 10px; /* Espaciado interior */
+    border: 1px solid #ccc; /* Borde */
+    border-radius: 4px; /* Bordes redondeados */
     width: 100%; /* Ajustado al 100% para ocupar el ancho del contenedor */
     box-sizing: border-box; /* Incluye el padding en el ancho total */
 }
 
+/* Estilo para el enlace de olvido de contraseña */
 .campo-form .forget-password {
     margin-top: 0px; /* Espacio entre el campo de contraseña y el enlace */
-    margin-bottom: 20px; /* Espacio entre el enlace y el botón de envío */
     text-align: right; /* Alinea el enlace a la derecha */
     display: block; /* Asegura que el enlace se comporte como un bloque */
 }
 
+/* Estilo para el botón de inicio de sesión */
 .button-login {
     align-items: center;
     padding: 10px;
     text-align: center;
     margin-right: 30px;
     border: none;
-    border-radius: 4px;
-    background-color: rgb(12, 87, 37);
-    color: #fff;
-    cursor: pointer;
-    width: 80%; /* Ajustado al 100% para ocupar el ancho del contenedor */
-    margin-top: 10px; /* Espacio superior entre el botón y el contenido anterior */
+    border-radius: 4px;    background-color: #2d5a27; /* Color de fondo */
+    color: #fff; /* Color del texto */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+    width: 80%; /* Ajustado al 80% para ocupar el ancho del contenedor */
+    padding-bottom: 10px; /* Espacio superior entre el botón y el contenido anterior */
+    margin-bottom: 30px;
 }
 
+/* Estilo para el botón de inicio de sesión al pasar el cursor */
 .button-login:hover {
-    background-color: #1AC052FF;
+    background-color: #1AC052FF; /* Color de fondo al pasar el cursor */
 }
 
 /* Barra de navegación */
@@ -356,25 +575,15 @@ h2 {
 }
 .navbar .container-fluid .navbar-nav .nav-link-entra {
     text-decoration: none;
-    font-family: "Aclonica", sans-serif;
-    color: #1AC052FF;
+    color: #000;
+    border-bottom: 2px solid #fff;
 }
 .navbar .container-fluid .navbar-nav .nav-link-entra:hover {
     padding-bottom: 5px; /* Espacio entre el texto y la línea */
-    border-bottom: 2px solid #1AC052FF; /* Ajusta el grosor y el color de la línea */
+    border-bottom: 2px solid #000000; /* Ajusta el grosor y el color de la línea */
 }
 
 /* Barra */
-.barra {
-    display: flex;
-    overflow: hidden; /* Hace que no se mueva si se minimiza la pantalla */
-    align-items: center; /* Alinea verticalmente los elementos dentro de la barra */
-    justify-content: space-between; /* Distribuye el espacio sobrante entre los elementos */
-    background-image: url(../assets/fondo-banner.jpg);
-    background-repeat: no-repeat;
-    background-size: cover;
-    padding: 2px; /* Ajusta el espaciado alrededor de los elementos según sea necesario */
-}
 .logo, .nomhak, .nomuser, .fotoperfil, .logout {
     margin: 5px 10px; /* Ajusta el margen entre los elementos*/
     font-size: 12px;
@@ -383,8 +592,9 @@ h2 {
     margin-right: 45%;
 }
 .logo img, .fotoperfil img {
-    width: 50px; /* Ajusta el tamaño de las imágenes según sea necesario */
+    width: 80px; /* Ajusta el tamaño de las imágenes según sea necesario */
     height: auto;
+    margin-left: 10px;
     border-radius: 50%; /* Hace que las imágenes sean circulares */
     object-fit: cover; /* Asegura que la imagen cubra el contenedor sin deformarse */
 }
@@ -397,7 +607,6 @@ h2 {
     margin: 0; /* Elimina márgenes alrededor de los textos para un mejor ajuste */
     pad: 0;
     color: white;
-    font-family: "Aclonica", sans-serif;
 }
 .nomhak h1, .nomhak h2 {
     font-size: 20px;
@@ -409,7 +618,7 @@ h2 {
 }
 
 /* Caja */
-.caja {
+.caja, .container-editar-usuario {
     width: 100%;
     max-width: 1300px;/* Ajusta el ancho máximo */
     background-color: #adacacad;
@@ -421,6 +630,22 @@ h2 {
     position: relative;
     padding: 20px 20px;
 }
+    .container-editar-usuario{
+     height: 1000px;   
+    } 
+.caja-user{
+        width: 100%;
+        max-width: 1300px;/* Ajusta el ancho máximo */
+        height: 1000px;
+        background-color: #adacacad;
+        margin: 10px 20px;
+        border-color: #575757ad;
+        border: 1px solid;
+        margin-top: 0%;
+        color: #000;
+        position: relative;
+        padding: 20px 20px;
+    }
 .caja-content{
     width: 100%;
     max-width: 1300px; /* Ajusta el ancho máximo según tus necesidades */
@@ -435,7 +660,6 @@ h2 {
 
 .caja h2 {
     text-align: center;
-    font-family: "Aclonica", sans-serif;
     font-size: 30px;
     font-weight: 700;
     margin: 8px 0 25px;
@@ -474,8 +698,8 @@ h2 {
     opacity: 1;
     border: none;
     border-radius: 2px;
-    padding: 3px 1px;
     margin: 5px;
+    padding: 3px 6px;
 }
 .submit-sueldo {
     margin-right: 0;
@@ -491,22 +715,32 @@ h2 {
     justify-content: left; /* Centra el contenido horizontalmente */
     margin: 0%;
 }
+.usuario-title a{
+    margin: 5px;
+    padding: 3px 6px;
+    border-radius:0px ;
+    margin-bottom: 50px;
+}
+.usuario-title h2{
+padding-left: 450px;
+margin-bottom: 40px;
+}
 .createuser .submit-user {
-    background: #091108FF;
+    background: rgb(250, 250, 250);
     opacity: 1;
     border: none;
-    border-radius: 2px;
-    margin: 1px;
-    padding: 0 5px;
+    margin: 10px 5px;
+    padding: 3px 8px;
     color: #fff;
     justify-content: right;
-    margin-right: 27%;
+    margin-right: 30%;
     margin-top: 8px;
     margin-bottom: 25px;
+    width: 40%;
 }
 .createuser .form-createu {
     background-color: #fff;
-    border-color: #0A4D20FF;
+    border-color: rgb(151, 160, 154);
     border-style: solid;
     border-radius: 1px;
     border-width: 1px;
@@ -557,7 +791,7 @@ h2 {
 /* Trabajador entradas y salidas */
 .form-entradas {
     background-color: #fff;
-    border-color: #0A4D20FF;
+    border-color: rgb(12, 87, 37);
     border-style: solid;
     border-radius: 1px;
     border-width: 1px;
@@ -597,14 +831,14 @@ h2 {
 button {
     margin: 10px;
     padding: 10px 20px;
-    background-color: #2d5a27;
+    background-color: #155724;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
 button:hover {
-    background-color: #2a4d26;
+    background-color: #155724;
 }
 
 
@@ -638,4 +872,28 @@ button:hover {
     max-width: 100%;
     height: auto;
     cursor: pointer; /* Indicar que la imagen es clickeable */
+}
+/*Footer*/
+.content {
+    flex: 1; /* Ocupa el espacio restante entre el contenido y el footer */
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #ffffff; /* Opcional, para darle un color de fondo al footer */
+    border-top: 1px solid #a9a9a9; /* Opcional, para añadir una línea superior */
+}
+
+footer p {
+    margin: 2px 0; /* Espacio entre los párrafos en el footer */
+}
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
 }

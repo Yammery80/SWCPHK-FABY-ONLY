@@ -1,4 +1,77 @@
+// Ventana de mensajes flash globales
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar si hay mensajes flash en la página
+    var flashMessages = document.querySelector('.flashconfig');
 
+    if (flashMessages) {
+        // Mostrar los mensajes flash si existen
+        flashMessages.style.display = 'block';
+
+        // Ocultar el mensaje después de 3 segundos
+        setTimeout(function() {
+            flashMessages.style.display = 'none';
+        }, 3000);
+    }
+});
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar si hay mensajes flash en la página
+    var flashMessages = document.querySelector('.flashusers');
+
+    if (flashMessages) {
+        // Mostrar los mensajes flash si existen
+        flashMessages.style.display = 'block';
+
+        // Ocultar el mensaje después de 3 segundos
+        setTimeout(function() {
+            flashMessages.style.display = 'none';
+        }, 3000);
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar si hay mensajes flash en la página
+    var flashMessages = document.querySelector('.flashglo');
+
+    if (flashMessages) {
+        // Mostrar los mensajes flash si existen
+        flashMessages.style.display = 'block';
+
+        // Ocultar el mensaje después de 3 segundos
+        setTimeout(function() {
+            flashMessages.style.display = 'none';
+        }, 3000);
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar si hay mensajes flash en la página
+    var flashMessages = document.querySelector('.flashbase');
+    
+    if (flashMessages) {
+        // Mostrar los mensajes flash si existen
+        flashMessages.style.display = 'block';
+
+        // Ocultar el mensaje después de 3 segundos (10000 milisegundos)
+        setTimeout(function() {
+            flashMessages.style.display = 'none';
+        }, 3000);
+    }
+});
+
+    //Ventana de Login - olvidar contraseña
+    function Passwordremember() {
+        // Obtener el elemento del mensaje de flash
+        var flashMessage = document.getElementById('flashmessage-login');
+        
+        // Mostrar el mensaje de flash
+        flashMessage.style.display = 'block';
+        
+        // Ocultar el mensaje después de 3 segundos (10000 milisegundos)
+        setTimeout(function() {
+            flashMessage.style.display = 'none';
+        }, 3000);
+    }
 
 //cambio de imagen en la interfaz del logo del establecimiento
 document.addEventListener('DOMContentLoaded', function() {
@@ -41,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-//Actualización de cartas de recomendación
+//Actualización de imagen de banner
 document.addEventListener('DOMContentLoaded', function() {
     var input = document.getElementById('imagen-banner');
     var preview = document.getElementById('banner-preview');
@@ -107,16 +180,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-   // Login ventana
-   function mostrarMensaje() {
-    var flashMessage = document.getElementById('flash-message');
-    flashMessage.style.display = 'block'; // Mostrar la ventana emergente
-
-    setTimeout(function() {
-        flashMessage.style.display = 'none'; // Ocultar la ventana emergente después de 1.5 segundos
-    }, 1500); // 1500 milisegundos = 1.5 segundos
-   }
-
 //Actiulizacion de foto de usuarios
 document.addEventListener('DOMContentLoaded', function() {
     const fotoUsuarioInput = document.getElementById('foto_usuario');
@@ -148,6 +211,20 @@ $(document).ready(function() {
         $('#popup-sueldo').show();
     }
 
+
+
+    function mostrarMensaje(mensaje, tipo) {
+        const container = $('#message-container');
+        container.text(mensaje);
+        container.removeClass('success error'); // Elimina clases anteriores
+        container.addClass(tipo); // Agrega la clase para el tipo de mensaje
+        container.show();
+                
+        setTimeout(function() {
+            container.fadeOut();
+        }, 5000); // Oculta el mensaje después de 5 segundos
+    }
+
     // Manejar clic en el botón de cancelar en el popup de sueldo
     $('#cancelButton-s').click(function() {
         // Limpiar los campos del formulario de consulta
@@ -162,39 +239,41 @@ $(document).ready(function() {
     });
 
     // Manejar clic en el botón de guardar en el popup de sueldo
-    $('#acceptButton-s').click(function() {
-        // Obtener los datos necesarios
-        const sueldoCalculado = parseFloat($('#sueldo-data').attr('data-sueldo-calculado'));
-        const idUsuario = $('#form-consulta input[name="id_usuario"]').val();
-        const fechaActual = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
-
         // Enviar datos al servidor
-        fetch('/guardar_pago', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                fecha_pago: fechaActual,
-                monto_total_pago: sueldoCalculado,
-                id_usuariofok: idUsuario
+        $('#acceptButton-s').click(function() {
+            // Obtener los datos necesarios
+            const sueldoCalculado = parseFloat($('#sueldo-data').attr('data-sueldo-calculado'));
+            const idUsuario = $('#form-consulta input[name="id_usuario"]').val();
+            const fechaActual = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
+    
+            // Enviar datos al servidor
+            fetch('/guardar_pago', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fecha_pago: fechaActual,
+                    monto_total_pago: sueldoCalculado,
+                    id_usuariofok: idUsuario
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log('Pago guardado con éxito');
-                // Ocultar el popup y limpiar datos
-                $('#popup-sueldo').hide();
-                $('#form-consulta input[type="text"]').val('');
-                $('#form-consulta input[type="date"]').val('');
-                $('#tabla-datos tbody').empty();
-            } else {
-                console.error('Error al guardar el pago:', data.error);
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarMensaje('Pago guardado exitosamente', 'success');
+                    // Ocultar el popup y limpiar datos
+                    $('#popup-sueldo').hide();
+                    $('#form-consulta input[type="text"]').val('');
+                    $('#form-consulta input[type="date"]').val('');
+                    $('#tabla-datos tbody').empty();
+                } else {
+                    mostrarMensaje('Error al guardar el pago: ' + data.error, 'error');
+                }
+            })
+            .catch(error => mostrarMensaje('Error: ' + error, 'error'));
+        });
+    
 
     // Manejar clic en el botón de guardar y generar PDF en el popup de sueldo
     $('#pdfButton-s').click(function() {
@@ -202,7 +281,7 @@ $(document).ready(function() {
         const sueldoCalculado = parseFloat($('#sueldo-data').attr('data-sueldo-calculado'));
         const idUsuario = $('#form-consulta input[name="id_usuario"]').val();
         const fechaActual = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
-    
+
         // Recopilar datos de la tabla
         const tablaDatos = [];
         $('#tabla-datos tbody tr').each(function() {
@@ -228,7 +307,13 @@ $(document).ready(function() {
                 registros: tablaDatos
             })
         })
-        .then(response => response.blob())
+        .then(response => {
+            if (response.ok) {
+                return response.blob(); // Devuelve el blob del PDF
+            } else {
+                throw new Error('Error al generar el PDF');
+            }
+        })
         .then(blob => {
             // Crear un enlace para descargar el PDF
             const url = window.URL.createObjectURL(blob);
@@ -238,16 +323,18 @@ $(document).ready(function() {
             a.click();
             window.URL.revokeObjectURL(url);
 
+            mostrarMensaje('Pago guardado y PDF generado exitosamente', 'success');
             // Limpiar datos ingresados y vaciar la tabla
             $('#form-consulta input[type="text"]').val('');
             $('#form-consulta input[type="date"]').val('');
             $('#tabla-datos tbody').empty();
-    
+
             // Cerrar la ventana emergente
             $('#popup-sueldo').hide();
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => mostrarMensaje('Error: ' + error.message, 'error'));
     });
+});
 
     // Mostrar ventana de Trabajador y horas de turno
     var popup = document.getElementById('popup');
@@ -310,7 +397,7 @@ $(document).ready(function() {
         popup.style.display = 'none';
     });
 
-});
+
 
 // Crea ventana emergente para Usuario existente
 $(".alert").fadeIn();
@@ -318,8 +405,4 @@ $(".alert").fadeIn();
 setTimeout(function() {
     $(".alert").fadeOut();
 }, 5000); // 5 seconds
-
-//Configuración
-///imagen
-
 

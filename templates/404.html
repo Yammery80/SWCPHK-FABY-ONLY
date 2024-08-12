@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ERROR 404</title>
 </head>
-<body>
+<body class="{% if config.tipografia_letra == 'Arial' %}tipografia-arial{% elif config.tipografia_letra == 'Aclonica' %}tipografia-aclonica{% elif config.tipografia_letra == 'Calibri' %}tipografia-calibri{% endif %}">
     <h1>Página no encontrada</h1>
     <p>¡La página que ha ingresado no existe en el sitio!</p>
     <p>Verifica tu URL() y vuelve a intentarlo</p>

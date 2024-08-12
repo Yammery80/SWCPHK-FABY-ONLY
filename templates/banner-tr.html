@@ -1,13 +1,17 @@
 
     <section class="barra">
-        <!--LOGO -->
+        <!-- LOGO -->
         <div class="logo">
-            <img class="logo-banner" src="{{ url_for('static', filename='uploads/logo-banner.jpg') }}" alt="Logo_hakkunna-matata">
+            {% if config.logo_sistem %}
+                <img class="logo-banner" src="{{ url_for('static', filename='uploads/' + config.logo_sistem) }}" alt="Logo del Establecimiento">
+            {% else %}
+                <img class="logo-banner" src="{{ url_for('static', filename='default-logo.png') }}" alt="Logo del Establecimiento">
+            {% endif %}
         </div>
         <div class="nomhak">
-            <!--Nombre del establecimiento -->
-            <h1>Hakkuna Matata</h1>
-            <h2>"Un lugar para relajarte"</h2>
+            <!-- Nombre del establecimiento -->
+            <h1>{{ config.nombre_establecimiento if config.nombre_establecimiento else 'Nombre del Establecimiento' }}</h1>
+            <h2>{{ config.tipo_servicio if config.tipo_servicio else '"Un lugar para relajarte"' }}</h2>
         </div>
         <div class="nomuser">
             <!--Nombre de usuario -->
@@ -15,10 +19,10 @@
         </div>
 
         <div class="logout">
-            <!--Cerrar sesión -->
+            <!-- Cerrar sesión -->
             <form action="{{ url_for('logout') }}" method="post" style="display: inline;">
-                <button type="submit" style="background: none; border: none;">
-                    <img class="logo-banner" src="../static/assets/logout.png" alt="Cerrar sesión">
+                <button id="logoutButton" type="submit" style="background: none; border: none;">
+                    <img id="logoutImage" class="logo-banner" src="{{ url_for('static', filename='assets/logout.png') }}" alt="Logo cerrar sesión">
                 </button>
             </form>
         </div>
