@@ -106,6 +106,12 @@
                 </form>
             </div>
         </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var colorInterfaz = "{{ config.color_interfaz }}";
+                document.querySelector('.button-sueldo').style.backgroundColor = colorInterfaz;
+            });
+        </script>
         {% endblock %}
         <script>
         document.addEventListener('DOMContentLoaded', function() {

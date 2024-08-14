@@ -21,7 +21,6 @@ import io
 from flask import request, jsonify
 import requests
 getcontext().prec = 10
-from reportlab.pdfgen import canvas
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import Paragraph, Table, TableStyle
 from reportlab.lib import colors
@@ -34,7 +33,7 @@ from io import BytesIO
 app = Flask(__name__)
 app.secret_key = 'Yamilindel2704'  # Necesario para usar flash messages
 app.config['UPLOAD_FOLDER-f'] = 'static/assets/Documents-SWCPHK/FotosPerfiles'  # Carpeta donde se guardarán las imágenes
-app.config['UPLOAD_FOLDER-c'] = 'static/assets/Documents-SWCPHK/CartasRecomendacion'  # Carpeta donde se guardarán las imágenes
+app.config['UPLOAD_FOLDER-c'] = 'assets/Documents-SWCPHK/CartasRecomendacion'  # Carpeta donde se guardarán las imágenes
 app.config['UPLOAD_FOLDER'] = 'static/assets/' #Acceder a la carpeta de recursos
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'} #Permite este tipo de enxtensiones
 # Directorio donde se guardarán los archivos subidos de configuración de interfaz
@@ -54,7 +53,8 @@ def index():
     sueldo_calculado = Decimal(0)
     mensaje = None
     fecha_actual = datetime.now().strftime('%Y-%m-%d')
-    config = get_config()
+    config = get_config()  # Función que recupera los datos de configuración
+
     if request.method == 'POST':
         id_usuario = request.form.get('id_usuario', '')
         e_fechaentrada = request.form.get('e_fechaentrada', '')
@@ -68,12 +68,29 @@ def index():
         
         if 'calcular_sueldo' in request.form:
             if datos:
-                horas_trabajadas_total, sueldo_calculado = calcular_sueldo(session.get('id_usuario'), session.get('e_fechaentrada'), session.get('e_fechasalida'))
-                if sueldo_calculado == Decimal(0):
-                    mensaje = "No se encontró información para calcular el sueldo."
+                # Realizar una solicitud POST a la ruta /calcular_sueldo
+                try:
+                    response = requests.post(url_for('calcular_sueldo', _external=True), data={
+                        'id_usuario': id_usuario,
+                        'e_fechaentrada': e_fechaentrada,
+                        'e_fechasalida': e_fechasalida
+                    })
+
+                    if response.status_code == 200:
+                        # Procesar la respuesta JSON
+                        data = response.json()
+                        horas_trabajadas_total = Decimal(data.get('horas_trabajadas_total', 0))
+                        sueldo_calculado = Decimal(data.get('sueldo_calculado', 0))
+                        if sueldo_calculado == Decimal(0):
+                            mensaje = "No se encontró información para calcular el sueldo."
+                    else:
+                        flash("Hubo un problema al calcular el sueldo.", 'loookerror')
+                except Exception as e:
+                    flash("Error, el Usuario no ha salido de su turno", 'loookerror')
             else:
                 mensaje = "No se encontraron datos para calcular el sueldo."
-# Obtener datos de configuración
+    
+    # Obtener datos de configuración
     return render_template(
         'base.html',
         datos=datos,
@@ -110,11 +127,16 @@ def get_data_from_db(id_usuario, e_fechaentrada, e_fechasalida):
         cursor.close()
         db.desconectar(conn)
 
-def calcular_sueldo(id_usuario, e_fechaentrada, e_fechasalida):
+@app.route('/calcular_sueldo', methods=['POST'])
+def calcular_sueldo():
+    id_usuario = request.form.get('id_usuario')
+    e_fechaentrada = request.form.get('e_fechaentrada')
+    e_fechasalida = request.form.get('e_fechasalida')
+    
     try:
         if not e_fechaentrada or not e_fechasalida:
-            print("Las fechas de entrada y salida no pueden estar vacías.")
-            return Decimal(0), Decimal(0)  # Regresa horas_trabajadas_total y sueldo_calculado
+            flash("Las fechas de entrada y salida no pueden estar vacías.", 'loookerror')
+            return redirect(url_for('index'))
 
         conn = db.conectar()
         cursor = conn.cursor()
@@ -123,10 +145,10 @@ def calcular_sueldo(id_usuario, e_fechaentrada, e_fechasalida):
         pagohora_usuario = cursor.fetchone()
 
         if not pagohora_usuario:
-            print("No se encontró el pago por hora del usuario.")
+            flash("No se encontró el pago por hora del usuario.", 'loookerror')
             cursor.close()
             db.desconectar(conn)
-            return Decimal(0), Decimal(0)
+            return redirect(url_for('index'))
 
         pagohora_usuario = Decimal(pagohora_usuario[0])
 
@@ -137,8 +159,20 @@ def calcular_sueldo(id_usuario, e_fechaentrada, e_fechasalida):
         """, (id_usuario, e_fechaentrada, e_fechasalida))
         registros = cursor.fetchall()
 
+        if not registros:
+            flash("No se encontraron registros para el usuario en el rango de fechas proporcionado.", 'loookerror')
+            cursor.close()
+            db.desconectar(conn)
+            return redirect(url_for('index'))
+
         horas_trabajadas_total = Decimal(0)
         for entrada, salida in registros:
+            if salida is None:
+                flash(f"Error: Usuario {id_usuario} tiene una hora de entrada sin hora de salida.", 'loookerror')
+                cursor.close()
+                db.desconectar(conn)
+                return redirect(url_for('index'))
+            
             fecha_dummy = datetime(1900, 1, 1)
             entrada_datetime = datetime.combine(fecha_dummy, entrada)
             salida_datetime = datetime.combine(fecha_dummy, salida)
@@ -150,42 +184,55 @@ def calcular_sueldo(id_usuario, e_fechaentrada, e_fechasalida):
 
         sueldo_calculado = horas_trabajadas_total * pagohora_usuario
 
-        return horas_trabajadas_total, sueldo_calculado
+        return jsonify({
+            'horas_trabajadas_total': round(horas_trabajadas_total, 2),
+            'sueldo_calculado': round(sueldo_calculado, 2)
+        })
 
     except Exception as e:
-        print(f"Error en calcular_sueldo: {e}")
-        return Decimal(0), Decimal(0)
-    
+        flash(f"Error en calcular_sueldo: {e}", 'loookerror')
+        return redirect(url_for('index'))
 
 @app.route('/guardar_pago', methods=['POST'])
 def guardar_pago():
     conn = None
     try:
+        # Obtener datos de la solicitud
         data = request.get_json()
-        fecha_pago = data['fecha_pago']
-        monto_total_pago = data['monto_total_pago']
-        id_usuariofok = data['id_usuariofok']
+        
+        # Verificar que los datos están siendo recibidos correctamente
+        print('Datos recibidos:', data)
+        
+        fecha_pago = data.get('fecha_pago')
+        monto_total_pago = data.get('monto_total_pago')
+        id_usuariofok = data.get('id_usuariofok')
 
-        conn = db.conectar()
+        # Verificar que todos los datos necesarios están presentes
+        if not fecha_pago or not monto_total_pago or not id_usuariofok:
+            raise ValueError('Faltan datos en la solicitud')
+
+        # Convertir la fecha en formato 'YYYY-MM-DD' a un objeto de fecha
+        fecha_pago_formateada = datetime.strptime(fecha_pago, "%d-%m-%Y").date()
+
+        # Guardar el pago en la base de datos
+        conn = db.conectar()  # Usar la función de conexión del módulo 'db'
         with conn.cursor() as cur:
-            query = sql.SQL("""
+            query = """
                 INSERT INTO public.pagos (fecha_pago, montototal_pago, id_usuariofok)
-                VALUES (%s, %s, %s)
-            """)
-            cur.execute(query, (fecha_pago, monto_total_pago, id_usuariofok))
+                VALUES (%s, %s, %s) RETURNING id_pago
+            """
+            cur.execute(query, (fecha_pago_formateada, monto_total_pago, id_usuariofok))
+            id_pago = cur.fetchone()[0]
             conn.commit()
-        return {'success': True}  # Cambiar a dict
-
+            print('Pago guardado con ID:', id_pago)
+        return jsonify({'success': True, 'id_pago': id_pago})
     except Exception as e:
         print(f'Error al guardar el pago: {e}')
-        return {'success': False, 'error': str(e)}  # Cambiar a dict
-
+        return jsonify({'success': False, 'error': str(e)})
     finally:
         if conn is not None:
-            db.desconectar(conn)
+            db.desconectar(conn)  # Usar la función de desconexión del módulo 'db'
 
-
-#   Botón de guardar y generar PDF
 @app.route('/guardar_y_generar_pdf', methods=['POST'])
 def guardar_y_generar_pdf():
     conn = None
@@ -197,28 +244,44 @@ def guardar_y_generar_pdf():
         id_usuariofok = data['id_usuariofok']
         registros = data['registros']
 
+        # Limpiar los datos de los registros
+        def limpiar_datos(dato):
+            return dato.strip()
+
+        registros_limpios = []
+        for reg in registros:
+            registros_limpios.append({
+                'idUsuario': limpiar_datos(reg['idUsuario']),
+                'usuario': limpiar_datos(reg['usuario']),
+                'fecha': limpiar_datos(reg['fecha']),
+                'horaEntrada': limpiar_datos(reg['horaEntrada']),
+                'horaSalida': limpiar_datos(reg['horaSalida'])
+            })
+
         # Imprimir datos para depuración
-        print('Datos recibidos:', data)
+        print('Datos recibidos:', {
+            'fecha_pago': fecha_pago,
+            'monto_total_pago': monto_total_pago,
+            'id_usuariofok': id_usuariofok,
+            'registros': registros_limpios
+        })
 
         # Verificar la estructura de los registros
-        if not registros or not all('horaEntrada' in reg and 'horaSalida' in reg for reg in registros):
+        if not registros_limpios or not all('horaEntrada' in reg and 'horaSalida' in reg for reg in registros_limpios):
             raise ValueError('Uno o más registros no contienen las claves "horaEntrada" o "horaSalida"')
 
         # Calcular total de horas trabajadas
         def calcular_total_horas(registros):
             total_horas = 0
+            formato = "%H:%M"
             for reg in registros:
-                # Suponiendo que tienes las horas de entrada y salida en formato HH:MM
-                from datetime import datetime
-
-                formato = "%H:%M"
                 entrada = datetime.strptime(reg['horaEntrada'], formato)
                 salida = datetime.strptime(reg['horaSalida'], formato)
-                diferencia = (salida - entrada).total_seconds() / 3600.0  # Convertir segundos a horas
+                diferencia = (salida - entrada).total_seconds() / 3600.0
                 total_horas += diferencia
             return total_horas
 
-        total_horas_trabajadas = calcular_total_horas(registros)
+        total_horas_trabajadas = calcular_total_horas(registros_limpios)
 
         # Guardar el pago en la base de datos
         conn = db.conectar()
@@ -229,15 +292,18 @@ def guardar_y_generar_pdf():
             """
             cur.execute(query, (fecha_pago, monto_total_pago, id_usuariofok))
             conn.commit()
-        flash('Pago guardado y PDF generado exitosamente', 'exito')
+
         # Crear un buffer para el PDF
         buffer = BytesIO()
         c = canvas.Canvas(buffer, pagesize=letter)
         width, height = letter
 
         # Agregar el logo del establecimiento
-        logo_path = 'static/assets/Documents-SWCPHK/Imagenes-interfaz/logo-banner.jpg'  # Reemplaza con la ruta correcta
-        c.drawImage(logo_path, 50, height - 100, width=100, height=100)
+        logo_path = 'static/assets/Documents-SWCPHK/Imagenes-interfaz/logo-banner.jpg'
+        if os.path.exists(logo_path):
+            c.drawImage(logo_path, 50, height - 100, width=100, height=100)
+        else:
+            print('El logo no se encuentra en la ruta:', logo_path)
 
         # Agregar nombre del establecimiento y subtítulo
         c.setFont('Helvetica-Bold', 14)
@@ -273,46 +339,34 @@ def guardar_y_generar_pdf():
         table_data = [
             ['ID Usuario', 'Usuario', 'Fecha', 'Hora de Entrada', 'Hora de Salida']
         ]
-        for reg in registros:
+        for reg in registros_limpios:
             table_data.append([reg['idUsuario'], reg['usuario'], reg['fecha'], reg['horaEntrada'], reg['horaSalida']])
 
         table = Table(table_data, colWidths=[100, 100, 100, 100, 100], hAlign='CENTER')
         style = TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.047, 0.341, 0.145)),  # RGB(12, 87, 37)
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.047, 0.341, 0.145)),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+            ('ALTERNATINGROWCOLOR', (0, 1), (-1, -1), colors.lightgrey),
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ])
         table.setStyle(style)
-
-        # Alternar color de fondo de los registros
-        row_count = len(table_data)
-        for i in range(1, row_count):
-            if i % 2 == 1:  # Alternar cada fila (pares e impares)
-                table.setStyle(TableStyle([('BACKGROUND', (0, i), (-1, i), colors.lightgrey)]))
-
-        # Agregar tabla al PDF
         table.wrapOn(c, width, height)
-        table.drawOn(c, 100, y_position - 40)  # Ajustar la posición según sea necesario
+        table.drawOn(c, 50, y_position - 100)
 
+        # Finalizar PDF
         c.save()
         buffer.seek(0)
-        return send_file(buffer, as_attachment=True, download_name='sueldo.pdf', mimetype='application/pdf')
-
+        return send_file(buffer, as_attachment=True, download_name="pago_sueldo.pdf", mimetype='application/pdf')
     except Exception as e:
-        print(f'Error al guardar el pago o generar el PDF: {e}')
-        return {'success': False, 'error': str(e)}
-
+        print(f'Error al guardar el pago y generar PDF: {e}')
+        return jsonify({'success': False, 'error': str(e)})
     finally:
         if conn is not None:
             db.desconectar(conn)
-
 #login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    config = get_config()  # Obtener la configuración
 
     if request.method == 'POST':
         username = request.form['username']
@@ -359,10 +413,10 @@ def login():
                 cur.close()
                 db.desconectar(conn)
         else:
-            flash('Nombre de usuario o contraseña incorrectos.', 'danger')
+            flash('Nombre de usuario incorrecto', 'danger')
 
         return redirect(url_for('login'))
-
+    config = get_config()  # Obtener la configuración
     return render_template('login.html', config=config)
 
 # Error de página
@@ -572,24 +626,21 @@ def update1_usuario(id_usuario):
                    horaentrada_usuario, horasalida_usuario, pagobase_usuario, pagohora_usuario, nummedico_usuario,
                    tiposegmedico_usuario, cartasreco_usuario, intentos_fallidos, cuenta_bloqueada
             FROM infopersonal
-            WHERE id_usuario=%s
+            WHERE id_usuario = %s
         ''', (id_usuario,))
-        datos = cursor.fetchall()  # Obtiene todos los resultados
-        
+        datos = cursor.fetchone()  # Obtiene un único resultado
+
         if not datos:
             return "Usuario no encontrado", 404
 
-        # Selecciona solo el primer resultado
-        datos = datos[0]
-
         # Convertir horaentrada_usuario y horasalida_usuario a formato HH:MM
-        def format_time_with_tz(time_with_tz):
-            if time_with_tz:
-                return time_with_tz.strftime('%H:%M')
+        def format_time(time_value):
+            if time_value:
+                return time_value.strftime('%H:%M')
             return ''
 
-        horaentrada = format_time_with_tz(datos[11])
-        horasalida = format_time_with_tz(datos[12])
+        horaentrada = format_time(datos[11])
+        horasalida = format_time(datos[12])
 
     except Exception as e:
         return f"Error al consultar los datos: {e}", 500
@@ -599,7 +650,6 @@ def update1_usuario(id_usuario):
     
     return render_template('editar-usuario.html', datos=datos, horaentrada=horaentrada, horasalida=horasalida, config=config)
 
-
 @app.route('/update2_usuario/<string:id_usuario>', methods=['GET', 'POST'])
 def update2_usuario(id_usuario):
     if request.method == 'POST':
@@ -607,15 +657,16 @@ def update2_usuario(id_usuario):
         foto_usuario = request.files.get('foto_usuario')
         cartasreco_usuario = request.files.get('cartasreco_usuario')
 
-        # Rutas para guardar los archivos
-        cartasreco_folder = 'assets\\Documents-SWCPHK\\CartasRecomendacion'
-        foto_folder = 'assets\\Documents-SWCPHK\\FotosPerfiles'
+        # Definir las rutas para guardar los archivos dentro de static
+        base_folder = 'static/assets/Documents-SWCPHK'
+        cartasreco_folder = os.path.join(base_folder, 'CartasRecomendacion')
+        foto_folder = os.path.join(base_folder, 'FotosPerfiles')
         os.makedirs(cartasreco_folder, exist_ok=True)
         os.makedirs(foto_folder, exist_ok=True)
 
-        # Guardar los archivos y obtener las rutas
-        cartasreco_path = None
-        foto_path = None
+        # Nombres de archivos y rutas
+        cartasreco_filename = None
+        foto_filename = None
 
         if cartasreco_usuario and cartasreco_usuario.filename:
             cartasreco_filename = secure_filename(cartasreco_usuario.filename)
@@ -644,7 +695,10 @@ def update2_usuario(id_usuario):
         nummedico_usuario = request.form.get('nummedico_usuario')
         tiposegmedico_usuario = request.form.get('tiposegmedico_usuario')
         intentos_fallidos = request.form.get('intentos_fallidos')
-        cuenta_bloqueada = request.form.get('cuenta_bloqueada')
+        cuenta_bloqueada_str = request.form.get('cuenta_bloqueada')
+
+        # Convertir 'Sí'/'No' a True/False
+        cuenta_bloqueada = True if cuenta_bloqueada_str == 'Sí' else False
 
         conn = None
         cursor = None
@@ -693,8 +747,8 @@ def update2_usuario(id_usuario):
                 horasalida_usuario,
                 contrasena_usuario,
                 confirmarcontrasena_usuario,
-                cartasreco_path,
-                foto_path,
+                cartasreco_filename,  # Guardar solo el nombre del archivo
+                foto_filename,       # Guardar solo el nombre del archivo
                 domicilio_usuario,
                 intentos_fallidos,
                 cuenta_bloqueada,
@@ -714,9 +768,11 @@ def update2_usuario(id_usuario):
                 cursor.close()
             if conn:
                 db.desconectar(conn)
+    
     # Obtener datos de configuración
     config = get_config()
     return render_template('consultar_usuario.html', id_usuario=id_usuario, config=config)
+
 
 
 @app.route('/sueldospagado', methods=['GET', 'POST'])
@@ -962,7 +1018,9 @@ def guardar_hora():
             return jsonify({'success': False, 'error': 'Datos incompletos'}), 400
 
         fecha = datetime.now().date()
-        hora_actual = f"{hora}:{minuto}"
+        hora_actual = datetime.now().replace(hour=int(hora), minute=int(minuto)).time()
+
+        print(f"Fecha: {fecha}, Hora Actual: {hora_actual}")
 
         conn = db.conectar()
         cursor = conn.cursor()
@@ -976,6 +1034,7 @@ def guardar_hora():
 
             if registro:
                 id_turno, hora_entrada, hora_salida = registro
+                print(f"Registro encontrado: id_turno={id_turno}, hora_entrada={hora_entrada}, hora_salida={hora_salida}")
                 if hora_salida is None:
                     cursor.execute(
                         'UPDATE public.turnos SET hora_salida = %s WHERE id_turno = %s',
@@ -1003,6 +1062,7 @@ def guardar_hora():
         print(f"Error en la función guardar_hora: {e}")
         return jsonify({'success': False, 'error': 'Error en la función guardar_hora'}), 500
 
+    
 @app.route('/trabajadoreys', methods=['GET', 'POST'])
 def treys():
     datos = []  # Inicializar datos

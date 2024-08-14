@@ -184,6 +184,46 @@ h2 {
     background-color: rgba(236, 67, 55, 1.0); /* Rojo */
 }
 
+.flashes {
+    list-style-type: none;
+    padding: 0;
+}
+.flashes li {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+.loookerror {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    color: rgb(0, 0, 0);
+    margin-bottom: 10px;
+    background-color: #f8d7da;
+    color: #721c24;
+}
+.loooksuc{
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    color: rgb(0, 0, 0);
+    margin-bottom: 10px;
+    background-color: #f8d7da;
+    color: rgba(76, 175, 80, 1.0);
+}
+
 /* Estilo para la ventana emergente flash */
 .flashmessage-login {
     position: fixed;

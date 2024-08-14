@@ -30,6 +30,16 @@
 {% block body %}
 <body class="{% if config.tipografia_letra == 'Arial' %}tipografia-arial{% elif config.tipografia_letra == 'Aclonica' %}tipografia-aclonica{% elif config.tipografia_letra == 'Calibri' %}tipografia-calibri{% endif %}" data-user-id="{{ session['user_id'] or 'No ID' }}">
         <!-- Contenedor para mensajes de estado -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for catego, flacha in messages %}
+                    <li class="{{ catego }}">{{ flacha }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
 <div id="message-container" style="display: none; padding: 10px; margin-top: 10px; border-radius: 5px;"></div>
 
     {% block navbar %}
@@ -92,9 +102,27 @@
                     <tr>
                         <td>{{ entrada[0] }}</td>
                         <td>{{ entrada[1] }}</td>
-                        <td>{{ entrada[2].strftime('%Y-%m-%d') }}</td>
-                        <td>{{ entrada[3].strftime('%H:%M') }}</td>
-                        <td>{{ entrada[4].strftime('%H:%M') }}</td>
+                        <td>
+                            {% if entrada[2] %}
+                                {{ entrada[2].strftime('%Y-%m-%d') }}
+                            {% else %}
+                                Fecha no disponible
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entrada[3] %}
+                                {{ entrada[3].strftime('%H:%M') }}
+                            {% else %}
+                                Hora no disponible
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if entrada[4] %}
+                                {{ entrada[4].strftime('%H:%M') }}
+                            {% else %}
+                                Hora no disponible
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 {% else %}
@@ -109,6 +137,7 @@
                     </tr>
                 {% endif %}
             </tbody>
+            
         </table>
 
     </div>
@@ -117,11 +146,11 @@
     <div class="popup-content-sueldo">
         <h2>Sueldo Total</h2>
         {% if datos %}
-            <h1>Las horas totales de <b>{{ datos[0][1] }}</b> son:<b> {{ horas_trabajadas_total }} </b></h1>
+            <h1>Las horas totales de <b>{{ datos[0][1] }}</b> son:<b> {{ '{:.3f}'.format(horas_trabajadas_total) }} </b></h1>
         {% else %}
             <h1>No se encontraron datos.</h1>
         {% endif %}
-        <p>Sueldo a pagar es: <b>{{ sueldo_calculado }} </b></p>
+        <p>Sueldo a pagar es: <b>{{ '{:.2f}'.format(sueldo_calculado) }} </b></p>
         <div class="time">
             <p>Fecha actual:<b> {{ fecha_actual }}</b></p>
         </div>
@@ -173,8 +202,8 @@
     var submitSueldoButtons = document.querySelectorAll('.submit-sueldo input[type="submit"], .button-sueldo');
     submitSueldoButtons.forEach(function(button) {
         if (isLightColor(colorInterfaz)) {
-            button.style.backgroundColor = 'black';
-            button.style.color = 'white';
+            button.style.backgroundColor = colorInterfaz;
+            button.style.color = 'black';
             button.style.borderColor = 'black';
         } else {
             button.style.backgroundColor = colorInterfaz;
@@ -187,8 +216,8 @@
     var submitConsulta = document.querySelector('.submit-container input[type="submit"]');
     if (submitConsulta) {
         if (isLightColor(colorInterfaz)) {
-            submitConsulta.style.backgroundColor = 'black';
-            submitConsulta.style.color = 'white';
+            submitConsulta.style.backgroundColor = colorInterfaz;
+            submitConsulta.style.color = 'black';
             submitConsulta.style.borderColor = 'black';
         } else {
             submitConsulta.style.backgroundColor = colorInterfaz;
@@ -201,9 +230,9 @@
     var popupButtons = document.querySelectorAll('#popup-sueldo .button-sueldo');
     popupButtons.forEach(function(button) {
         if (isLightColor(colorInterfaz)) {
-            button.style.backgroundColor = '#060606';
-            button.style.color = 'white';
-            button.style.borderColor = '#060606';
+            button.style.backgroundColor = 'white';
+            button.style.color = '#060606';
+            button.style.borderColor = 'white';
         } else {
             button.style.backgroundColor = colorInterfaz;
             button.style.color = 'white'; // Si el fondo es oscuro, las letras deben ser blancas

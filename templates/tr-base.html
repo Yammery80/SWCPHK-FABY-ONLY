@@ -37,7 +37,7 @@
             <div class="tr-base">
             </div>
         </div>
-
+        
         <div id="popup" class="popup">
             <div class="popup-content">
                 <h2>Entradas y Salidas</h2>
@@ -50,6 +50,7 @@
                 <button id="cancelButton">Cancelar</button>
             </div>
         </div>
+        
         <!-- Mensajes Flash -->
         {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}
@@ -60,6 +61,7 @@
             </div>
         {% endif %}
         {% endwith %}
+        
         <script>
             document.addEventListener('DOMContentLoaded', function() {
     var colorInterfaz = "{{ config.color_interfaz }}";

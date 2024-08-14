@@ -100,9 +100,9 @@
                             <!-- Mostrar Foto del Usuario -->
                             <td>
                                 {% if cuser[0] %}
-                                    <img src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' ~ cuser[0]) }}" alt="Foto" width="50">
+                                <img src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' + cuser[0]) }}" alt="Foto" width="50">
                                 {% else %}
-                                    No Disponible
+                                No Disponible
                                 {% endif %}
                             </td>
                             <!-- Mostrar ID Usuario -->
@@ -140,15 +140,15 @@
                             <!-- Mostrar Cartas Recomendación -->
                             <td>
                                 {% if cuser[17] %}
-                                    <img src="{{ url_for('static', filename='static/assets/Documents-SWCPHK/FotosPerfiles/' ~ cuser[17]) }}" alt="Cartas de Recomendación" width="50">
-                                {% else %}
-                                    No Disponible
-                                {% endif %}
+                                <img src="{{ url_for('static', filename='assets/Documents-SWCPHK/CartasRecomendacion/' + (cuser[17] if cuser[17] else 'default-recommendation.jpeg')) }}" alt="Cartas de Recomendación" width="50">
+                            {% else %}
+                                No Disponible
+                            {% endif %}
                             </td>
                             <!-- Mostrar Intentos Fallidos -->
                             <td>{{ cuser[18] }}</td>
                             <!-- Mostrar Cuenta Bloqueada -->
-                            <td>{{ cuser[19] }}</td>
+                            <td>{{ 'Sí' if cuser[19] else 'No' }}</td>
                             </td>
                             <td>
                                 <form action="{{ url_for('update1_usuario', id_usuario=cuser[1]) }}" method="POST">

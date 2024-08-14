@@ -13,6 +13,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar si hay mensajes flash en la página
+    var flashMessages = document.querySelector('.flashes');
+
+    if (flashMessages) {
+        // Mostrar los mensajes flash si existen
+        flashMessages.style.display = 'block';
+
+        // Ocultar el mensaje después de 3 segundos
+        setTimeout(function() {
+            flashMessages.style.display = 'none';
+        }, 3000);
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // Verificar si hay mensajes flash en la página
     var flashMessages = document.querySelector('.flashusers');
@@ -27,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 });
+
 
 document.addEventListener('DOMContentLoaded', function() {
     // Verificar si hay mensajes flash en la página
@@ -160,6 +177,21 @@ $(document).ready(function() {
     });
 });
 
+//Cambio de imagen de profile
+function previewProfileImage(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        document.getElementById('profileImage').src = e.target.result;
+    }
+    
+    if (file) {
+        reader.readAsDataURL(file);
+    }
+}
+
+
 ///Imagen de de configuracion de interfaz
 document.addEventListener('DOMContentLoaded', function() {
     var input = document.getElementById('imagen-banner');
@@ -203,6 +235,13 @@ document.addEventListener('DOMContentLoaded', function() {
 });    
 
 $(document).ready(function() {
+    // Función para obtener la fecha actual en formato YYYY-MM-DD
+    function obtenerFechaActual() {
+        const ahora = new Date();
+        const opciones = { year: 'numeric', month: '2-digit', day: '2-digit' };
+        return ahora.toLocaleDateString(undefined, opciones).replace(/\//g, '-');
+    }
+
     // Mostrar ventana de Sueldos pagados
     const sueldoDataElement = $('#sueldo-data');
     const sueldoCalculado = parseFloat(sueldoDataElement.attr('data-sueldo-calculado'));
@@ -210,8 +249,6 @@ $(document).ready(function() {
     if (sueldoCalculado !== 0) {
         $('#popup-sueldo').show();
     }
-
-
 
     function mostrarMensaje(mensaje, tipo) {
         const container = $('#message-container');
@@ -239,48 +276,51 @@ $(document).ready(function() {
     });
 
     // Manejar clic en el botón de guardar en el popup de sueldo
+    $('#acceptButton-s').click(function() {
+        // Obtener los datos necesarios
+        const sueldoCalculado = parseFloat($('#sueldo-data').attr('data-sueldo-calculado'));
+        const idUsuario = $('#form-consulta input[name="id_usuario"]').val();
+        const fechaActual = obtenerFechaActual(); // Obtener la fecha en formato YYYY-MM-DD
+
+        // Obtener la hora actual en formato HH:MM:SS
+        const ahora = new Date();
+        const horaActual = ahora.toTimeString().split(' ')[0]; // Extrae la parte de la hora en formato HH:MM:SS
+    
         // Enviar datos al servidor
-        $('#acceptButton-s').click(function() {
-            // Obtener los datos necesarios
-            const sueldoCalculado = parseFloat($('#sueldo-data').attr('data-sueldo-calculado'));
-            const idUsuario = $('#form-consulta input[name="id_usuario"]').val();
-            const fechaActual = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
-    
-            // Enviar datos al servidor
-            fetch('/guardar_pago', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    fecha_pago: fechaActual,
-                    monto_total_pago: sueldoCalculado,
-                    id_usuariofok: idUsuario
-                })
+        fetch('/guardar_pago', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                fecha_pago: fechaActual,
+                hora_pago: horaActual, // Enviar la hora en formato HH:MM:SS
+                monto_total_pago: sueldoCalculado,
+                id_usuariofok: idUsuario
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    mostrarMensaje('Pago guardado exitosamente', 'success');
-                    // Ocultar el popup y limpiar datos
-                    $('#popup-sueldo').hide();
-                    $('#form-consulta input[type="text"]').val('');
-                    $('#form-consulta input[type="date"]').val('');
-                    $('#tabla-datos tbody').empty();
-                } else {
-                    mostrarMensaje('Error al guardar el pago: ' + data.error, 'error');
-                }
-            })
-            .catch(error => mostrarMensaje('Error: ' + error, 'error'));
-        });
-    
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                mostrarMensaje('Pago guardado exitosamente', 'success');
+                // Ocultar el popup y limpiar datos
+                $('#popup-sueldo').hide();
+                $('#form-consulta input[type="text"]').val('');
+                $('#form-consulta input[type="date"]').val('');
+                $('#tabla-datos tbody').empty();
+            } else {
+                mostrarMensaje('Error al guardar el pago: ' + data.error, 'error');
+            }
+        })
+        .catch(error => mostrarMensaje('Error: ' + error, 'error'));
+    });
 
     // Manejar clic en el botón de guardar y generar PDF en el popup de sueldo
     $('#pdfButton-s').click(function() {
         // Obtener los datos necesarios
         const sueldoCalculado = parseFloat($('#sueldo-data').attr('data-sueldo-calculado'));
         const idUsuario = $('#form-consulta input[name="id_usuario"]').val();
-        const fechaActual = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
+        const fechaActual = obtenerFechaActual(); // Fecha actual en formato YYYY-MM-DD
 
         // Recopilar datos de la tabla
         const tablaDatos = [];
@@ -307,36 +347,31 @@ $(document).ready(function() {
                 registros: tablaDatos
             })
         })
-        .then(response => {
-            if (response.ok) {
-                return response.blob(); // Devuelve el blob del PDF
-            } else {
-                throw new Error('Error al generar el PDF');
-            }
-        })
+        .then(response => response.blob())
         .then(blob => {
-            // Crear un enlace para descargar el PDF
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = 'sueldo.pdf';
+            document.body.appendChild(a);
             a.click();
-            window.URL.revokeObjectURL(url);
+            a.remove();
+            window.URL.revokeObjectURL(url); // Limpiar la URL del blob
 
-            mostrarMensaje('Pago guardado y PDF generado exitosamente', 'success');
-            // Limpiar datos ingresados y vaciar la tabla
+            // Ocultar el popup y limpiar el formulario
+            $('#popup-sueldo').hide();
             $('#form-consulta input[type="text"]').val('');
             $('#form-consulta input[type="date"]').val('');
             $('#tabla-datos tbody').empty();
-
-            // Cerrar la ventana emergente
-            $('#popup-sueldo').hide();
         })
-        .catch(error => mostrarMensaje('Error: ' + error.message, 'error'));
+        .catch(error => {
+            console.error('Error al generar el PDF:', error);
+        });
     });
 });
 
-    // Mostrar ventana de Trabajador y horas de turno
+document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar ventana emergente
     var popup = document.getElementById('popup');
     var acceptButton = document.getElementById('acceptButton');
     var cancelButton = document.getElementById('cancelButton');
@@ -384,20 +419,23 @@ $(document).ready(function() {
             if (data.success) {
                 console.log('Hora guardada con éxito');
                 popup.style.display = 'none'; // Cierra la ventana emergente
+                // Asegúrate de que esta línea se esté ejecutando
             } else {
                 console.error('Error al guardar la hora:', data.error);
+                // Puedes agregar aquí una notificación de error para el usuario
             }
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            console.error('Error:', error);
+            // Puedes agregar aquí una notificación de error para el usuario
+        });
     });
 
-    // Cierra la ventana emergente sin hacer nada al hacer clic en el botón de cancelar
+    // Cierra la ventana emergente al hacer clic en el botón "Cancelar"
     cancelButton.addEventListener('click', function() {
-        console.log('Botón Cancelar clickeado'); // Línea de depuración
-        popup.style.display = 'none';
+        popup.style.display = 'none'; // Cierra la ventana emergente
     });
-
-
+});
 
 // Crea ventana emergente para Usuario existente
 $(".alert").fadeIn();
@@ -405,4 +443,3 @@ $(".alert").fadeIn();
 setTimeout(function() {
     $(".alert").fadeOut();
 }, 5000); // 5 seconds
-

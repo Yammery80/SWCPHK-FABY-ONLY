@@ -50,9 +50,9 @@
                             <!-- Imagen de Perfil -->
                             <label for="foto_usuario">Imagen de Perfil:</label>
                             {% if datos[0] %}
-                                <img id="profileImage" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' + datos[0]) }}" alt="Imagen de Perfil">
+                            <img id="profileImage" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/' + datos[0]) }}" alt="Imagen de Perfil">
                             {% else %}
-                                <img id="profileImage" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/foto-admi.jpg') }}" alt="Imagen de Perfil">
+                            <img id="profileImage" class="imagen" src="{{ url_for('static', filename='assets/Documents-SWCPHK/FotosPerfiles/Maria-Lopez.jpg') }}" alt="Imagen de Perfil">
                             {% endif %}
                             <input id="foto_usuario" type="file" name="foto_usuario" onchange="previewProfileImage(event)"><br>
 
@@ -108,9 +108,9 @@
 
                             <label for="cuenta_bloqueada">¿Cuenta bloqueada?:</label>
                             <select name="cuenta_bloqueada" id="cuenta_bloqueada">
-                                <option value="true" {% if datos[16] == 'true' %}selected{% endif %}>Si</option>
-                                <option value="false" {% if datos[16] == 'false' %}selected{% endif %}>No</option>
-                            </select><br>
+                                <option value="Sí" {% if datos[19] %}selected{% endif %}>Sí</option>
+                                <option value="No" {% if not datos[19] %}selected{% endif %}>No</option>
+                            </select><br>                            
                         </div>
                         
                         <!-- Cuarta columna -->
