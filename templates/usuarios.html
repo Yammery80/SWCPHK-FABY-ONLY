@@ -49,8 +49,6 @@
                 <h2>Usuarios</h2>
             </div>
             <!-- Mensajes Flash -->
-
-    
             <form action="/usuario" method="post" enctype="multipart/form-data" class="formulario-user">
                 <div class="form-createu">
                     <!-- Primera columna -->
@@ -60,13 +58,13 @@
                         <input id="foto_usuario" type="file" name="foto_usuario"><br>
     
                         <label for="id_usuario">ID Usuario:</label>
-                        <input type="text" id="id_usuario" name="id_usuario" maxlength="11" autocomplete="new-id" placeholder="LaPe19HAd24"><br>
+                        <input type="text" id="id_usuario" name="id_usuario" maxlength="11" autocomplete="new-id" placeholder="LaPe19HAd24" required><br>
                         
                         <label for="nomcompleto_usuario">Nombre Completo:</label>
                         <input type="text" id="nomcompleto_usuario" name="nomcompleto_usuario" placeholder="Laura Pérez" required><br>
                         
                         <label for="tipo_usuario">Tipo Usuario:</label>
-                        <select name="tipo_usuario" id="tipo_usuario">
+                        <select name="tipo_usuario" id="tipo_usuario" requiered>
                             <option value="Administrador">Administrador</option>
                             <option value="Trabajador">Trabajador</option>
                         </select><br>
@@ -93,7 +91,7 @@
                     <!-- Tercera columna -->
                     <div class="columna-form">
                         <label for="contrasena_usuario">Contraseña:</label>
-                        <input type="password" id="contrasena_usuario" name="contrasena_usuario" autocomplete="new-password"><br>
+                        <input type="password" id="contrasena_usuario" name="contrasena_usuario" autocomplete="new-password" required><br>
                         
                         <label for="confirmarcontrasena_usuario">Confirmar Contraseña:</label>
                         <input type="password" id="confirmarcontrasena_usuario" name="confirmarcontrasena_usuario" required><br>

@@ -50,7 +50,7 @@
                 <div class="form-createu">
                 <div class="columna-form">
                     <label for="logo">Logo:</label>
-                    <input id="logo" type="file" name="logo" onchange="previewImage(event)">
+                    <input id="logo" type="file" name="logo" onchange="previewImage(event)" required>
                     {% if config.logo_sistem %}
                         <img id="logo-preview" class="imagen" src="{{ url_for('static', filename='uploads/' + config.logo_sistem) }}" alt="logo-establecimiento">
                     {% else %}
@@ -75,7 +75,7 @@
                         <option value="Calibri" {% if config.tipografia_letra == 'Calibri' %}selected{% endif %}>Calibri</option>
                     </select><br>
                     <label for="tamaño-local">Tamaño de empresa:</label>
-                    <select name="tamaño-local" id="tamaño-local">
+                    <select name="tamaño-local" id="tamaño-local" required>
                         <option value="">----</option>
                         <option value="chica" {% if config.tamano_empresa == 'chica' %}selected{% endif %}>Chica</option>
                         <option value="mediana" {% if config.tamano_empresa == 'mediana' %}selected{% endif %}>Mediana</option>
@@ -84,7 +84,7 @@
                 </div>
                 <div class="columna-form">
                     <label for="imagen-banner">Imagen banner:</label>
-                    <input id="imagen-banner" type="file" name="imagen-banner" accept="image/*"><br>
+                    <input id="imagen-banner" type="file" name="imagen-banner" accept="image/*" required><br>
                     {% if config.imagen_banner %}
                         <img id="banner-preview" class="imagen" src="{{ url_for('static', filename='uploads/' + config.imagen_banner) }}" alt="imagen-banner">
                     {% else %}
